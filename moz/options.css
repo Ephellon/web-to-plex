@@ -680,9 +680,6 @@ span.checkbox {
 .checkbox[white] input:checked + label:hover {
     background: #fff !important;
 }
-.checkbox[white] input:checked + label {
-    background: #fff !important;
-}
 
 [orange], .checkbox[orange]::before {
     color: #cc7b19 !important;
