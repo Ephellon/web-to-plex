@@ -3,8 +3,8 @@
 	"description": "Adds a button on various movie & TV show sites to open the item in Plex, or send to your designated NZB manager for download.",
 	"homepage_url": "https://webtoplex.github.io/",
 
-	"manifest_version": 2,
-	"version": "4.1.2.4",
+"manifest_version": 3,
+"version": "4.1.2.4",
 
 	"icons": {
 		"16":  "img/16.png",
@@ -15,7 +15,9 @@
 		"256": "img/256.png"
 	},
 
-	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+"content_security_policy": {
+"extension_pages": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+},
 
 	"content_scripts": [
 		{
@@ -189,10 +191,9 @@
 		}
 	],
 
-	"background": {
-		"scripts": ["background.js", "plugn.js"],
-		"persistent": true
-	},
+        "background": {
+                "service_worker": "background.js"
+        },
 
 	"options_page": "options/index.html",
 	"options_ui": {
@@ -200,23 +201,29 @@
 		"open_in_tab": true
 	},
 
-	"browser_action": {
-		"default_icon": {
-			"16": "img/16.png",
-			"32": "img/32.png",
-			"48": "img/48.png",
-			"96": "img/96.png"
-		},
-		"default_title": "Web to Plex",
-		"default_popup": "popup/index.html"
-	},
+        "action": {
+                "default_icon": {
+                        "16": "img/16.png",
+                        "32": "img/32.png",
+                        "48": "img/48.png",
+                        "96": "img/96.png"
+                },
+                "default_title": "Web to Plex",
+                "default_popup": "popup/index.html"
+        },
 
-	"permissions": [
-		"tabs",
-		"storage",
-		"downloads",
-		"contextMenus",
-		"<all_urls>"
-	],
-	"web_accessible_resources": ["font/*", "img/*", "options/*", "sites/*.css"]
+        "permissions": [
+                "tabs",
+                "storage",
+                "downloads",
+                "contextMenus",
+                "scripting"
+        ],
+        "host_permissions": ["<all_urls>"],
+        "web_accessible_resources": [
+                {
+                        "resources": ["font/*", "img/*", "options/*", "sites/*.css"],
+                        "matches": ["<all_urls>"]
+                }
+        ]
 }

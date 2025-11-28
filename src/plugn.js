@@ -13,12 +13,20 @@ let LAST, LAST_JS, LAST_INSTANCE, LAST_ID, LAST_TYPE, FOUND = {};
 let PLUGN_STORAGE = chrome.storage.sync || chrome.storage.local;
 let PLUGN_CONFIGURATION;
 
-function load(name, private) {
-	return JSON.parse((private && sessionStorage? sessionStorage: localStorage).getItem(btoa(name)));
+async function load(name) {
+        let key = btoa(name);
+        let data = await chrome.storage.local.get(key);
+
+        return JSON.parse(data[key] || null);
 }
 
-function save(name, data, private) {
-	return (private && sessionStorage? sessionStorage: localStorage).setItem(btoa(name), JSON.stringify(data));
+async function save(name, data) {
+        let key = btoa(name),
+                value = JSON.stringify(data);
+
+        await chrome.storage.local.set({ [key]: value });
+
+        return value;
 }
 
 async function Load(name = '') {
@@ -248,7 +256,7 @@ chrome.storage.onChanged.addListener(async(changes, namespace) => {
 function RandomName(length = 16, symbol = '') {
 	let values = [];
 
-	window.crypto.getRandomValues(new Uint32Array(length)).forEach((value, index, array) => values.push(value.toString(36)));
+        crypto.getRandomValues(new Uint32Array(length)).forEach((value, index, array) => values.push(value.toString(36)));
 
 	return values.join(symbol).replace(/^[^a-z]+/i, '');
 };
@@ -378,6 +386,35 @@ top.onlocationchange = (event) => chrome.runtime.sendMessage({ type: '$INIT$', o
 ;${ name };`
 }
 
+let execute = (tabId, details) => {
+        let target = { tabId };
+
+        if(details.file)
+                return chrome.scripting.executeScript({ target, files: [details.file] });
+
+        if(details.code)
+                return chrome.scripting.executeScript({
+                        target,
+                        func: code => eval(code),
+                        args: [details.code]
+                });
+
+        return Promise.resolve([]);
+};
+
+let insertCSS = (tabId, { file, code, cssOrigin }) => {
+        let origin = (cssOrigin || 'AUTHOR').toUpperCase();
+        let target = { tabId };
+
+        if(file)
+                return chrome.scripting.insertCSS({ target, files: [file], origin });
+
+        if(code)
+                return chrome.scripting.insertCSS({ target, css: code, origin });
+
+        return Promise.resolve();
+};
+
 let handle = async(results, tabID, instance, script, type) => {
 	let InstanceWarning = `[${ type.toUpperCase() }:${ script }] Instance failed to execute @${ tabID }#${ instance }`,
 		InstanceType = type;
@@ -386,11 +423,11 @@ let handle = async(results, tabID, instance, script, type) => {
 
 	let extURL = url => chrome.extension.getURL(url);
 
-	/* Always display a pretty button */
-	chrome.tabs.insertCSS(tabID, { cssOrigin: 'user', file: 'sites/common.css' });
-	chrome.tabs.insertCSS(tabID, { cssOrigin: 'user', file: 'sites/theme.css' });
-	chrome.tabs.insertCSS(tabID, { cssOrigin: 'user', file: 'sites/glyphs.css' });
-	chrome.tabs.insertCSS(tabID, { cssOrigin: 'user', file: 'sites/colors.css' });
+        /* Always display a pretty button */
+        await insertCSS(tabID, { cssOrigin: 'user', file: 'sites/common.css' });
+        await insertCSS(tabID, { cssOrigin: 'user', file: 'sites/theme.css' });
+        await insertCSS(tabID, { cssOrigin: 'user', file: 'sites/glyphs.css' });
+        await insertCSS(tabID, { cssOrigin: 'user', file: 'sites/colors.css' });
 
 	if((!results || !results[0] || !instance) && !FOUND[instance])
 		try {
@@ -492,21 +529,22 @@ let tabchange = async tabs => {
 	url  = new URL(url);
 	org  = url.origin;
 	ali  = TLDHost(url.host);
-	type = (load(`builtin:${ ali }`) + '') == 'true'? 'script': 'plugin';
-	js   = load(`${ type }:${ ali }`);
+        type = (await load(`builtin:${ ali }`) + '') == 'true'? 'script': 'plugin';
+        js   = await load(`${ type }:${ ali }`);
 	code = cache[ali];
 	allowed = await GetConsent(ali, type == 'script');
 
 	if(!allowed || !js) return;
 
-	if(code) {
-		chrome.tabs.executeScript(id, { file: 'helpers.js' }, () => {
-			// Sorry, but the instance needs to be callable multiple times
-			chrome.tabs.executeScript(id, { code }, results => handle(results, id, instance, js, type));
-		});
+        if(code) {
+                await execute(id, { file: 'helpers.js' });
+                // Sorry, but the instance needs to be callable multiple times
+                let results = await execute(id, { code });
 
-		return setTimeout(() => cache = {}, 1e6);
-	}
+                handle(results, id, instance, js, type);
+
+                return setTimeout(() => cache = {}, 1e6);
+        }
 
 	let file = (PLUGN_DEVELOPER)?
 		(type === 'script')?
@@ -518,22 +556,23 @@ let tabchange = async tabs => {
 		chrome.runtime.getURL(`sites/${ js }/index.css`):
 	`https://webtoplex.github.io/web/styles/${ js }.css`;
 
-	await fetch(file, { mode: 'cors' })
-		.then(response => response.text())
-		.then(async code => {
-			await chrome.tabs.executeScript(id, { file: 'helpers.js' }, async() => {
-				// Sorry, but the instance needs to be callable multiple times
-				await chrome.tabs.executeScript(id, {
-					code: (LAST = cache[ali] = await prepare({ code, alias: js, type, allowed, url })),
-				}, results => handle(results, LAST_ID = id, LAST_INSTANCE = instance, LAST_JS = js, LAST_TYPE = type))
-			})
-		})
-		.then(() => running.push(id, instance))
-		.catch(error => { throw error });
+        await fetch(file, { mode: 'cors' })
+                .then(response => response.text())
+                .then(async code => {
+                        await execute(id, { file: 'helpers.js' });
+                        // Sorry, but the instance needs to be callable multiple times
+                        let results = await execute(id, {
+                                code: (LAST = cache[ali] = await prepare({ code, alias: js, type, allowed, url })),
+                        });
 
-	await fetch(style, { mode: 'cors' })
-		.then(response => response.text())
-		.then(async code => chrome.tabs.insertCSS({ code }));
+                        handle(results, LAST_ID = id, LAST_INSTANCE = instance, LAST_JS = js, LAST_TYPE = type);
+                })
+                .then(() => running.push(id, instance))
+                .catch(error => { throw error });
+
+        await fetch(style, { mode: 'cors' })
+                .then(response => response.text())
+                .then(async code => insertCSS(id, { code }));
 };
 
 // listen for message event
@@ -590,41 +629,43 @@ chrome.runtime.onMessage.addListener(processMessage = async(request = {}, sender
 				case 'PLUGIN':
 					allowed = await GetConsent(plugin, false);
 
-					await fetch(file, { mode: 'cors' })
-						.then(response => response.text())
-						.then(async code => {
-							await chrome.tabs.executeScript(id, { file: 'helpers.js' }, async() => {
-								// Sorry, but the instance needs to be callable multiple times
-								await chrome.tabs.executeScript(id, {
-									code: (LAST = cache[plugin] = await prepare({ code, alias: plugin, type: 'plugin', allowed, url }))
-								}, results => handle(results, LAST_ID = id, LAST_INSTANCE = instance, LAST_JS = plugin, LAST_TYPE = type))
-							})
-						})
-						.then(() => running.push(id, instance))
-						.catch(error => { throw error });
-					break;
+                                        await fetch(file, { mode: 'cors' })
+                                                .then(response => response.text())
+                                                .then(async code => {
+                                                        await execute(id, { file: 'helpers.js' });
+                                                        // Sorry, but the instance needs to be callable multiple times
+                                                        let results = await execute(id, {
+                                                                code: (LAST = cache[plugin] = await prepare({ code, alias: plugin, type: 'plugin', allowed, url }))
+                                                        });
+
+                                                        handle(results, LAST_ID = id, LAST_INSTANCE = instance, LAST_JS = plugin, LAST_TYPE = type);
+                                                })
+                                                .then(() => running.push(id, instance))
+                                                .catch(error => { throw error });
+                                        break;
 
 				case 'SCRIPT':
 					allowed = await GetConsent(script, true);
 
-					await fetch(file, { mode: 'cors' })
-						.then(response => response.text())
-						.then(async code => {
-							await chrome.tabs.executeScript(id, { file: 'helpers.js' }, async() => {
-								// Sorry, but the instance needs to be callable multiple times
-								await chrome.tabs.executeScript(id, {
-									code: (LAST = cache[script] = await prepare({ code, alias: script, type: 'script', allowed, url }))
-								}, results => handle(results, LAST_ID = id, LAST_INSTANCE = instance, LAST_JS = script, LAST_TYPE = type))
-							})
-						})
-						.then(() => running.push(id, instance))
-						.catch(error => { throw error });
-					break;
+                                        await fetch(file, { mode: 'cors' })
+                                                .then(response => response.text())
+                                                .then(async code => {
+                                                        await execute(id, { file: 'helpers.js' });
+                                                        // Sorry, but the instance needs to be callable multiple times
+                                                        let results = await execute(id, {
+                                                                code: (LAST = cache[script] = await prepare({ code, alias: script, type: 'script', allowed, url }))
+                                                        });
+
+                                                        handle(results, LAST_ID = id, LAST_INSTANCE = instance, LAST_JS = script, LAST_TYPE = type);
+                                                })
+                                                .then(() => running.push(id, instance))
+                                                .catch(error => { throw error });
+                                        break;
 
 				// Soft reset (button reset)
-				case '_INIT_':
-					chrome.tabs.executeScript(id, { code: LAST }, results => handle(results, LAST_ID, LAST_INSTANCE, LAST_JS, LAST_TYPE));
-					break;
+                                case '_INIT_':
+                                        execute(id, { code: LAST }).then(results => handle(results, LAST_ID, LAST_INSTANCE, LAST_JS, LAST_TYPE));
+                                        break;
 
 				// Hard reset (program reset)
 				case '$INIT$':
@@ -676,9 +717,9 @@ chrome.runtime.onMessage.addListener(processMessage = async(request = {}, sender
 					return false;
 			}
 
-			await fetch(style, { mode: 'cors' })
-				.then(response => response.text())
-				.then(async code => chrome.tabs.insertCSS({ code }));
+                        await fetch(style, { mode: 'cors' })
+                                .then(response => response.text())
+                                .then(async code => insertCSS(id, { code }));
 
 			return true;
 		} catch(error) {

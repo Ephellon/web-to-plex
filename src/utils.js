@@ -3920,8 +3920,15 @@ Object.filter = Object.filter || function filter(object, prejudice) {
 						} catch (__error) {
 							try {
 								/* Not a Chrome (extension) state */
-								chrome.tabs.getCurrent(tab => chrome.tabs.executeScript(tab.id, { code: `document.furnish.__cache__ = () => {${ value }}` }, __cache__ => element[name] = __cache__[0] || parent.furnish.__cache__ || value));
-							} catch (_error) {
+                                                                chrome.tabs.getCurrent(tab => chrome.scripting.executeScript({
+                                                                        target: { tabId: tab.id },
+                                                                        func: cached => {
+                                                                                document.furnish.__cache__ = () => { return eval(cached); };
+                                                                                return document.furnish.__cache__();
+                                                                        },
+                                                                        args: [value]
+                                                                }).then(__cache__ => element[name] = (__cache__[0] && __cache__[0].result) || parent.furnish.__cache__ || value));
+                                                        } catch (_error) {
 								throw __error, _error;
 							}
 						}

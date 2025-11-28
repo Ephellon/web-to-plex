@@ -1,4 +1,6 @@
 /* global chrome */
+self.importScripts('plugn.js');
+
 let BACKGROUND_DEVELOPER = false;
 
 let external = {},
@@ -26,7 +28,7 @@ class Key {
 	constructor(length = 8, symbol = '') {
 		let values = [];
 
-		window.crypto.getRandomValues(new Uint32Array(16)).forEach((value, index, array) => values.push(value.toString(36)));
+                crypto.getRandomValues(new Uint32Array(16)).forEach((value, index, array) => values.push(value.toString(36)));
 
 		return this.length = length, this.value = values.join(symbol);
 	}
@@ -74,13 +76,13 @@ function ChangeStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, 
 
 	external = { ...external, ID_PROVIDER, ITEM_ID, ITEM_TITLE, ITEM_YEAR, ITEM_URL, ITEM_TYPE, SEARCH_PROVIDER, SEARCH_TITLE, FILE_PATH, FILE_TITLE, FILE_TYPE };
 
-	chrome.browserAction.setBadgeText({
-		text: ID_PROVIDER
-	});
+        chrome.action.setBadgeText({
+                text: ID_PROVIDER
+        });
 
-	chrome.browserAction.setBadgeBackgroundColor({
-		color: (ITEM_ID? '#f45a26': '#666666')
-	});
+        chrome.action.setBadgeBackgroundColor({
+                color: (ITEM_ID? '#f45a26': '#666666')
+        });
 
 	chrome.contextMenus.update('W2P', {
 		title: `Find "${ ITEM_TITLE } (${ ITEM_YEAR || YEAR })"`
@@ -145,21 +147,29 @@ function parseConfiguration() {
 	return getConfiguration().then(options => options, error => { throw error });
 }
 
-function load(name, private) {
-	return JSON.parse((private && sessionStorage? sessionStorage: localStorage).getItem(btoa(name)));
+async function load(name) {
+        let key = btoa(name);
+        let data = await chrome.storage.local.get(key);
+
+        return JSON.parse(data[key] || null);
 }
 
-function save(name, data, private) {
-	return (private && sessionStorage? sessionStorage: localStorage).setItem(btoa(name), JSON.stringify(data));
+async function save(name, data) {
+        let key = btoa(name),
+                value = JSON.stringify(data);
+
+        await chrome.storage.local.set({ [key]: value });
+
+        return value;
 }
 
 async function UpdateConfiguration(force_update = false) {
-	let configuration = load('configuration');
+        let configuration = await load('configuration');
 
-	if(force_update || configuration === null || configuration === undefined)
-		BACKGROUND_CONFIGURATION = configuration = await parseConfiguration();
-	else
-		BACKGROUND_CONFIGURATION = configuration;
+        if(force_update || configuration === null || configuration === undefined)
+                BACKGROUND_CONFIGURATION = configuration = await parseConfiguration();
+        else
+                BACKGROUND_CONFIGURATION = configuration;
 
 	if(BACKGROUND_DEVELOPER = configuration.DeveloperMode) {
 		BACKGROUND_TERMINAL =
@@ -170,7 +180,7 @@ async function UpdateConfiguration(force_update = false) {
 		BACKGROUND_TERMINAL.warn(`BACKGROUND_DEVELOPER: ${BACKGROUND_DEVELOPER}`);
 	}
 
-	save('configuration', BACKGROUND_CONFIGURATION);
+        await save('configuration', BACKGROUND_CONFIGURATION);
 };
 
 UpdateConfiguration();
@@ -894,9 +904,9 @@ chrome.contextMenus.onClicked.addListener(item => {
 		default: return; break;
 	}
 
-	if(!dnl)
-		window.open(`https://${ url }`, '_blank');
-	else if(dnl)
+        if(!dnl)
+                chrome.tabs.create({ url: `https://${ url }` });
+        else if(dnl)
 		// try/catch won't work here, so use the first download's callback as an error catcher
 		chrome.downloads.download({
 			url: item.href,
