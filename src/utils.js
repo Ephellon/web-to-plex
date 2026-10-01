@@ -2355,12 +2355,18 @@ let INITIALIZE = (async date => {
 		if(!prompted && (PromptQuality || PromptLocation))
 			return new Prompt('modify', options, refined => Request_Radarr(refined, true));
 
-		let parsePath = id => JSON.parse(__CONFIG__.radarrStoragePaths).map(item => item.id == id? item: null).filter(n => n)[0].path.replace(/\\/g, '\\\\');
+		let parsePath = id => (JSON.parse(__CONFIG__.radarrStoragePaths).map(item => item.id == id? item: null).filter(n => n)[0] || { path: '' }).path.replace(/\\/g, '\\\\');
 
 		if(PromptQuality && +options.quality > 0)
 			PromptValues.QualityID = +options.quality;
-		if(PromptLocation && +options.location > 0)
+		if(PromptLocation && +options.location > 0 && parsePath(options.location))
 			PromptValues.StoragePath = parsePath(options.location);
+
+		// A storage path removed on the server leaves a stale ID in the settings
+		let StoragePath = parsePath(__CONFIG__.radarrStoragePath);
+
+		if(!(PromptValues.StoragePath || StoragePath))
+			return new Notification('warning', 'Stopped adding to Radarr: storage path not found. Test Radarr in the settings, then save');
 
 		new Notification('info', `Sending "${ options.title }" to Radarr`, 3000);
 
@@ -2368,7 +2374,7 @@ let INITIALIZE = (async date => {
 				type: 'PUSH_RADARR',
 				url: `${ __CONFIG__.radarrURLRoot }api/movie/`,
 				token: __CONFIG__.radarrToken,
-				StoragePath: parsePath(__CONFIG__.radarrStoragePath),
+				StoragePath,
 				QualityID: __CONFIG__.radarrQualityProfileId,
 				basicAuth: __CONFIG__.radarrBasicAuth,
 				title: options.title,
@@ -2414,12 +2420,18 @@ let INITIALIZE = (async date => {
 		if(!prompted && (PromptQuality || PromptLocation))
 			return new Prompt('modify', options, refined => Request_Sonarr(refined, true));
 
-		let parsePath = id => JSON.parse(__CONFIG__.sonarrStoragePaths).map(item => item.id == id? item: null).filter(n => n)[0].path.replace(/\\/g, '\\\\');
+		let parsePath = id => (JSON.parse(__CONFIG__.sonarrStoragePaths).map(item => item.id == id? item: null).filter(n => n)[0] || { path: '' }).path.replace(/\\/g, '\\\\');
 
 		if(PromptQuality && +options.quality > 0)
 			PromptValues.QualityID = +options.quality;
-		if(PromptLocation && +options.location > 0)
+		if(PromptLocation && +options.location > 0 && parsePath(options.location))
 			PromptValues.StoragePath = parsePath(options.location);
+
+		// A storage path removed on the server leaves a stale ID in the settings
+		let StoragePath = parsePath(__CONFIG__.sonarrStoragePath);
+
+		if(!(PromptValues.StoragePath || StoragePath))
+			return new Notification('warning', 'Stopped adding to Sonarr: storage path not found. Test Sonarr in the settings, then save');
 
 		new Notification('info', `Sending "${ options.title }" to Sonarr`, 3000);
 
@@ -2427,7 +2439,7 @@ let INITIALIZE = (async date => {
 				type: 'PUSH_SONARR',
 				url: `${ __CONFIG__.sonarrURLRoot }api/series/`,
 				token: __CONFIG__.sonarrToken,
-				StoragePath: parsePath(__CONFIG__.sonarrStoragePath),
+				StoragePath,
 				QualityID: __CONFIG__.sonarrQualityProfileId,
 				basicAuth: __CONFIG__.sonarrBasicAuth,
 				title: options.title,
