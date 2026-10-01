@@ -1971,12 +1971,19 @@ function saveOptionsWhileResetting() {
 
 	let options = getOptionValues();
 
+	// The runtime reads the derived proxy object (utils.js), not the raw proxy fields
+	options.proxy = HandleProxySettings(options);
+
+	function OptionsSavedMessage() {
+		new Notification('update', 'Saved', 1500);
+	}
+
 	storage.set(options, () => {
 		LoadingAnimation();
 
 		if(chrome.runtime.lastError) {
 			new Notification('error', 'Error with saving: ' + chrome.runtime.lastError.message);
-			storage.set(data, OptionsSavedMessage);
+			storage.set(options, OptionsSavedMessage);
 		} else {
 			terminal.log('Saved Options: ', options);
 			OptionsSavedMessage();
