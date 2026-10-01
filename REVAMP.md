@@ -9,7 +9,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0 and 1 done; 2: 50 fixes landed, Phase 2 fix lists done; live rechecks pending (B21, B39, S1, S18) |
+| Phase | 0, 1 done; 2 done (51 fixes, live recheck passed in Firefox; only B36 open). 3 next and urgent: Chrome 153 no longer loads this MV2 build |
 | Budget | First 3 h block ended 05:10 UTC; resumed 21:07 UTC on the owner's word, 30 min check-ins |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
@@ -19,7 +19,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|---|---|
 | 0 | Baseline and tooling: lint, `scripts/build.mjs` (`dist/chrome`, `dist/firefox`, zips), pre-commit hook, CI | `npm test`, `npm run lint` (0 errors), `npm run build` run | ✅ |
 | 1 | Inventory: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, per-file digests, bug candidates | Every setting maps to code; every file has a digest | ✅ (`ARCHITECTURE.md`, `FEATURES.md`, `SITES.md`) |
-| 2 | Triage and isolated fixes: `docs/triage/TRIAGE.md` | Every candidate verified against code | |
+| 2 | Triage and isolated fixes: `docs/triage/TRIAGE.md` | Every candidate verified against code | ✅ (B36 needs a CouchPotato server) |
 | 3 | Core extraction and plugin contract (`src/lib/`, plugin registry, unit tests) | Pilot plugins behave identically (headless parity) | |
 | 4 | Plugin migration: one plugin per site, one per service | Parity per batch | |
 | 5 | Declarative settings | Settings page renders the same; first-run defaults stored exactly | |
@@ -36,6 +36,10 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
   from `src/` by the build.
 
 ## Known MV3 blockers (from the first read)
+
+**Live finding (2026-10-01):** Chrome 153 and Edge 154 refuse to load the MV2 build at all, so the current release is
+unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
+
 
 - `background.js` + `plugn.js` are a persistent MV2 background page; they use `window`, `localStorage`,
   `sessionStorage` and long-lived globals.
@@ -83,3 +87,4 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 | 2026-10-01 | `w2p-fix-settings` | subordinate (`webtoplex-subo`) | S5 S2 S1 S13 S4 S10 S11 S20 (two patches tidied: indent, quotes) |
 | 2026-10-01 | `w2p-triage-sites` | subordinate (`webtoplex-subo`) | T1-T32 verdicts, drop list (13 integrations; owner's call on iTunes, Verizon, Kitsu) |
 | 2026-10-01 | `w2p-fix-utils-a`, `w2p-fix-utils-b`, `w2p-fix-misc` | subordinate (`webtoplex-subo`) | 22 fixes: B39 B43 B40 B1 B20 B21; B16 B17 B34 B22 B23 B45 B46 B33 B35; B31 S14 S15 S18 B32 B51 B52 |
+| 2026-10-01 | `w2p-live-recheck-1` | subordinate (`webtoplex-subo`) | Firefox BiDi live checks: B39 B21 S1 S2 S18 pass; found N1 (fixed), N2; confirmed B37, B13 |

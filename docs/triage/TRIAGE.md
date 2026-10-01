@@ -349,3 +349,26 @@ All 32 IDs (T1–T32) appear exactly once.
 | 2 | T3, T8 |
 | 3+ | T2 |
 | 4 | all others |
+
+## Live recheck 1 (`w2p-live-recheck-1`)
+
+Run in a throwaway Firefox 155 profile over WebDriver BiDi, because Chrome 153 and Edge 154 no longer load MV2
+extensions. Each check was also run against a build with the fix reverted, to show the test can tell them apart.
+
+| Check | Result |
+|---|---|
+| B39 SPA navigation | Pass (Firefox) |
+| B21 window `message` listener | Pass (Firefox); the Chrome isolated-world `event.source.top` check is untested until the MV3 build loads |
+| S1/S32 theme persists | Pass |
+| S2/S28 UseLZW on | Pass |
+| S18 hidden `~save` | Pass (no-server path) |
+| B36 CouchPotato over HTTP | Skipped (no CouchPotato server) |
+
+New findings:
+
+- ~~**N1** (high): the first Save after install stored every default-on checkbox as `false` (31 built-in sites,
+  `UseLoose`, `UseOmbi`, `DeveloperMode`), blocking every built-in site and switching to remote script loading.~~
+  Fixed by the manager: keys never saved keep the page default.
+- **N2** (medium): Trakt moved to `app.trakt.tv`, which the `utils.js` domain check refuses. Phase 4 (site rewrite).
+- **N3**: confirms B37 (`utils.js` injected twice) in Firefox. Phase 3+.
+- **N4**: confirms B13 (`plugn.js` targets the last tab seen, not the sender). Phase 3+.
