@@ -506,7 +506,8 @@ function getServers(plexToken) {
 		if(/^\s*Invalid/i.test(data))
 			throw data;
 
-		return data.Device.filter(device => !!~device.provides.split(',').indexOf('server'));
+		// parseXML gives an object, not an array, when the account has a single device
+		return [].concat(data.Device || []).filter(device => !!~(device.provides || '').split(',').indexOf('server'));
 	})
 	.catch(error => {
 		new Notification('error', `Unable to connect to Plex: "${ error }"`, 7000);
