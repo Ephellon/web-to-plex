@@ -33,7 +33,7 @@ let plxdwnld = (() => {
 	};
 
 	let getXML = (url, callback) => {
-		fetch(`//cors-anywhere.herokuapp.com/${ url }`, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+		fetch(url, { method: 'GET' })
 			.then(Q => Q.text())
 			.then(text => {
 				if(!text.length)
