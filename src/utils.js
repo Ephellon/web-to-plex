@@ -11,10 +11,11 @@ let configuration, init, Update, IMAGES, Glyphs = {},
 			} else if(keys instanceof String) {
 				return callback(configuration[keys]);
 			} else if(keys instanceof Array) {
-				results = [...keys];
+				// Like chrome.storage: an array of keys gives back { key: value }
+				results = {};
 
 				for(let key of keys)
-					result.push(configuration[key]);
+					results[key] = configuration[key];
 				return callback(results);
 			} else if(keys instanceof Object) {
 				results = { ...keys };
