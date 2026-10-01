@@ -657,6 +657,17 @@ function getOptionValues() {
 	options.__caught = (COM? compress(zip(BWT(_c))): _c);
 	options.__theme = (COM? compress(zip(BWT(_t))): _t);
 
+	// Prompt defaults (utils.js) follow the current selections, not the values loaded when the page opened
+	for(let svc of ['radarr', 'sonarr', 'medusa', 'sickBeard'])
+		if(options[`${ svc }QualityProfileId`])
+			options[`__${ svc }Quality`] = options[`${ svc }QualityProfileId`];
+	for(let svc of ['radarr', 'sonarr', 'medusa'])
+		if(options[`${ svc }StoragePath`])
+			options[`__${ svc }StoragePath`] = options[`${ svc }StoragePath`];
+	// Sick Beard's paths are listed by index (sickBeardStoragePaths ids)
+	if(__sickBeard_storagePath__.selectedIndex >= 0 && options.sickBeardStoragePath)
+		options.__sickBeardStoragePath = __sickBeard_storagePath__.selectedIndex + '';
+
 	return options;
 }
 
