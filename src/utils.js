@@ -3172,33 +3172,33 @@ let INITIALIZE = (async date => {
 		if(!(__CONFIG__.plexURL && __CONFIG__.plexToken) || __CONFIG__.IGNORE_PLEX)
 			return new Promise((resolve, reject) => resolve({ found: false, key: null }));
 
-		Request_Plex.IN_WORK = Request_Plex.IN_WORK || [];
 		Request_Plex.PROMISED_WORK = Request_Plex.PROMISED_WORK || {};
 
-		return new Promise((resolve, reject) => {
-			// Sanitize the object
-			options = JSON.parse( JSON.stringify(options) );
+		// Sanitize the object
+		options = JSON.parse( JSON.stringify(options) );
 
-			let uuid = UUID.from(options);
+		let uuid = UUID.from(options);
 
-			UTILS_TERMINAL.LOG('Searching for item on Plex', { uuid, ...options });
+		UTILS_TERMINAL.LOG('Searching for item on Plex', { uuid, ...options });
 
-			if(!!~Request_Plex.IN_WORK.indexOf(uuid) || Request_Plex.PROMISED_WORK[uuid])
-				return console.warn('Sending promised work back...', { uuid, options }), Request_Plex.PROMISED_WORK[uuid];
-			Request_Plex.IN_WORK.push(uuid);
+		// Share the pending search instead of returning from inside the executor
+		if(Request_Plex.PROMISED_WORK[uuid])
+			return console.warn('Sending promised work back...', { uuid, options }), Request_Plex.PROMISED_WORK[uuid];
 
+		return Request_Plex.PROMISED_WORK[uuid] = new Promise((resolve, reject) => {
 			chrome.runtime.sendMessage({
 					type: 'SEARCH_PLEX',
 					options,
 					serverConfig: __CONFIG__.server
 				},
 				response => {
-					Request_Plex.PROMISED_WORK[uuid] =
-						(response && response.error)?
-							reject(response.error):
-						(!response)?
-							reject(new Error(`Unknown error: ${ response }`)):
-						resolve(response)
+					delete Request_Plex.PROMISED_WORK[uuid];
+
+					(response && response.error)?
+						reject(response.error):
+					(!response)?
+						reject(new Error(`Unknown error: ${ response }`)):
+					resolve(response)
 				});
 			});
 	}
