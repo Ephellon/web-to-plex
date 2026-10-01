@@ -644,7 +644,7 @@ function Push_SickBeard(request, sendResponse) {
 		.then(response => response.text())
 		.then(results => {
 			debug.data =
-			results = JSON.parse(results || `{"data":{},message:"",result:""}`);
+			results = JSON.parse(results || `{"data":{},"message":"","result":""}`);
 
 			let { data, message, result } = results;
 
