@@ -3581,18 +3581,9 @@ function watchlocationchange(subject) {
 
 			let event = new Event('locationchange', { bubbles: true });
 
-			if(!exists && typeof callback == 'function') {
-				/* The eventlistener does not exist */
-				window.addEventListener('beforeunload', event => {
-					event.preventDefault(false);
-					callback({ event, ...properties });
-				});
-			} else {
-				/* The eventlistener already exists */
+			// Tell the listener in place; reloading the page (or blocking unload) breaks SPA navigation
+			if(typeof callback == 'function')
 				callback({ event, ...properties });
-			}
-
-			open(to, '_self');
 		}
 	}
 }
