@@ -2533,10 +2533,6 @@ let INITIALIZE = (async date => {
 
 		new Notification('info', `Sending "${ options.title }" to Sick Beard`, 3000);
 
-		COMPRESS = options.UseLZW;
-		CAUGHT = __CONFIG__.__caught;
-		CAUGHT = JSON.parse(COMPRESS? iBWT(unzip(decompress(CAUGHT))): CAUGHT);
-
 		chrome.runtime.sendMessage({
 				type: 'PUSH_SICKBEARD',
 				url: `${ __CONFIG__.sickBeardURLRoot }api/${ __CONFIG__.sickBeardToken }/`,
