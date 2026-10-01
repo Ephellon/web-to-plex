@@ -482,7 +482,8 @@ function Push_Medusa(request, sendResponse) {
 				throw new Error('TV Show not found');
 
 			// Monitor, search, and download series ASAP
-			let body = data[0].join('|');
+			// The add call only needs the TVDb ID (the search result itself was never sent)
+			let body = { id: { tvdb: id } };
 
 			BACKGROUND_TERMINAL.group('Generated URL');
 				BACKGROUND_TERMINAL.log('URL', request.url);
@@ -496,7 +497,7 @@ function Push_Medusa(request, sendResponse) {
 			return fetch(`${ request.url }`, debug.requestHeaders = {
 				method: 'POST',
 				// mode: cors(request.url),
-				body: JSON.stringify({ id: { tvdb: id } }),
+				body: JSON.stringify(body),
 				headers
 			});
 		})
