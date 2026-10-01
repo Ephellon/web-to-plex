@@ -684,7 +684,7 @@ function Push_Ombi(request, sendResponse) {
 		},
 		type = request.contentType,
 		id = (type == 'movie'? request.tmdbId: request.tvdbId),
-		body = ({ [type == 'movie'? 'theMovieDbId': 'tvDbId']: id, requestAll: true, lastestSeason: true, firstSeason: true }),
+		body = ({ [type == 'movie'? 'theMovieDbId': 'tvDbId']: id, requestAll: true, latestSeason: true, firstSeason: true }),
 		debug = { headers, body, request };
 			// setup stack trace for debugging
 
