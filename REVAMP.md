@@ -9,7 +9,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0 done; 1 in progress (core ✅, settings ✅, sites claimed) |
+| Phase | 0 and 1 done; 2 in progress (core and settings triaged; fixes posted) |
 | Budget | 3 h from 02:10 UTC 2026-10-01 (ends about 05:10 UTC) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
@@ -18,7 +18,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | # | Phase | Exit criteria | State |
 |---|---|---|---|
 | 0 | Baseline and tooling: lint, `scripts/build.mjs` (`dist/chrome`, `dist/firefox`, zips), pre-commit hook, CI | `npm test`, `npm run lint` (0 errors), `npm run build` run | ✅ |
-| 1 | Inventory: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, per-file digests, bug candidates | Every setting maps to code; every file has a digest | |
+| 1 | Inventory: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, per-file digests, bug candidates | Every setting maps to code; every file has a digest | ✅ (`ARCHITECTURE.md`, `FEATURES.md`, `SITES.md`) |
 | 2 | Triage and isolated fixes: `docs/triage/TRIAGE.md` | Every candidate verified against code | |
 | 3 | Core extraction and plugin contract (`src/lib/`, plugin registry, unit tests) | Pilot plugins behave identically (headless parity) | |
 | 4 | Plugin migration: one plugin per site, one per service | Parity per batch | |
@@ -76,3 +76,5 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 |---|---|---|---|
 | 2026-10-01 | `w2p-inventory-core` | subordinate (`webtoplex-subo`) | `docs/ARCHITECTURE.md`, `docs/triage/bugs-core.md` (61 candidates, unverified) |
 | 2026-10-01 | `w2p-inventory-settings` | subordinate (`webtoplex-subo`) | `docs/FEATURES.md`, `docs/triage/bugs-settings.md` (33 candidates, unverified); corrects core B15: `DeveloperMode` defaults on, so local `cloud/*` runs by default |
+| 2026-10-01 | `w2p-inventory-sites` | subordinate (`webtoplex-subo`) | `docs/SITES.md`, `docs/triage/bugs-sites.md` (32 candidates) |
+| 2026-10-01 | `w2p-triage-core`, `w2p-triage-settings` | subordinate (`webtoplex-subo`) | `docs/triage/TRIAGE.md`: 33 + 11 size-S Phase 2 fixes |
