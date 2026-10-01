@@ -289,7 +289,8 @@ let INITIALIZE = (async date => {
 			NOTIFIED = true;
 
 			if(last && !last.done)
-				return (last => setTimeout(() => new Notification(state, text, timeout, callback, requiresClick), +(new Date) - last.start))(last);
+				// Wait for the time the shown notification has left, not the time it has already been up
+				return (last => setTimeout(() => new Notification(state, text, timeout, callback, requiresClick), Math.max(0, last.stop - (+new Date))))(last);
 
 			let element = furnish(`div.web-to-plex-notification.${state}`, {
 				onmouseup: event => {
