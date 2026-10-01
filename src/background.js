@@ -133,7 +133,7 @@ function getConfiguration() {
 
 		BACKGROUND_STORAGE.get(null, options => {
 			if(chrome.runtime.lastError)
-				chrome.storage.local.get(null, handleOptions);
+				chrome.storage.local.get(null, handleConfiguration);
 			else
 				handleConfiguration(options);
 		});
