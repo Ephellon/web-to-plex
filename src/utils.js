@@ -2067,7 +2067,7 @@ let INITIALIZE = (async date => {
 			mr = 'movie_results',
 			tr = 'tv_results';
 
-		json = json && mr in json? json[mr].length > json[tr].length? json[mr]: json[tr]: json;
+		json = json && mr in json? (!json[tr] || json[mr].length > json[tr].length)? json[mr]: json[tr]: json;
 
 		if(json instanceof Array && (!__CONFIG__.usingMedusa? true: (__CONFIG__.usingSonarr || __CONFIG__.usingOmbi || __CONFIG__.usingSickBeard)))
 			json = json[0];
@@ -2104,7 +2104,7 @@ let INITIALIZE = (async date => {
 				year: ((json.premiered || json.first_aired_date || year) + '').slice(0, 4)
 			};
 		//api.themoviedb.org/
-		else if('imdb_id' in (json = mr in json? json[mr].length > json[tr].length? json[mr]: json[tr]: json) || 'original_name' in json || 'original_title' in json)
+		else if('imdb_id' in (json = mr in json? (!json[tr] || json[mr].length > json[tr].length)? json[mr]: json[tr]: json) || 'original_name' in json || 'original_title' in json)
 			data = {
 				imdb: iid || json.imdb_id || ei,
 				tmdb: mid || json.id | 0,
