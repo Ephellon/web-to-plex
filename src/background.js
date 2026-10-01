@@ -689,9 +689,9 @@ function Push_Ombi(request, sendResponse) {
 			// setup stack trace for debugging
 
 	if(request.contentType == 'movie' && (id || null) === null)
-		sendResponse({ error: 'Invalid TMDbID', location: '@0B: Push_Ombi => if', silent: true });
+		return sendResponse({ error: 'Invalid TMDbID', location: '@0B: Push_Ombi => if', silent: true });
 	else if((id || null) === null)
-		sendResponse({ error: 'Invalid TVDbID', location: '@0B: Push_Ombi => else if', silent: true });
+		return sendResponse({ error: 'Invalid TVDbID', location: '@0B: Push_Ombi => else if', silent: true });
 
 	fetch(debug.url = request.url, {
 			method: 'POST',
