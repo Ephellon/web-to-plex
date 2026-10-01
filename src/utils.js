@@ -3499,7 +3499,8 @@ function decompress(string = '') {
 }
 
 function wait(on, then) {
-	if(on && ((on instanceof Function && on()) || true))
+	// A function is polled until it returns true; any other value is checked once
+	if(on instanceof Function? on(): on)
 		then && then();
 	else
 		setTimeout(() => wait(on, then), 50);
