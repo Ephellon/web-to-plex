@@ -2257,10 +2257,11 @@ let INITIALIZE = (async date => {
 	// View the item
 	function Request_CouchPotato(options) {
 		// TODO: this does not work anymore!
-		if(!options.IMDbID || !options.TMDbID)
+		// CouchPotato only looks up and adds by IMDb ID
+		if(!/^tt\d+$/i.test(options.IMDbID))
 			return new Notification(
 				'warning',
-				'Stopped adding to CouchPotato: No ID'
+				'Stopped adding to CouchPotato: No IMDb ID'
 			);
 
 		chrome.runtime.sendMessage(
