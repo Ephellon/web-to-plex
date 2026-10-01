@@ -2056,7 +2056,10 @@ function restoreOptions(OPTIONS) {
 
 			if(!el) return;
 
-			if(el.type == 'checkbox')
+			// A key never saved (first run) keeps the page's default, e.g. built-in sites checked
+			if(!(option in items))
+				/* Keep the default */;
+			else if(el.type == 'checkbox')
 				el.checked = items[option];
 			else
 				el.value = (items.UseLZW && /^__(caught|theme)$/.test(option) && items[option]? unxip(items[option]): items[option]) || '';
