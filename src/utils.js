@@ -1351,19 +1351,12 @@ let INITIALIZE = (async date => {
 						                });
 									};
 
-								try {
-									setTimeout(() =>
-										chrome.runtime.sendMessage(
-											{ type, url, basicAuth },
-											response => parseJSON(response)
-										)
-									, 10000);
-								} catch(error) {
-									await fetch(url)
-										.then(response => response.json())
-										.then(json => parseJSON(json))
-										.catch(error => { throw error });
-								}
+								setTimeout(() =>
+									chrome.runtime.sendMessage(
+										{ type, url, basicAuth },
+										response => parseJSON(response)
+									)
+								, 10000);
 						    }
 
 						    /* TV Shows */
