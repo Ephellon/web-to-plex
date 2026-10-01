@@ -912,7 +912,7 @@ chrome.contextMenus.onClicked.addListener(item => {
 });
 
 chrome.runtime.onMessage.addListener((request = {}, sender, callback) => {
-	BACKGROUND_TERMINAL.log('From: ' + sender);
+	BACKGROUND_TERMINAL.log('From:', sender);
 
 	let item = (request.options || request),
 		ITEM_TITLE = item.title,
