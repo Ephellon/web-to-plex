@@ -3303,10 +3303,21 @@ let INITIALIZE = (async date => {
 	/* Listen for Window events - from iframes, etc. */
 	top.addEventListener('message', async request => {
 		try {
+			// Only windows in this tab (the page or its frames); ignore other tabs and windows
+			if(!request.source || request.source.top !== top)
+				return false;
+
 			request = request.data;
+
+			// Only Web to Plex message shapes; anything else used to raise an error notification
+			if(!request || typeof request != 'object' || typeof request.type != 'string')
+				return false;
 
 			switch(request.type) {
 				case 'SEND_VIDEO_LINK':
+					if(typeof request.href != 'string' || !/^https?:\/\//i.test(request.href) || !/^(oload|consistent|fembed|gounlimited|plex)$/.test(request.from))
+						return false;
+
 					let options = { ...FindMediaItem.OPTIONS, href: request.href, remote: request.from };
 
 					UTILS_TERMINAL.LOG(`Download Event [${ options.remote }]:`, options);
@@ -3315,11 +3326,17 @@ let INITIALIZE = (async date => {
 					return true;
 
 				case 'NOTIFICATION':
+					if(!request.data || typeof request.data.text != 'string')
+						return false;
+
 					let { state, text, timeout = 7000, callback = () => {}, requiresClick = true } = request.data;
 					new Notification(state, text, timeout, callback, requiresClick);
 					return true;
 
 				case 'PERMISSION':
+					if(!request.data || typeof request.data != 'object' || typeof request.data.permission != 'string')
+						return false;
+
 					let { data } = request,
 						{ instance } = data;
 
