@@ -899,13 +899,13 @@ chrome.contextMenus.onClicked.addListener(item => {
 	else if(dnl)
 		// try/catch won't work here, so use the first download's callback as an error catcher
 		chrome.downloads.download({
-			url: item.href,
+			url,
 			filename: `${ fp }${ lt } (${ yr }).${ ft }`,
 			saveAs: true
 		}, id => {
 			if(id === undefined || id === null)
 				chrome.downloads.download({
-					url: item.href,
+					url,
 					saveAs: true
 				});
 		});
