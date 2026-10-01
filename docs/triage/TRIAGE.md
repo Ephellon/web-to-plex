@@ -114,7 +114,7 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 1. ~~**B9.** Repeat Plex searches hang forever (`utils.js:3186-3201`).~~ Fixed (`w2p-fix-plex`).
 2. ~~**B2.** Sick Beard push always throws and breaks `CAUGHT` for the page (`utils.js:2532-2534`).~~ Fixed (`w2p-fix-services`).
 3. ~~**B4.** Plex search never replies when every connection fails (`background.js:744`).~~ Fixed (`w2p-fix-plex`).
-4. **B39.** SPA navigations force full reloads and can show "Leave site?" (`utils.js:3582`, `:3573-3576`).
+4. ~~**B39.** SPA navigations force full reloads and can show "Leave site?" (`utils.js:3582`, `:3573-3576`).~~ Fixed (`w2p-fix-utils-a`).
 5. ~~**B41.** A missing `proxy` breaks every `Identify` (`utils.js:1760-1762`).~~ Fixed (`w2p-fix-plex`).
 6. ~~**B42.** A missing `__domains` aborts `INITIALIZE` (`utils.js:1597`).~~ Fixed (`w2p-fix-plex`).
 7. ~~**B18.** An unset `plexURL` stalls `INITIALIZE`, and the computed URL is lost (`utils.js:1061-1072`).~~ Fixed (`w2p-fix-plex`).
@@ -129,25 +129,25 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 16. ~~**B29.** Ombi `latestSeason` typo (`background.js:687`).~~ Fixed (`w2p-fix-services`).
 17. ~~**B7.** Sick Beard fallback JSON is invalid (`background.js:647`).~~ Fixed (`w2p-fix-services`).
 18. ~~**B44.** Stale storage-path ID throws on push (`utils.js:2353, 2412`).~~ Fixed (`w2p-fix-services`).
-19. **B43.** TMDb `find` with only `movie_results` throws (`utils.js:2066, 2103`).
-20. **B40.** Permission filter throws on object-form permissions (`utils.js:1176-1182`).
-21. **B1.** `UTF_16` class strips `¢`–`¾` from titles (`utils.js:1657`).
-22. **B16.** `HELPERS_STORAGE.get([...])` `ReferenceError` (`utils.js:17`).
-23. **B17.** `HELPERS_STORAGE` string keys and undeclared `key` (`utils.js:11, 40-41`).
-24. **B34.** Cache quota check off by 8× (`utils.js:227-230`).
+19. ~~**B43.** TMDb `find` with only `movie_results` throws (`utils.js:2066, 2103`).~~ Fixed (`w2p-fix-utils-a`).
+20. ~~**B40.** Permission filter throws on object-form permissions (`utils.js:1176-1182`).~~ Fixed (`w2p-fix-utils-a`).
+21. ~~**B1.** `UTF_16` class strips `¢`–`¾` from titles (`utils.js:1657`).~~ Fixed (`w2p-fix-utils-a`).
+22. ~~**B16.** `HELPERS_STORAGE.get([...])` `ReferenceError` (`utils.js:17`).~~ Fixed (`w2p-fix-utils-b`).
+23. ~~**B17.** `HELPERS_STORAGE` string keys and undeclared `key` (`utils.js:11, 40-41`).~~ Fixed (`w2p-fix-utils-b`).
+24. ~~**B34.** Cache quota check off by 8× (`utils.js:227-230`).~~ Fixed (`w2p-fix-utils-b`).
 25. ~~**B55.** Unencoded titles in context-menu search URLs (`background.js:871-888`).~~ Fixed by the manager.
-26. **B31.** Mid-chain `.catch` continues the chain (`background.js` 7 sites).
-27. **B22.** `wait()` never waits (`utils.js:3481`).
-28. **B23.** `queryBy(element).empty` is always true (`utils.js:3711`).
-29. **B45.** Notification queue delay uses elapsed time (`utils.js:290`).
-30. **B46.** `rerun` flag precedence (`utils.js:1734`).
-31. **B33.** Discarded `filter` results (`utils.js:1220, 1240`).
-32. **B35.** BWT guard tests `'2'`, not a space (`utils.js:3370, 3387` + copies).
+26. ~~**B31.** Mid-chain `.catch` continues the chain (`background.js` 7 sites).~~ Fixed (`w2p-fix-misc`).
+27. ~~**B22.** `wait()` never waits (`utils.js:3481`).~~ Fixed (`w2p-fix-utils-b`).
+28. ~~**B23.** `queryBy(element).empty` is always true (`utils.js:3711`).~~ Fixed (`w2p-fix-utils-b`).
+29. ~~**B45.** Notification queue delay uses elapsed time (`utils.js:290`).~~ Fixed (`w2p-fix-utils-b`).
+30. ~~**B46.** `rerun` flag precedence (`utils.js:1734`).~~ Fixed (`w2p-fix-utils-b`).
+31. ~~**B33.** Discarded `filter` results (`utils.js:1220, 1240`).~~ Fixed (`w2p-fix-utils-b`).
+32. ~~**B35.** BWT guard tests `'2'`, not a space (`utils.js:3370, 3387` + copies).~~ Fixed (`w2p-fix-utils-b`).
 33. ~~**B54.** Log shows `[object Object]` (`background.js:915`).~~ Fixed by the manager.
 
-Phase 2 items that are not size S: **B20** (`M`, rewrite the TMDb "local" matcher) and **B21** (`M`, `security`, add a source/instance check to the `message` listener).
+Phase 2 items that are not size S: ~~**B20**~~ and ~~**B21**~~ fixed (`w2p-fix-utils-a`); B21 keeps a phase 3+ remainder (instance secret; a same-tab page can still post).
 
-Phase 2 `dead-code` removals (size S): B32, B51, B52.
+Phase 2 `dead-code` removals (size S): ~~B32, B51, B52~~ removed (`w2p-fix-misc`).
 
 ### Count check
 
@@ -229,9 +229,9 @@ B1–B61 each appear once in the table: 61 rows, plus X1.
 4. ~~**S13.** Every save truncates `__caught` (`idx.js:217, 643-654`).~~ Fixed (`w2p-fix-settings`).
 5. ~~**S4.** The two profile-type selects are not saved, so Save is refused after a reload (`idx.js:31-202`).~~ Fixed (`w2p-fix-settings`).
 6. ~~**S10.** `watcherStoragePaths` is not an array and the prompt throws (`idx.js:955`).~~ Fixed (`w2p-fix-settings`).
-7. **S14.** A Plex account with a single device fails to list servers (`xml.js:52-64`, `idx.js:510`).
-8. **S18.** The hidden-iframe save can raise `confirm()` and save without Plex (`idx.js:2760-2765`).
-9. **S15.** Prompt defaults lag one save (`idx.js:1054`, etc.).
+7. ~~**S14.** A Plex account with a single device fails to list servers (`xml.js:52-64`, `idx.js:510`).~~ Fixed (`w2p-fix-misc`).
+8. ~~**S18.** The hidden-iframe save can raise `confirm()` and save without Plex (`idx.js:2760-2765`).~~ Fixed (`w2p-fix-misc`).
+9. ~~**S15.** Prompt defaults lag one save (`idx.js:1054`, etc.).~~ Fixed (`w2p-fix-misc`).
 10. ~~**S11.** The "Web to Plex" site toggle uses `pid` but the handler reads `bid` (`idx.js:2229, 2274`).~~ Fixed (`w2p-fix-settings`).
 11. ~~**S20.** The CouchPotato URL is not normalised in the without-Plex save (`idx.js:1873-1897`).~~ Fixed (`w2p-fix-settings`).
 
