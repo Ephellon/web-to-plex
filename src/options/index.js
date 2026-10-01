@@ -2799,13 +2799,24 @@ if(hash.length > 1)
 		 * #!/~save
 		 * #!/~clear:all
 		 */
-		case '~save':
-			setTimeout(async() => {
-				await saveOptions();
+		case '~save': {
+			// Hidden frame: wait for the Plex server list, and never ask the user (no confirm()) from here
+			let tries = 0, trySave = async() => {
+				if(__servers__.value) {
+					await saveOptions();
 
-				window.postMessage({ type: 'INITIALIZE' });
-			}, 1000);
+					return window.postMessage({ type: 'INITIALIZE' });
+				}
+
+				if(++tries < 20)
+					return setTimeout(trySave, 500);
+
+				terminal.warn('~save skipped: no Plex server selected');
+			};
+
+			setTimeout(trySave, 1000);
 			break;
+		}
 
 		/* #!/SETTING[/SUB-SETTING]
 		 * #!/radarr
