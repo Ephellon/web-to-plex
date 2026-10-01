@@ -854,7 +854,7 @@ chrome.contextMenus.onClicked.addListener(item => {
 
 	let url = "", dnl = false,
 		db = item.menuItemId.slice(-2).toLowerCase(),
-		pv = external.ID_PROVIDER.slice(0, 2).toLowerCase(),
+		pv = (external.ID_PROVIDER || '').slice(0, 2).toLowerCase(),
 		qu = external.ITEM_ID,
 		tl = external.SEARCH_TITLE,
 		yr = external.ITEM_YEAR,
