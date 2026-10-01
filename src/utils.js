@@ -1594,7 +1594,11 @@ let INITIALIZE = (async date => {
 
 	if(configuration) {
 		let host = TLDHost(location.host),
-			doms = configuration.__domains.split(',');
+			// Fall back to the manifest's site hosts when the options never saved "__domains"
+			doms = configuration.__domains?
+				configuration.__domains.split(','):
+			[].concat(...chrome.runtime.getManifest().content_scripts.map(script => script.matches))
+				.map(match => TLDHost(match.replace(/^[^:]+:\/\/(?:\*\.)?([^\/]+)\/.*$/, '$1')));
 
 		if(!~doms.indexOf(host))
 			return UTILS_TERMINAL.WARN(`Domain not acknowledged "${ host }"`);
