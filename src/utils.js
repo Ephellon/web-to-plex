@@ -1223,7 +1223,8 @@ let INITIALIZE = (async date => {
 									CAUGHT[ID].splice(0, 1 + (CAUGHT[ID].length - MAX));
 
 								CAUGHT[ID].push(ids[id]);
-								CAUGHT[ID].filter(v => typeof v == 'number'? v: null);
+								// Drop empty IDs (a missing ID is pushed as undefined); IMDb IDs are strings, so keep strings
+								CAUGHT[ID] = CAUGHT[ID].filter(v => v);
 								CAUGHT[ID] = CAUGHT[ID].slice(0, MAX);
 							}
 
@@ -1243,7 +1244,7 @@ let INITIALIZE = (async date => {
 									continue charging;
 
 								CAUGHT.NO_CACHE[ID].push(ids[id]);
-								CAUGHT.NO_CACHE[ID].filter(v => typeof v == 'number'? v: null);
+								CAUGHT.NO_CACHE[ID] = CAUGHT.NO_CACHE[ID].filter(v => v);
 							}
 						};
 
