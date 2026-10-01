@@ -470,8 +470,7 @@ function LoadingAnimation(state = false) {
 }
 
 function load(name, decompress_data = false) {
-	let options = JSON.stringify(getOptionValues()),
-		data;
+	let data;
 
 	name = btoa(name);
 	data = localStorage.getItem(name);
@@ -483,8 +482,6 @@ function load(name, decompress_data = false) {
 }
 
 function save(name, data, compress_data = false) {
-	let options = JSON.stringify(getOptionValues());
-
 	name = btoa(name);
 	data = JSON.stringify(data);
 
@@ -651,8 +648,11 @@ function getOptionValues() {
 	let _c = JSON.stringify(__caught),
 		_t = JSON.stringify(__theme);
 
-	CHT.value = options.__caught = (COM? compress(zip(BWT(_c))): _c);
-	THM.value = options.__theme = (COM? compress(zip(BWT(_t))): _t);
+	// The hidden inputs keep plain JSON (they are parsed again above); only the saved copy is compressed
+	CHT.value = _c;
+	THM.value = _t;
+	options.__caught = (COM? compress(zip(BWT(_c))): _c);
+	options.__theme = (COM? compress(zip(BWT(_t))): _t);
 
 	return options;
 }
@@ -2041,7 +2041,7 @@ function restoreOptions(OPTIONS) {
 			if(el.type == 'checkbox')
 				el.checked = items[option];
 			else
-				el.value = items[option] || '';
+				el.value = (items.UseLZW && /^__(caught|theme)$/.test(option) && items[option]? unxip(items[option]): items[option]) || '';
 
 			if(el.value !== '' && !el.disabled) {
 				if(el.type == 'checkbox')
