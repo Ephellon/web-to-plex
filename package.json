@@ -1,17 +1,25 @@
 {
   "name": "web-to-plex",
   "private": true,
+  "type": "module",
   "scripts": {
-    "lint": "eslint src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node scripts/build.mjs",
+    "lint": "eslint",
+    "format": "eslint --fix",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "lint:firefox": "web-ext lint --source-dir dist/firefox",
+    "watch": "node scripts/build.mjs --watch",
+    "release": "node scripts/build.mjs --release",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "author": "Kees Kluskens <kees@webduck.nl>, Ephellon Dantzler <minkcbos@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "@volst/eslint-config": "2.1.0",
-    "addons-linter": "^0.39.1",
-    "chrome-webstore-upload-cli": "^1.1.1",
-    "eslint": "^4.18.2"
-  },
-  "dependencies": {}
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "web-ext": "^10.7.0"
+  }
 }

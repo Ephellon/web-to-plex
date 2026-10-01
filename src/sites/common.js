@@ -1,4 +1,4 @@
-/* global Update(type:string, details:object) */
+/* global Update */ // Update(type:string, details:object)
 if(init && typeof init == 'function')
 	/* Do nothing */;
 else

@@ -7,16 +7,16 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 
 | Item | Value |
 |---|---|
-| Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` |
+| Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0, baseline and tooling |
+| Phase | 0 done; 1 next |
 | Offser rules share | `w2p-live-rules` (created once the build exists) |
 
 ## Phases
 
 | # | Phase | Exit criteria | State |
 |---|---|---|---|
-| 0 | Baseline and tooling: lint, `scripts/build.mjs` (`dist/chrome`, `dist/firefox`, zips), pre-commit hook, CI | `npm test`, `npm run lint` (0 errors), `npm run build` run | in progress |
+| 0 | Baseline and tooling: lint, `scripts/build.mjs` (`dist/chrome`, `dist/firefox`, zips), pre-commit hook, CI | `npm test`, `npm run lint` (0 errors), `npm run build` run | ✅ |
 | 1 | Inventory: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, per-file digests, bug candidates | Every setting maps to code; every file has a digest | |
 | 2 | Triage and isolated fixes: `docs/triage/TRIAGE.md` | Every candidate verified against code | |
 | 3 | Core extraction and plugin contract (`src/lib/`, plugin registry, unit tests) | Pilot plugins behave identically (headless parity) | |
@@ -45,6 +45,18 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
   CouchPotato, Watcher…) need `optional_host_permissions` requested at runtime.
 - `browser_action` to `action`; `tabs.executeScript` / `insertCSS` to `chrome.scripting`.
 
+## Tooling (Phase 0)
+
+- `npm test`: `node --test tests/*.test.mjs` (manifest and page references exist).
+- `npm run lint` / `npm run format`: ESLint flat config (`eslint.config.mjs`) with `@stylistic` and the house rules in
+  `scripts/eslint/style.mjs` (`w2p/*`). Style findings are warnings; the legacy code shows about 22,900 of them, so the
+  bulk `npm run format` pass is its own commit, not mixed with moves.
+- `npm run build`: `scripts/build.mjs` writes `dist/chrome` and `dist/firefox`; `--release` also writes
+  `web-to-plex.zip` and `web-to-plex.moz.zip` at the root. `.githooks/pre-commit` rebuilds them when `src/` is staged.
+- CI: `.github/workflows/ci.yml`. The `web-ext lint` step is non-blocking until Phase 4 (legacy `cloud/itunes.js`
+  has a top-level `return`, legal only inside the `plugn.js` wrapper).
+- `Makefile` and the legacy `src.zip`/`src.crx`/`moz.*`/`opa.*`/`win.*` artifacts are left as they were.
+
 ## Decisions
 
 | Date | Decision |
@@ -54,6 +66,8 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 | 2026-10-01 | Build outputs Chrome and Firefox from the one `src/`. |
 | 2026-10-01 | House style comes from a styleguide the owner will upload; lint rules wait for it. |
 | 2026-10-01 | New features come from the owner's breakdown; none are invented. |
+| 2026-10-01 | House style is `docs/STYLEGUIDE.md` (owner's upload; rule prefix `w2p/`): 4 spaces, leading `?`/`:`, comma-first. |
+| 2026-10-01 | Firefox build keeps the published add-on ID `mink.cbos@gmail.com`. |
 
 ## Offser usage
 

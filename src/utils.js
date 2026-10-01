@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-/* global configuration, init, Update, "Helpers" */
+/* global configuration, init, Update, Helpers */
 
 let configuration, init, Update, IMAGES, Glyphs = {},
 	HELPERS_STORAGE = {

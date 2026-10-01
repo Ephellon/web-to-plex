@@ -1,2 +1,2 @@
-/* global Update(type:string, details:object) */
+/* global Update */ // Update(type:string, details:object)
 (init = () => Update('SCRIPT', { script: 'movieo' }))();

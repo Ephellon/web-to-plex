@@ -1,9 +1,11 @@
-.editorconfig
-.eslintrc
+# Build output
+/dist
+/build
+node_modules/
 pkg*.zip
 *-beta.zip
-*.example
-*.lock
-build/
-node_modules/
 *-beta/
+*.example
+*.pem
+-*.*
+/.offser
