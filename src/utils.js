@@ -1176,10 +1176,13 @@ let INITIALIZE = (async date => {
 						allowed = await load(`has/${ running }`),
 						permiss = await load(`get/${ running }`);
 
+					// Saved as an array (permission prompt) or an object (GRANT_PERMISSION); an empty list grants nothing
+					permiss = (permiss instanceof Array? permiss: Object.keys(permiss || {})).filter(name => name);
+
 					/* Don't expose the user's authentication information to sites */
 					for(let key in options)
 						if(/username|password|token|api|server|url|storage|cache|proxy|client|builtin|plugin|qualit/i.test(key))
-							if(allowed && RegExp(permiss.join('|'),'i').test(key))
+							if(allowed && permiss.length && RegExp(permiss.join('|'),'i').test(key))
 								configuration[key] = options[key];
 							else
 								/* Do nothing */;
