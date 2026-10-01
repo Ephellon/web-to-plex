@@ -9,7 +9,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0 done; 1 in progress (core ✅, settings and sites open) |
+| Phase | 0 done; 1 in progress (core ✅, settings ✅, sites claimed) |
 | Budget | 3 h from 02:10 UTC 2026-10-01 (ends about 05:10 UTC) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
@@ -75,3 +75,4 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 | Date | Job | Model | Use |
 |---|---|---|---|
 | 2026-10-01 | `w2p-inventory-core` | subordinate (`webtoplex-subo`) | `docs/ARCHITECTURE.md`, `docs/triage/bugs-core.md` (61 candidates, unverified) |
+| 2026-10-01 | `w2p-inventory-settings` | subordinate (`webtoplex-subo`) | `docs/FEATURES.md`, `docs/triage/bugs-settings.md` (33 candidates, unverified); corrects core B15: `DeveloperMode` defaults on, so local `cloud/*` runs by default |
