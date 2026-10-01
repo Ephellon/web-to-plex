@@ -20,6 +20,9 @@ let BACKGROUND_CONFIGURATION;
 // returns the proper CORS mode of the URL
 let cors = url => ((/^(https|sftp)\b/i.test(url) || /\:(443|22)\b/i.test(url)? '': 'no-') + 'cors');
 
+// Thrown after a step has already replied, so the rest of the chain stops without a second reply
+const REPLIED = Symbol('replied');
+
 // Create a Crypto-Key
 // new Key(number:integer, string:symbol) -> string
 class Key {
@@ -212,11 +215,14 @@ function Push_CouchPotato(request, sendResponse) {
 		headers,
 	})
 		.then(response => response.json())
-		.catch(error => sendResponse({ error: 'Movie not found', location: '@0B: Push_CouchPotato => fetch.then.catch', silent: true }))
+		.catch(error => { sendResponse({ error: 'Movie not found', location: '@0B: Push_CouchPotato => fetch.then.catch', silent: true }); throw REPLIED })
 		.then(response => {
 			sendResponse({ success: response.success });
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: '@0B: Push_CouchPotato => fetch("${ request.url }", { headers }).catch(error => { sendResponse })',
@@ -253,7 +259,7 @@ function Push_Watcher(request, sendResponse) {
 
 	fetch(debug.url = `${ request.url }?apikey=${ request.token }&mode=addmovie&${ query }=${ id }`, { headers })
 		.then(response => response.json())
-		.catch(error => sendResponse({ error: 'Movie not found', location: '@0B: Push_Watcher => fetch.then.catch', silent: true }))
+		.catch(error => { sendResponse({ error: 'Movie not found', location: '@0B: Push_Watcher => fetch.then.catch', silent: true }); throw REPLIED })
 		.then(response => {
 			if((response.response + "") == "true")
 				return sendResponse({
@@ -263,6 +269,9 @@ function Push_Watcher(request, sendResponse) {
 			throw new Error(response.error);
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: `@0B: Push_Watcher => fetch("${ request.url }", { headers }).catch(error => { sendResponse })`,
@@ -289,7 +298,7 @@ function Push_Radarr(request, sendResponse) {
 
 	fetch(debug.url = `${ request.url }lookup/${ query }=${ id }&apikey=${ request.token }`)
 		.then(response => response.json())
-		.catch(error => sendResponse({ error: 'Movie not found', location: '@0B: Push_Radarr => fetch.then.catch', silent: true }))
+		.catch(error => { sendResponse({ error: 'Movie not found', location: '@0B: Push_Radarr => fetch.then.catch', silent: true }); throw REPLIED })
 		.then(data => {
 			let body,
 				// Monitor, search, and download movie ASAP
@@ -357,6 +366,9 @@ function Push_Radarr(request, sendResponse) {
 			}
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: `@0B: Push_Radarr => fetch("${ request.url }", { headers }).catch(error => { sendResponse })`,
@@ -379,7 +391,7 @@ function Push_Sonarr(request, sendResponse) {
 
 	fetch(debug.url = `${ request.url }lookup?apikey=${ request.token }&term=${ query }`)
 		.then(response => response.json())
-		.catch(error => sendResponse({ error: 'TV Show not found', location: '@0B: Push_Sonarr => fetch.then.catch', silent: true }))
+		.catch(error => { sendResponse({ error: 'TV Show not found', location: '@0B: Push_Sonarr => fetch.then.catch', silent: true }); throw REPLIED })
 		.then(data => {
 			if(!(data instanceof Array) || !data.length)
 				throw new Error('TV Show not found');
@@ -437,6 +449,9 @@ function Push_Sonarr(request, sendResponse) {
 			}
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: `@0B: Push_Sonarr => fetch("${ request.url }", { headers }).catch(error => { sendResponse })`,
@@ -459,7 +474,7 @@ function Push_Medusa(request, sendResponse) {
 
 	fetch(debug.url = `${ request.root }internal/searchIndexersForShowName?api_key=${ request.token }&indexerId=0&query=${ query }`)
 		.then(response => response.json())
-		.catch(error => sendResponse({ error: 'TV Show not found', location: '@0B: Push_Medusa => fetch.then.catch', silent: true }))
+		.catch(error => { sendResponse({ error: 'TV Show not found', location: '@0B: Push_Medusa => fetch.then.catch', silent: true }); throw REPLIED })
 		.then(data => {
 			data = data.results;
 
@@ -511,6 +526,9 @@ function Push_Medusa(request, sendResponse) {
 			}
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: `@0B: Push_Medusa => fetch("${ request.url }", { headers }).catch(error => { sendResponse })`,
@@ -608,7 +626,7 @@ function Push_SickBeard(request, sendResponse) {
 
 	fetch(debug.url = `${ request.url }?cmd=sb.searchtvdb&${ query }`)
 		.then(response => response.json())
-		.catch(error => sendResponse({ error: 'TV Show not found', location: '@0B: Push_SickBeard => fetch.then.catch', silent: true }))
+		.catch(error => { sendResponse({ error: 'TV Show not found', location: '@0B: Push_SickBeard => fetch.then.catch', silent: true }); throw REPLIED })
 		.then(data => {
 			if(!/^success$/i.test(data.result))
 				throw new Error('TV Show not found');
@@ -667,6 +685,9 @@ function Push_SickBeard(request, sendResponse) {
 			}
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: `@0B: Push_SickBeard => fetch("${ request.url }", { headers }).catch(error => { sendResponse })`,
@@ -699,7 +720,7 @@ function Push_Ombi(request, sendResponse) {
 			body: JSON.stringify(body),
 			headers
 		})
-		.catch(error => sendResponse({ error: `${ type } not found`, location: '@0B: Push_Ombi => fetch.then.catch', debug, silent: true }))
+		.catch(error => { sendResponse({ error: `${ type } not found`, location: '@0B: Push_Ombi => fetch.then.catch', debug, silent: true }); throw REPLIED })
 		.then(response => response.text())
 		.then(data => {
 			debug.data =
@@ -729,6 +750,9 @@ function Push_Ombi(request, sendResponse) {
 			}
 		})
 		.catch(error => {
+			if(error === REPLIED)
+				return;
+
 			sendResponse({
 				error: String(error),
 				location: `@0B: Push_Ombi => fetch("${ request.url }", { headers }).catch(error => { sendResponse })`,
