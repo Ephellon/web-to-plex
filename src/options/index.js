@@ -638,7 +638,7 @@ function getOptionValues() {
 		THM = $('[data-option="__theme"i]');
 
 	for(let key in __caught)
-		__caught[key] = __caught[key].filter(id => id).slice(0, (COM? 200: 100)).sort();
+		__caught[key] = [...new Set(__caught[key].filter(id => id))].slice(0, (COM? 200: 100)).sort();
 
 	if(THM.value)
 		__theme = JSON.parse(THM.value);
@@ -2079,6 +2079,16 @@ function restoreOptions(OPTIONS) {
 			performSickBeardTest({ QualityProfileID: items.sickBeardQualityProfileId, StoragePath: items.sickBeardStoragePath, refreshing });
 		if(items.couchpotatoURLRoot)
 			performCouchPotatoTest({ refreshing });
+
+		// Keep the saved IDs (also those added by the content scripts); the tests only add to them
+		try {
+			let caught = JSON.parse(items.UseLZW? unxip(items.__caught): items.__caught);
+
+			for(let key in __caught)
+				__caught[key] = [...__caught[key], ...(caught[key] || [])];
+		} catch(error) {
+			/* Nothing saved yet */
+		}
 
 		let __domains = (sites => {
 			let array = [];
