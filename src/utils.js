@@ -1067,7 +1067,7 @@ let INITIALIZE = (async date => {
 						...options
 					};
 
-					options.plexURL = o.plexURL.replace(/\/+$/, '')?
+					options.plexURL = (o.plexURL || '').replace(/\/+$/, '')?
 						`${ o.plexURL }web#!/server/${ o.server.id }/`:
 					`https://app.plex.tv/web/app#!/server/${ o.server.id }/`;
 				} else {
