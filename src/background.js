@@ -251,7 +251,7 @@ function Push_Watcher(request, sendResponse) {
 		debug = { headers, query, request };
 			// setup a stack trace for debugging
 
-	fetch(debug.url = `${ request.url }?apikey=${ request.token }&mode=addmovie&${ query }=${ id }`)
+	fetch(debug.url = `${ request.url }?apikey=${ request.token }&mode=addmovie&${ query }=${ id }`, { headers })
 		.then(response => response.json())
 		.catch(error => sendResponse({ error: 'Movie not found', location: '@0B: Push_Watcher => fetch.then.catch', silent: true }))
 		.then(response => {
