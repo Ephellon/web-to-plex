@@ -8,7 +8,7 @@ let configuration, init, Update, IMAGES, Glyphs = {},
 
 			if(keys === null) {
 				return callback(configuration);
-			} else if(keys instanceof String) {
+			} else if(typeof keys == 'string' || keys instanceof String) {
 				return callback(configuration[keys]);
 			} else if(keys instanceof Array) {
 				// Like chrome.storage: an array of keys gives back { key: value }
@@ -38,8 +38,8 @@ let configuration, init, Update, IMAGES, Glyphs = {},
 			if(keys === null)
 				for(let key in configuration)
 					delete configuration[key];
-			else if(keys instanceof String)
-				delete configuration[key];
+			else if(typeof keys == 'string' || keys instanceof String)
+				delete configuration[keys];
 			else if(keys instanceof Array)
 				for(let key of keys)
 					delete configuration[key];
