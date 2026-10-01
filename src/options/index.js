@@ -954,7 +954,7 @@ function performWatcherTest({ QualityProfileID = 'Default', refreshing = false, 
 
 				storagepath.value = path || '[Default Location]';
 
-				$('[data-option="watcherStoragePaths"i]').value = JSON.stringify(path || { path: '[Default Location]', id: 0 });
+				$('[data-option="watcherStoragePaths"i]').value = JSON.stringify([{ path: path || '[Default Location]', id: 0 }]);
 
 				return true;
 			})
