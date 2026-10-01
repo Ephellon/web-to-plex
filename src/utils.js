@@ -1757,7 +1757,7 @@ let INITIALIZE = (async date => {
 
 		if(url === null) return null;
 
-		let proxy = __CONFIG__.proxy,
+		let proxy = __CONFIG__.proxy || {},
 			cors = proxy.url, // if cors is requried and not uspported, proxy through this URL
 			headers = HandleProxyHeaders(proxy.headers, url);
 
