@@ -2590,20 +2590,27 @@ $('[data-option^="theme:"i], [data-option^="theme:"i] + label', true)
 
 		addListener(element, 'mouseup', UpdateTheme = async event => {
 			let self = traverse(event.target, element => /^theme:/i.test(element.dataset.option), true),
-				R = RegExp;
+				R = RegExp,
+				// mouseup fires before the box toggles; the 1s start-up call reads the settled state
+				checked = (event.type == 'mouseup'? !self.checked: self.checked);
+
+			// Start from the saved theme (getOptionValues reads the hidden input into __theme)
+			getOptionValues();
 
 			let [a, b] = self.getAttribute('theme').split(/^([^]+):([^]+?)$/).filter(v => v),
 				value = `${self.dataset.option.replace(/^theme:/i, '')}-${b}`;
 
 			if(/^(get|read|for)$/i.test(a))
 				__theme[value] = (self.value == 'true'? true: self.value == 'false'? false: self.value);
-			else if(/^(checkbox)$/i.test(self.type) && (self.checked + '') != a)
-			// backwards; fires late
+			else if(/^(checkbox)$/i.test(self.type) && (checked + '') == a)
 				__theme[value] = JSON.parse(a);
 			else if(/^(text|input|button|\B)$/i.test(self.type) && R(a, 'i').test(self.value))
 				__theme[value] = self.value;
 			else
 				delete __theme[value];
+
+			// Write back, or the next getOptionValues call reads the old theme again
+			$('[data-option="__theme"i]').value = JSON.stringify(__theme);
 		});
 
 		setTimeout(() => UpdateTheme({ target: element }), 1000);
