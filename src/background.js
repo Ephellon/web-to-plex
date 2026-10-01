@@ -741,7 +741,7 @@ function Push_Ombi(request, sendResponse) {
 // If one promise (Plex request) fails, we still want the other requests to continue racing.
 // See https://www.jcore.com/2016/12/18/promise-me-you-wont-use-promise-race/ for an explanation
 function PromiseRace(promises) {
-	if(!~promises.length) {
+	if(!promises.length) {
 		return Promise.reject('Cannot start a race without promises!');
 	}
 
