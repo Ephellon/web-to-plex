@@ -1,0 +1,61 @@
+# Web to Plex revamp
+
+Rewrite of the Chrome extension (`src/`) to MV3 with a plugin layout, declarative settings, tests, lint and a
+build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING-EXTENSIONS.md` (TTV Tools v6).
+
+## Status
+
+| Item | Value |
+|---|---|
+| Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` |
+| Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
+| Phase | 0, baseline and tooling |
+| Offser rules share | `w2p-live-rules` (created once the build exists) |
+
+## Phases
+
+| # | Phase | Exit criteria | State |
+|---|---|---|---|
+| 0 | Baseline and tooling: lint, `scripts/build.mjs` (`dist/chrome`, `dist/firefox`, zips), pre-commit hook, CI | `npm test`, `npm run lint` (0 errors), `npm run build` run | in progress |
+| 1 | Inventory: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, per-file digests, bug candidates | Every setting maps to code; every file has a digest | |
+| 2 | Triage and isolated fixes: `docs/triage/TRIAGE.md` | Every candidate verified against code | |
+| 3 | Core extraction and plugin contract (`src/lib/`, plugin registry, unit tests) | Pilot plugins behave identically (headless parity) | |
+| 4 | Plugin migration: one plugin per site, one per service | Parity per batch | |
+| 5 | Declarative settings | Settings page renders the same; first-run defaults stored exactly | |
+| 6 | Styles and tokens | Computed styles unchanged (snapshot diff) | |
+| 7 | New features (owner's breakdown) and the W2P DSL | Own tests plus live checks | |
+| 8 | Docs and release | Owner's call | |
+
+Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by parity.
+
+## Scope
+
+- `src/` is the Chrome source and the only code being rewritten.
+- `moz/`, `opa/`, `win/` (legacy Firefox, Opera, EdgeHTML copies) are frozen and ignored. Firefox is rebuilt
+  from `src/` by the build.
+
+## Known MV3 blockers (from the first read)
+
+- `background.js` + `plugn.js` are a persistent MV2 background page; they use `window`, `localStorage`,
+  `sessionStorage` and long-lived globals.
+- `plugn.js` fetches site scripts and CSS (`src/cloud/*`) and runs them with `tabs.executeScript({ code })`:
+  remote code, banned in MV3. The scripts must ship in the package and register as content scripts.
+- `eval` / `new Function` in `options/index.js:436`, `utils.js:3498`, `utils.js:3919`; CSP has `'unsafe-eval'`.
+- `<all_urls>` permission plus a `*://*/*` content script; user-entered server URLs (Plex, Radarr, Sonarr, Ombi,
+  CouchPotato, Watcher…) need `optional_host_permissions` requested at runtime.
+- `browser_action` to `action`; `tabs.executeScript` / `insertCSS` to `chrome.scripting`.
+
+## Decisions
+
+| Date | Decision |
+|---|---|
+| 2026-10-01 | Base the rewrite on `beta-branch`. Only `src/` (Chrome) is in scope; `moz`, `opa`, `win` are ignored. |
+| 2026-10-01 | Push to Ephellon/web-to-plex only; SpaceK33z/web-to-plex stays untouched. |
+| 2026-10-01 | Build outputs Chrome and Firefox from the one `src/`. |
+| 2026-10-01 | House style comes from a styleguide the owner will upload; lint rules wait for it. |
+| 2026-10-01 | New features come from the owner's breakdown; none are invented. |
+
+## Offser usage
+
+| Date | Job | Model | Use |
+|---|---|---|---|
