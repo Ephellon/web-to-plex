@@ -9,14 +9,14 @@ let script = {
 		let title  = $('header.columns > h1').first,
 			year   = $('#year').first,
 			image  = $('figure img').first,
-			type   = 'show',
-			TVDbID = script.getTVDbID();
+			type   = 'show';
 
 		title = title.textContent.trim();
 		year  = +year.textContent.replace(/\((\d+).+\)/, '$1');
 		image = (image || {}).src;
 
-		return { type, title, year, image, TVDbID };
+		// The path holds a TVmaze ID, not a TVDb ID; Identify looks the TVDb ID up
+		return { type, title, year, image };
 	},
 
 	"getTVDbID": () => {
