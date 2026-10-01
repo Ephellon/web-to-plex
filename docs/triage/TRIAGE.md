@@ -120,9 +120,9 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 7. **B18.** An unset `plexURL` stalls `INITIALIZE`, and the computed URL is lost (`utils.js:1061-1072`).
 8. **B36.** CouchPotato over HTTP always fails (`background.js:21` and its callers).
 9. **B8.** Ombi POSTs with a null ID after reporting an error (`background.js:691-696`).
-10. **B5.** Context-menu download passes `url: undefined` (`background.js:902, 908`).
-11. **B6.** Context-menu click before any search throws (`background.js:857`).
-12. **B3.** Configuration fallback `ReferenceError` (`background.js:136`).
+10. ~~**B5.** Context-menu download passes `url: undefined` (`background.js:902, 908`).~~ Fixed by the manager.
+11. ~~**B6.** Context-menu click before any search throws (`background.js:857`).~~ Fixed by the manager.
+12. ~~**B3.** Configuration fallback `ReferenceError` (`background.js:136`).~~ Fixed by the manager.
 13. **B30.** Watcher pushes ignore Basic auth (`background.js:254`).
 14. **B24.** CouchPotato rejects items with a single ID (`utils.js:2256`).
 15. **B28.** Radarr posts an empty body for an empty lookup (`background.js:306`).
@@ -135,7 +135,7 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 22. **B16.** `HELPERS_STORAGE.get([...])` `ReferenceError` (`utils.js:17`).
 23. **B17.** `HELPERS_STORAGE` string keys and undeclared `key` (`utils.js:11, 40-41`).
 24. **B34.** Cache quota check off by 8× (`utils.js:227-230`).
-25. **B55.** Unencoded titles in context-menu search URLs (`background.js:871-888`).
+25. ~~**B55.** Unencoded titles in context-menu search URLs (`background.js:871-888`).~~ Fixed by the manager.
 26. **B31.** Mid-chain `.catch` continues the chain (`background.js` 7 sites).
 27. **B22.** `wait()` never waits (`utils.js:3481`).
 28. **B23.** `queryBy(element).empty` is always true (`utils.js:3711`).
@@ -143,7 +143,7 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 30. **B46.** `rerun` flag precedence (`utils.js:1734`).
 31. **B33.** Discarded `filter` results (`utils.js:1220, 1240`).
 32. **B35.** BWT guard tests `'2'`, not a space (`utils.js:3370, 3387` + copies).
-33. **B54.** Log shows `[object Object]` (`background.js:915`).
+33. ~~**B54.** Log shows `[object Object]` (`background.js:915`).~~ Fixed by the manager.
 
 Phase 2 items that are not size S: **B20** (`M`, rewrite the TMDb "local" matcher) and **B21** (`M`, `security`, add a source/instance check to the `message` listener).
 

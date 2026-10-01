@@ -9,7 +9,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0 and 1 done; 2 in progress (core and settings triaged; fixes posted) |
+| Phase | 0 and 1 done; 2 in progress (core and settings triaged; B3 B5 B6 B54 B55 fixed; `w2p-fix-plex`, `w2p-fix-services`, `w2p-fix-settings`, `w2p-triage-sites` posted, unclaimed at 04:03 UTC) |
 | Budget | 3 h from 02:10 UTC 2026-10-01 (ends about 05:10 UTC) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
