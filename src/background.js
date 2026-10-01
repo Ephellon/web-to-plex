@@ -868,24 +868,24 @@ chrome.contextMenus.onClicked.addListener(item => {
 		case 'im':
 			url = (qu && pv == 'im')?
 				`imdb.com/title/${ qu }/`:
-			`imdb.com/find?ref_=nv_sr_fn&s=all&q=${ tt }`;
+			`imdb.com/find?ref_=nv_sr_fn&s=all&q=${ encodeURIComponent(tt) }`;
 			break;
 		case 'tm':
 			url = (qu && pv == 'tm')?
 				`themoviedb.org/${ external.ITEM_TYPE == 'show'? 'tv': 'movie' }/${ qu }`:
-			`themoviedb.org/search?query=${ tt }`;
+			`themoviedb.org/search?query=${ encodeURIComponent(tt) }`;
 			break;
 		case 'tv':
 			url = (qu && pv == 'tv')?
 				`thetvdb.com/series/${ tl }#${ qu }`: // TVDb accepts either: a title, or a series number... but only one
-			`thetvdb.com/search?q=${ p(tl) }`;
+			`thetvdb.com/search?q=${ p(encodeURIComponent(tl)) }`;
 			break;
 		case 'xx':
 			url = external.SEARCH_PROVIDER == 'VO'?
-				`google.com/search?q=${ p(tl) }+site:vumoo.to`:
+				`google.com/search?q=${ p(encodeURIComponent(tl)) }+site:vumoo.to`:
 			external.SEARCH_PROVIDER == 'GX'?
-				`gostream.site?s=${ p(tl) }`:
-			`google.com/search?q="${ p(tl, ' ') } ${ yr }"+${ pv }db`;
+				`gostream.site?s=${ p(encodeURIComponent(tl)) }`:
+			`google.com/search?q="${ encodeURIComponent(p(tl, ' ')) } ${ yr }"+${ pv }db`;
 			break;
 		case 'dl':
 			dnl = true;
