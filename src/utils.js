@@ -1661,7 +1661,7 @@ let INITIALIZE = (async date => {
 			tid  = TVDbID  || null, // TVDbID
 			rqut = apit, // request type: tmdb, imdb, or tvdb
 			manable = __CONFIG__.ManagerSearch && !(rerun & 0b1000), // is the user's "Manager Searches" option enabled?
-			UTF_16 = /[^0\u0020-\u007e, 1\u00a1\u00bf-\u00ff, 2\u0100-\u017f, 3\u0180-\u024f, 4\u0300-\u036f, 5\u0370-\u03ff, 6\u0400-\u04ff, 7\u0500-\u052f, 8\u20a0-\u20bf]+/g,
+			UTF_16 = /[^\u0020-\u007e\u00a1\u00bf-\u00ff\u0100-\u017f\u0180-\u024f\u0300-\u036f\u0370-\u03ff\u0400-\u04ff\u0500-\u052f\u20a0-\u20bf]+/g,
 			MV = /^(movies?|films?|cinemas?|theat[re]{2}s?)$/i.test(apit),
 			TV = /^(tv[\s\-]*(?:shows?|series)?)$/i.test(apit);
 
