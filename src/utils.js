@@ -225,7 +225,8 @@ let INITIALIZE = (async date => {
 				let object = items[item];
 
 				array.push(item);
-				bytes += (typeof object == 'string'? object.length * 8: typeof object == 'boolean'? 8: JSON.stringify(object).length * 8)|0;
+				// chrome.storage counts the key plus the JSON of the value, in bytes (QUOTA_BYTES is bytes, not bits)
+				bytes += (item.length + JSON.stringify(object).length)|0;
 			}
 
 			if((UTILS_STORAGE.MAX_ITEMS && array.length >= UTILS_STORAGE.MAX_ITEMS) || bytes >= UTILS_STORAGE.QUOTA_BYTES) {
