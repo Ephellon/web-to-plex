@@ -49,6 +49,7 @@ const storage = (chrome.storage.sync || chrome.storage.local),
 			'medusaBasicAuthPassword',
 			'medusaStoragePath',
 			'medusaQualityProfileId',
+			'medusaQualityProfileType',
 
 			// Watcher
 			'usingWatcher',
@@ -85,6 +86,7 @@ const storage = (chrome.storage.sync || chrome.storage.local),
 			'sickBeardBasicAuthPassword',
 			'sickBeardStoragePath',
 			'sickBeardQualityProfileId',
+			'sickBeardQualityProfileType',
 
 			// CouchPotato
 			'usingCouchPotato',
