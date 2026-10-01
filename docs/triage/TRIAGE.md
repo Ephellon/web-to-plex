@@ -1,6 +1,6 @@
 # Triage
 
-Verdicts for every bug candidate from Phase 1. Candidate lists: `bugs-core.md` (B), `bugs-settings.md` (S), `bugs-sites.md` (T, triage pending).
+Verdicts for every bug candidate from Phase 1. Candidate lists: `bugs-core.md` (B), `bugs-settings.md` (S), `bugs-sites.md` (T).
 
 Phase rules (manager-confirmed):
 
@@ -112,23 +112,23 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 ### Phase 2 fix list (phase `2` + verdict `bug` + size `S`), ordered by impact
 
 1. ~~**B9.** Repeat Plex searches hang forever (`utils.js:3186-3201`).~~ Fixed (`w2p-fix-plex`).
-2. **B2.** Sick Beard push always throws and breaks `CAUGHT` for the page (`utils.js:2532-2534`).
+2. ~~**B2.** Sick Beard push always throws and breaks `CAUGHT` for the page (`utils.js:2532-2534`).~~ Fixed (`w2p-fix-services`).
 3. ~~**B4.** Plex search never replies when every connection fails (`background.js:744`).~~ Fixed (`w2p-fix-plex`).
 4. **B39.** SPA navigations force full reloads and can show "Leave site?" (`utils.js:3582`, `:3573-3576`).
 5. ~~**B41.** A missing `proxy` breaks every `Identify` (`utils.js:1760-1762`).~~ Fixed (`w2p-fix-plex`).
 6. ~~**B42.** A missing `__domains` aborts `INITIALIZE` (`utils.js:1597`).~~ Fixed (`w2p-fix-plex`).
 7. ~~**B18.** An unset `plexURL` stalls `INITIALIZE`, and the computed URL is lost (`utils.js:1061-1072`).~~ Fixed (`w2p-fix-plex`).
 8. **B36.** CouchPotato over HTTP always fails (`background.js:21` and its callers).
-9. **B8.** Ombi POSTs with a null ID after reporting an error (`background.js:691-696`).
+9. ~~**B8.** Ombi POSTs with a null ID after reporting an error (`background.js:691-696`).~~ Fixed (`w2p-fix-services`).
 10. ~~**B5.** Context-menu download passes `url: undefined` (`background.js:902, 908`).~~ Fixed by the manager.
 11. ~~**B6.** Context-menu click before any search throws (`background.js:857`).~~ Fixed by the manager.
 12. ~~**B3.** Configuration fallback `ReferenceError` (`background.js:136`).~~ Fixed by the manager.
-13. **B30.** Watcher pushes ignore Basic auth (`background.js:254`).
-14. **B24.** CouchPotato rejects items with a single ID (`utils.js:2256`).
-15. **B28.** Radarr posts an empty body for an empty lookup (`background.js:306`).
-16. **B29.** Ombi `latestSeason` typo (`background.js:687`).
-17. **B7.** Sick Beard fallback JSON is invalid (`background.js:647`).
-18. **B44.** Stale storage-path ID throws on push (`utils.js:2353, 2412`).
+13. ~~**B30.** Watcher pushes ignore Basic auth (`background.js:254`).~~ Fixed (`w2p-fix-services`).
+14. ~~**B24.** CouchPotato rejects items with a single ID (`utils.js:2256`).~~ Fixed (`w2p-fix-services`).
+15. ~~**B28.** Radarr posts an empty body for an empty lookup (`background.js:306`).~~ Fixed (`w2p-fix-services`).
+16. ~~**B29.** Ombi `latestSeason` typo (`background.js:687`).~~ Fixed (`w2p-fix-services`).
+17. ~~**B7.** Sick Beard fallback JSON is invalid (`background.js:647`).~~ Fixed (`w2p-fix-services`).
+18. ~~**B44.** Stale storage-path ID throws on push (`utils.js:2353, 2412`).~~ Fixed (`w2p-fix-services`).
 19. **B43.** TMDb `find` with only `movie_results` throws (`utils.js:2066, 2103`).
 20. **B40.** Permission filter throws on object-form permissions (`utils.js:1176-1182`).
 21. **B1.** `UTF_16` class strips `¢`–`¾` from titles (`utils.js:1657`).
@@ -223,17 +223,17 @@ B1–B61 each appear once in the table: 61 rows, plus X1.
 
 ### Phase 2 fix list (phase `2` + verdict `bug` + size `S`), ordered by impact
 
-1. **S5.** Save after Reset throws, so the config never propagates and `proxy` is left missing (`idx.js:1969-1996`). Fixes the cause of B41.
-2. **S2 + S28.** With `UseLZW` on, the options page cannot save at all (`idx.js:646, 473, 486`).
-3. **S1 + S32.** Theme settings never reach `__theme` (`idx.js:646-647, 2602`).
-4. **S13.** Every save truncates `__caught` (`idx.js:217, 643-654`).
-5. **S4.** The two profile-type selects are not saved, so Save is refused after a reload (`idx.js:31-202`).
-6. **S10.** `watcherStoragePaths` is not an array and the prompt throws (`idx.js:955`).
+1. ~~**S5.** Save after Reset throws, so the config never propagates and `proxy` is left missing (`idx.js:1969-1996`). Fixes the cause of B41.~~ Fixed (`w2p-fix-settings`).
+2. ~~**S2 + S28.** With `UseLZW` on, the options page cannot save at all (`idx.js:646, 473, 486`).~~ Fixed (`w2p-fix-settings`).
+3. ~~**S1 + S32.** Theme settings never reach `__theme` (`idx.js:646-647, 2602`).~~ Fixed (`w2p-fix-settings`).
+4. ~~**S13.** Every save truncates `__caught` (`idx.js:217, 643-654`).~~ Fixed (`w2p-fix-settings`).
+5. ~~**S4.** The two profile-type selects are not saved, so Save is refused after a reload (`idx.js:31-202`).~~ Fixed (`w2p-fix-settings`).
+6. ~~**S10.** `watcherStoragePaths` is not an array and the prompt throws (`idx.js:955`).~~ Fixed (`w2p-fix-settings`).
 7. **S14.** A Plex account with a single device fails to list servers (`xml.js:52-64`, `idx.js:510`).
 8. **S18.** The hidden-iframe save can raise `confirm()` and save without Plex (`idx.js:2760-2765`).
 9. **S15.** Prompt defaults lag one save (`idx.js:1054`, etc.).
-10. **S11.** The "Web to Plex" site toggle uses `pid` but the handler reads `bid` (`idx.js:2229, 2274`).
-11. **S20.** The CouchPotato URL is not normalised in the without-Plex save (`idx.js:1873-1897`).
+10. ~~**S11.** The "Web to Plex" site toggle uses `pid` but the handler reads `bid` (`idx.js:2229, 2274`).~~ Fixed (`w2p-fix-settings`).
+11. ~~**S20.** The CouchPotato URL is not normalised in the without-Plex save (`idx.js:1873-1897`).~~ Fixed (`w2p-fix-settings`).
 
 There are no Phase 2 items of size M or L. **Security:** S22 (M), S23 and S30 are all `3+`. S22 needs an owner decision on whether to keep secrets in `storage.sync`.
 
@@ -247,3 +247,105 @@ S1–S33 each appear once in the table (33 rows).
 | `not-a-bug` | 1 (S24) |
 | `dead-code` | 1 (S25) |
 | `live-check` | 0 |
+
+## Sites (T)
+
+**Source list:** `docs/triage/bugs-sites.md`.
+**Code checked:** branch `claude/extension-rewrite-features-b4afna` @ `1bf4670` (`src/sites`, `src/cloud`, `src/download` unchanged since `cb7ec2a`). No code was changed. No site was visited.
+
+**Legend**
+
+| Field | Values |
+|---|---|
+| Verdict | `bug` · `not-a-bug` · `dead-code` · `live-check` |
+| Size | `S` (10 lines or fewer) · `M` · `L` |
+| Phase | `2` = fix now (security or data leak only) · `4` = the site is rewritten and live-checked during plugin migration · `3+` = lands with removal of `plugn.js`, the manifest rewrite, or the message router |
+
+**Cross-references:** `B#` = `bugs-core.md`, `S#` = `bugs-settings.md`. A cross-reference means the two items share a root cause.
+
+### Table
+
+| ID | Verdict | Reason | Size | Phase | Flag |
+|---|---|---|---|---|---|
+| T1 | bug | `cloud/itunes.js:73`: a top-level `return` exits the `prepare` wrapper (`plugn.js:286-372`) before the URL test whenever the page has no CSP `<meta>`. `ready` (`:4`) also waits on `top.__NewCSP__`, which is set only after such a meta exists (`:92`), and rewriting a CSP meta after parse has no effect. The fix is to delete `:67-93` and the `__NewCSP__` clause. The `web-ext lint` parse error goes with it. | S | 4 | |
+| T2 | bug | `plugn.js:295` blocks only when consent is `=== false`, and `GetConsent` returns `undefined` for unknown keys (`plugn.js:63`). As a result, `builtin_google.play` ≠ `builtin_googleplay` (`sites/google/play.js:2`; `options/index.js:155`), `plugin_indomovietv` ≠ `plugin_indomovie` (`sites/common.js:5`; `options/index.js:187`), and every unknown host runs what it fetches. Same root area as B11, B15 and S3. | S | 3+ | security |
+| T3 | bug | `download/plex.js:36` prefixes every request with `//cors-anywhere.herokuapp.com/`. The URLs carry `X-Plex-Token=<token>` (`:19-21`), so the account token reaches a third party. Fix: drop the prefix (`fetch(url, …)`). From app.plex.tv, plex.tv and the user's server already answer cross-origin requests from the Plex web app. Removal breaks no **working** feature: the manifest pattern likely never matches (`manifest.json:51`, B38), and the public proxy has been opt-in only since 2021. | S | 2 | security |
+| T4 | bug | `sites/shanaproject/index.js:2` sends `SCRIPT 'shanaproject'`, but `src/cloud/shanaproject.js` does not exist, only `cloud/plugin/shanaproject.js` (`let plugin`). In dev mode the fetch at `plugn.js:578` fails and the error is rethrown unhandled (`plugn.js:621`). | S | 4 | |
+| T5 | bug | `cloud/imdb.js:4` waits for `#servertime`, and `:18-29, 35-47` use `.title_wrapper`, `#titleYear` and `.originalTitle`. Those are pre-2020 IMDb IDs and classes. Code alone shows it targets the old layout. A live check during Phase 4 confirms current IMDb lacks `#servertime`. | L | 4 | |
+| T6 | bug | `plugin_metacritic` is offered (`options/index.js:194, 2316`), but the plugin path fetches `cloud/plugin/metacritic.js`, which is missing. `cloud/metacritic.js` declares `let script`, not `let plugin`, so the wrapper's `plugin.url` would throw a `ReferenceError` (`plugn.js:331`). There is no manifest entry. | S | 4 | |
+| T7 | bug | `cloud/imdb.js:96-98`: `$('meta[property="pageId"]')` is a `queryBy` array (always truthy), so `tag.content` is `undefined`. Fix: `.first`. The script is rewritten with T5. | S | 4 | |
+| T8 | bug | `cloud/tvmaze.js:22-26` returns the TVmaze show ID as `TVDbID`. `Identify` trusts a given `TVDbID` (`utils.js:1654, 1747-1748`) and `PUSH_SONARR` sends `tvdb:<id>` (`background.js:375-380`), so a wrong series can be added to the user's manager. This is wrong data written to a real service. It can be fixed in place by leaving `TVDbID` empty or reading the page's TheTVDB link. | S | 2 | data |
+| T9 | bug | `cloud/rottentomatoes.js:24`: `.replace(/[^]*(\d{4})/, '')` deletes the year, so the result is `0` or `NaN`. | S | 4 | |
+| T10 | bug | `cloud/rottentomatoes.js:66-68` and `cloud/tmdb.js:64-66`: `process(element)` queries the whole document, so every list item gets the first card's data. Compare `cloud/letterboxd.js:65-66`. | S | 4 | |
+| T11 | bug | `cloud/verizon.js`: `:18` calls `.replace(regex)` with one argument; `:21` uses an undefined `decodeURL` and the typo `toCpas`; `getType` (`:45-53`) never returns `'show'` for URLs the `url` pattern admits. | S | 4 | |
+| T12 | bug | `cloud/rottentomatoes.js:56`: in `/^\/browse\/i/` the `i` is part of the pattern, so list mode is never detected. | S | 4 | |
+| T13 | bug | `cloud/letterboxd.js:78-82`: `actions.id` is read before the `if(!actions)` check, so it throws when `UseMinions` is on and there is no panel. | S | 4 | |
+| T14 | bug | `cloud/youtube.js:87-92` sets a 10 ms `setInterval` that re-runs `init`, and `init` returns early (`:16-17`) before `clearInterval` (`:105`). `:19-23` clicks the description buttons on every watch page. This is CPU and UI side effects, not a leak. | M | 4 | |
+| T15 | bug | `cloud/tvdb.js:38-43` takes the ID only from a numeric `/series/<n>` path. Current TheTVDB uses slugs. Code shows the assumption; the URL format needs a Phase 4 live check. | S | 4 | |
+| T16 | bug | `.src`/`.textContent` are read without null checks at 14 places (`allocine.js:16`, `fandango.js:12-14`, `justwatch.js:18`, `moviemeter.js:20`, `tubi.js:14-16`, `hulu.js:14-18`, `webtoplex.js:31-33`, and in plugins `kitsu.js:19-21`, `foxsearchlight.js:19`, `indomovietv.js:17-19`, `redbox.js:16-19`, `myanimelist.js:8-20`, `myshows.js:12-21`, `toloka.js:17-27`). One missing element throws, and the B25 loop follows (B25 is in `plugn.js`, 3+). | M | 4 | |
+| T17 | bug | Legacy `RegExp.$n` is read after a regex that may not match, in 13 files (list in `bugs-sites.md`), so stale values leak from earlier regexes. Same pattern as B26 (`plugn.js:420`). | M | 4 | |
+| T18 | bug | `cloud/flickmetrix.js:57`: `new Notification('error', '…')` resolves to the browser's Web Notification (the `utils.js` class is closure-private, `utils.js:274`). A string second argument throws `TypeError`, so `init` throws on an empty list. | S | 4 | |
+| T19 | bug | `cloud/google.js:2`: `FILM` uses `themoviedb.org/tv/` (should be `/movie/`); `:26` `$(SHOW).first.querySelector('*')` may be `null`. | S | 4 | |
+| T20 | bug | `cloud/amazon.js:38`: `$(...).src` on a `queryBy` array is always `undefined` (missing `.first`). `:1` has the copy-paste header "Toloka Plugin". | S | 4 | |
+| T21 | bug | `cloud/plugin/freemoviescinema.js:19`: the replacement `'$1'` (the quote) should be `'$2'` (the URL). | S | 4 | |
+| T22 | live-check | `download/*.js:10`, `plex.js:131`: `check = document.body.onload = …` is assigned at `document_idle`. Code cannot tell whether the frame's `load` has already fired by then. Observe on a page with the embed: does `check` ever run? A direct `check()` call avoids the question. | S | 4 | |
+| T23 | bug | `cloud/vumoo.js:58-68` and `cloud/plugin/indomovietv.js:49-59`: `message` listeners with no origin check. Any frame can cancel the auto-click timers. Benign, but the same pattern as B21. Both sites are on the drop list. | S | 4 | |
+| T24 | bug | `cloud/vrv.js:90-91`: `minions()` calls `script.init()` and re-runs extraction just for a title. The site is on the drop list. | S | 4 | |
+| T25 | bug | `cloud/plugin/toloka.js:12`: `url` is `*://*.toloka.to/*`, so `init` runs on index and search pages without `.maintitle` and throws (T16). | S | 4 | |
+| T26 | dead-code | `cloud/webtoplex.js:44-57`: `return -1` inside a `setTimeout` callback is discarded. The pre-fill itself works. | S | 4 | |
+| T27 | dead-code | `cloud/trakt.js:37-48, 99-103`: `getType` never returns `'list'` (`:57-67`), so the branch and `process` are unreachable. | S | 4 | |
+| T28 | bug | `cloud/vudu.js:36`: a leftover `console.log({ actions })`. Hygiene. The site is on the drop list. | S | 4 | |
+| T29 | bug | `cloud/itunes.js:45-49`: `$('.web-to-plex-button').first` can be `undefined` one second after `init`. | S | 4 | |
+| T30 | bug | `cloud/rottentomatoes.js:103` appends `minion`, so its `parent` wrapper (`:94-100`) is never inserted. | S | 4 | |
+| T31 | not-a-bug | `cloud/__test__.js` and `sites/__test__.js` have no manifest entry and no options key, and no shipped stub sends `SCRIPT '__test__'`, so nothing loads them in normal use. Moving them under `tests/` is housekeeping; Phase 4 moves them with the plugin layout. | S | 4 | |
+| T32 | bug | `options/index.js:2186` and `popup/index.html:133` list ShowRSS, but there is no manifest entry, stub or cloud script. The options checkbox and popup tile do nothing. Settings page (Phase 5) or plugin migration (Phase 4). | S | 4 | |
+
+### Phase 2 list (security or data leak, fix now)
+
+1. ~~**T3** (`security`, S). Remove the `cors-anywhere.herokuapp.com` prefix in `download/plex.js:36`, so the Plex token stops going to a third party. No working feature is lost (manifest pattern, B38; proxy opt-in since 2021). Fetch directly instead. If the manager prefers, delete the download path until Phase 4.~~ Fixed by the manager.
+2. ~~**T8** (`data`, S). Stop passing the TVmaze ID as `TVDbID` (`cloud/tvmaze.js:22-26`). It can add the wrong series to Sonarr, Medusa or Sick Beard. The smallest fix is to return no `TVDbID`, which leaves `Identify` to look it up.~~ Fixed by the manager.
+
+Security, but phase 3+: **T2**. Consent is default-allow and keyed by derived names. It lives in `plugn.js` (`GetConsent`, the wrapper guard) and is fixed when consent moves to the plugin registry. It is the same root area as B11, B15 and S3.
+
+### Drop list (whole integrations to remove; code evidence only)
+
+Shutdown status is from public knowledge and was **not live-checked**. "Code evidence" is what the code shows by itself.
+
+| Integration | Files | Code evidence | Status (unverified) |
+|---|---|---|---|
+| Openload | `download/oload.js`, `manifest.json:21-44` | 34 hard-coded TLDs; builds `https://oload.fun/stream/…` (`oload.js:22`) | Host closed 2019 |
+| consistent.stream, gounlimited.to, fembed.com | `download/consistent.js`, `gounlimited.js`, `fembed.js`; `manifest.json:45-49, 55-64` | Generic `<video>` scrape only; nothing else references them | Hosts gone |
+| GoStream | stub, `cloud/gostream.js`, CSS, `manifest.json:171-174`, `options/index.js:2196` | Asks the user to "Select the OL/VH server" (`gostream.js:14`), which depends on the Openload download path | Gone |
+| Vumoo | stub, `cloud/vumoo.js`, CSS, `manifest.json:143-146`, `options/index.js:2189` | Auto-clicks player servers to trigger `download/oload.js` (`vumoo.js:21-43`) | Gone |
+| Movieo | stub, `cloud/movieo.js`, CSS, `history-hack.js` use, `manifest.json:66-69` | `ready` waits for a Zendesk `.zopim` widget (`movieo.js:4`) | Closed |
+| VRV | stub, `cloud/vrv.js`, CSS, `manifest.json:94-97` | — | Shut 2023 (Crunchyroll) |
+| Vudu | stub, `cloud/vudu.js`, CSS, `manifest.json:122-125` | Positional selectors (`vudu.js:10, 34-41`) | Rebranded 2024; redirects |
+| Google Play Movies | `sites/google/play.js`, `cloud/google.play.js`, `manifest.json:102-105` | Consent key mismatch (T2) | Moved to Google TV |
+| CouchPotato site | stub, `cloud/couchpotato.js`, CSS, `manifest.json:130-133` | Scrapes `wp-content` images (`couchpotato.js:11`) | Likely gone |
+| Fox Searchlight, SnagFilms, Free Movies Cinema, Freeform (go.com), Redbox, Indomovie | `cloud/plugin/{foxsearchlight,snagfilms,freemoviescinema,go,redbox,indomovietv}.js`; options `plugin_*` (`options/index.js:183-194, 2305-2319`) | Indomovie's key never matches (T2) | Renamed or closed |
+| Metacritic (as plugin) | `cloud/metacritic.js`, `options/index.js:194, 2316` | Can never load (T6). Keep only if rewritten as a built-in in Phase 4. | Site alive |
+| Shana Project plugin file | `cloud/plugin/shanaproject.js` | Never requested; the built-in stub wins (`sites/common.js:2-3`) | Dead file (the built-in needs T4) |
+| ShowRSS | `options/index.js:2186`, `popup/index.html:133-138` | No script exists at all (T32) | — |
+
+**Owner's call (rewrite or drop):**
+
+- **iTunes** (`itunes.apple.com` movie and TV pages redirect to tv.apple.com; T1, T29).
+- **Verizon** (Fios web catalogue paths changed; T11).
+- **Kitsu** (domain moved to kitsu.app; the `url` at `kitsu.js:4` needs updating).
+
+### Count check
+
+All 32 IDs (T1–T32) appear exactly once.
+
+| Verdict | Count |
+|---|---|
+| `bug` | 28 |
+| `dead-code` | 2 (T26, T27) |
+| `not-a-bug` | 1 (T31) |
+| `live-check` | 1 (T22) |
+
+| Phase | IDs |
+|---|---|
+| 2 | T3, T8 |
+| 3+ | T2 |
+| 4 | all others |

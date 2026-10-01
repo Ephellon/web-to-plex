@@ -9,7 +9,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0 and 1 done; 2 in progress: 10 fixes landed (B3 B4 B5 B6 B9 B18 B41 B42 B54 B55); `w2p-fix-services` claimed; `w2p-fix-settings`, `w2p-triage-sites` open |
+| Phase | 0 and 1 done; 2 in progress: 28 fixes landed (core, services, settings, T3, T8); next batches posted |
 | Budget | First 3 h block ended 05:10 UTC; resumed 21:07 UTC on the owner's word, 30 min check-ins |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
@@ -79,3 +79,6 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 | 2026-10-01 | `w2p-inventory-sites` | subordinate (`webtoplex-subo`) | `docs/SITES.md`, `docs/triage/bugs-sites.md` (32 candidates) |
 | 2026-10-01 | `w2p-triage-core`, `w2p-triage-settings` | subordinate (`webtoplex-subo`) | `docs/triage/TRIAGE.md`: 33 + 11 size-S Phase 2 fixes |
 | 2026-10-01 | `w2p-fix-plex` | subordinate (`webtoplex-subo`) | B9 B4 B18 B41 B42, one commit each |
+| 2026-10-01 | `w2p-fix-services` | subordinate (`webtoplex-subo`) | B2 B8 B29 B28 B7 B30 B24 B44 |
+| 2026-10-01 | `w2p-fix-settings` | subordinate (`webtoplex-subo`) | S5 S2 S1 S13 S4 S10 S11 S20 (two patches tidied: indent, quotes) |
+| 2026-10-01 | `w2p-triage-sites` | subordinate (`webtoplex-subo`) | T1-T32 verdicts, drop list (13 integrations; owner's call on iTunes, Verizon, Kitsu) |
