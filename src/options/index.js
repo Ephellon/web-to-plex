@@ -1898,6 +1898,10 @@ function saveOptionsWithoutPlex() {
 		.replace(/([^\\\/])$/, endingSlash)
 		.replace(/^(?!^http(s)?:\/\/)(.+)/, 'http$1://$2');
 
+	options.couchpotatoURLRoot = (options.couchpotatoURLRoot || '')
+		.replace(/([^\\\/])$/, endingSlash)
+		.replace(/^(?!^http(s)?:\/\/)(.+)/, 'http$1://$2');
+
 	options.radarrStoragePath = options.radarrStoragePath
 		// .replace(/([^\\\/])$/, endingSlash);
 
