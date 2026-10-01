@@ -303,7 +303,7 @@ function Push_Radarr(request, sendResponse) {
 					}
 				};
 
-			if(!(data instanceof Array) && !data.length && !data.title) {
+			if(!data || (!data.length && !data.title)) {
 				throw new Error('Movie not found');
 			} else if(data.length) {
 				body = {
