@@ -3721,7 +3721,7 @@ Object.filter = Object.filter || function filter(object, prejudice) {
 					...properties
 				},
 				empty: {
-					value: !media.length,
+					value: false, // a single Element is never empty
 					...properties
 				},
 			});
