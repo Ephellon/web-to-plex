@@ -3390,7 +3390,7 @@ function unzip(string = '') {
 
 /* BWT Sorting Algorithm */
 function BWT(string = '') {
-    if(/^[\x32]*$/.test(string))
+    if(/^[\x20]*$/.test(string)) // empty or spaces only
         return '';
 
     let _a = `\u0001${ string }`,
@@ -3407,7 +3407,7 @@ function BWT(string = '') {
 
 /* BWT Desorting Algorithm */
 function iBWT(string = '') {
-    if(/^[\x32]*$/.test(string))
+    if(/^[\x20]*$/.test(string)) // empty or spaces only
         return '';
 
     let a = string.split('');
