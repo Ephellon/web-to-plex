@@ -1880,15 +1880,13 @@ let INITIALIZE = (async date => {
 							else
 								DATA.tv_results = DATA.results;
 
-						let i, f, o, l;
+						// Return the matching item, not the list; a lookup by IMDb ID (/find) trusts its first result
+						let movies = DATA.movie_results || [], shows = DATA.tv_results || [];
 
-						for(i = 0, f = !1, o = DATA.movie_results, l = o.length | 0; i < l; i++)
-							f = (t(o.title) == t(title) && o.release_date.slice(0, 4) == year);
-
-						for(i = (+f * l), o = (f? o: DATA.tv_results), l = (f? l: o.length | 0); i < l; i++)
-							f = (t(o.name) == t(title) && o.first_air_date.slice(0, 4) == year);
-
-						return f? o: f = !!iid;
+						return movies.find(o => t(o.title) == t(title) && (o.release_date || '').slice(0, 4) == year)
+							|| shows.find(o => t(o.name) == t(title) && (o.first_air_date || '').slice(0, 4) == year)
+							|| (iid && (movies[0] || shows[0]))
+							|| false;
 					})($data);
 				//api.themoviedb.org/ \remote
 				else if($data && ('original_name' in $data || 'original_title' in $data) && $data.release_date)
@@ -1942,21 +1940,15 @@ let INITIALIZE = (async date => {
 				//api.themoviedb.org/ \local
 				else if('movie_results' in $data || 'tv_results' in $data || 'results' in $data)
 					found = (DATA => {
-						let i, f, o, l;
-
 						if(DATA.results)
 							if(rqut == 'tmdb')
 								DATA.movie_results = DATA.results;
 							else
 								DATA.tv_results = DATA.results;
 
-						for(i = 0, f = !1, o = DATA.movie_results, l = o.length | 0; i < l; i++)
-							f = (c(o.title) == c(title));
-
-						for(i = (+f * l), o = (f? o: DATA.tv_results), l = (f? l: o.length | 0); i < l; i++)
-							f = (c(o.name) == c(title));
-
-						return f? o: f;
+						return (DATA.movie_results || []).find(o => c(o.title) == c(title))
+							|| (DATA.tv_results || []).find(o => c(o.name) == c(title))
+							|| false;
 					})($data);
 				//api.themoviedb.org/ \remote
 				else if('original_name' in $data || 'original_title' in $data || 'name' in $data)
@@ -2021,15 +2013,9 @@ let INITIALIZE = (async date => {
 				//api.themoviedb.org/ \local
 				else if($data && ('movie_results' in $data || 'tv_results' in $data))
 					found = (DATA => {
-						let i, f, o, l;
-
-						for(i = 0, f = !1, o = DATA.movie_results, l = o.length | 0; i < l; i++)
-							f = R(o.title, title);
-
-						for(i = (+f * l), o = (f? o: DATA.tv_results), l = (f? l: o.length | 0); i < l; i++)
-							f = R(o.name, title);
-
-						return f? o: f;
+						return (DATA.movie_results || []).find(o => R(o.title, title))
+							|| (DATA.tv_results || []).find(o => R(o.name, title))
+							|| false;
 					})($data);
 				//api.themoviedb.org/ \remote
 				else if($data && ('original_name' in $data || 'original_title' in $data))
