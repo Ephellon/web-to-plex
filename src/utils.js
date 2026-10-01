@@ -1741,7 +1741,7 @@ let INITIALIZE = (async date => {
 		        //		 `${ __CONFIG__.sickBeardURLRoot }api/${ __CONFIG__.sickBeardToken }/?cmd=sb.searchtvdb&tvdbid=${ tid }`:
 		        //	 `${ __CONFIG__.sickBeardURLRoot }api/${ __CONFIG__.sickBeardToken }/?cmd=sb.searchtvdb&name=${ encodeURIComponent(title) }`:
 		        null:
-		    (rqut == 'imdb' || (rqut == '*' && !iid && title) || (rqut == 'tvdb' && !iid && title && !(rerun & 0b1000)) && (rerun |= 0b1000))?
+		    ((rqut == 'imdb' || (rqut == '*' && !iid && title) || (rqut == 'tvdb' && !iid && title && !(rerun & 0b1000))) && (rerun |= 0b1000))?
 		        (iid)?
 		            `https://www.omdbapi.com/?i=${ iid }&apikey=${ api.omdb }`:
 		        (year)?
