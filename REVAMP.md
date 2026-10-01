@@ -9,8 +9,8 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0 and 1 done; 2 in progress (core and settings triaged; B3 B5 B6 B54 B55 fixed; `w2p-fix-plex`, `w2p-fix-services`, `w2p-fix-settings`, `w2p-triage-sites` posted, unclaimed at 04:03 UTC) |
-| Budget | 3 h from 02:10 UTC 2026-10-01 (ends about 05:10 UTC) |
+| Phase | 0 and 1 done; 2 in progress: 10 fixes landed (B3 B4 B5 B6 B9 B18 B41 B42 B54 B55); `w2p-fix-services` claimed; `w2p-fix-settings`, `w2p-triage-sites` open |
+| Budget | First 3 h block ended 05:10 UTC; resumed 21:07 UTC on the owner's word, 30 min check-ins |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -78,3 +78,4 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 | 2026-10-01 | `w2p-inventory-settings` | subordinate (`webtoplex-subo`) | `docs/FEATURES.md`, `docs/triage/bugs-settings.md` (33 candidates, unverified); corrects core B15: `DeveloperMode` defaults on, so local `cloud/*` runs by default |
 | 2026-10-01 | `w2p-inventory-sites` | subordinate (`webtoplex-subo`) | `docs/SITES.md`, `docs/triage/bugs-sites.md` (32 candidates) |
 | 2026-10-01 | `w2p-triage-core`, `w2p-triage-settings` | subordinate (`webtoplex-subo`) | `docs/triage/TRIAGE.md`: 33 + 11 size-S Phase 2 fixes |
+| 2026-10-01 | `w2p-fix-plex` | subordinate (`webtoplex-subo`) | B9 B4 B18 B41 B42, one commit each |

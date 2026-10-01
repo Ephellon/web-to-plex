@@ -111,13 +111,13 @@ Source list: `docs/triage/bugs-core.md`. Code: branch `claude/extension-rewrite-
 
 ### Phase 2 fix list (phase `2` + verdict `bug` + size `S`), ordered by impact
 
-1. **B9.** Repeat Plex searches hang forever (`utils.js:3186-3201`).
+1. ~~**B9.** Repeat Plex searches hang forever (`utils.js:3186-3201`).~~ Fixed (`w2p-fix-plex`).
 2. **B2.** Sick Beard push always throws and breaks `CAUGHT` for the page (`utils.js:2532-2534`).
-3. **B4.** Plex search never replies when every connection fails (`background.js:744`).
+3. ~~**B4.** Plex search never replies when every connection fails (`background.js:744`).~~ Fixed (`w2p-fix-plex`).
 4. **B39.** SPA navigations force full reloads and can show "Leave site?" (`utils.js:3582`, `:3573-3576`).
-5. **B41.** A missing `proxy` breaks every `Identify` (`utils.js:1760-1762`).
-6. **B42.** A missing `__domains` aborts `INITIALIZE` (`utils.js:1597`).
-7. **B18.** An unset `plexURL` stalls `INITIALIZE`, and the computed URL is lost (`utils.js:1061-1072`).
+5. ~~**B41.** A missing `proxy` breaks every `Identify` (`utils.js:1760-1762`).~~ Fixed (`w2p-fix-plex`).
+6. ~~**B42.** A missing `__domains` aborts `INITIALIZE` (`utils.js:1597`).~~ Fixed (`w2p-fix-plex`).
+7. ~~**B18.** An unset `plexURL` stalls `INITIALIZE`, and the computed URL is lost (`utils.js:1061-1072`).~~ Fixed (`w2p-fix-plex`).
 8. **B36.** CouchPotato over HTTP always fails (`background.js:21` and its callers).
 9. **B8.** Ombi POSTs with a null ID after reporting an error (`background.js:691-696`).
 10. ~~**B5.** Context-menu download passes `url: undefined` (`background.js:902, 908`).~~ Fixed by the manager.
