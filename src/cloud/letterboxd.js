@@ -1,7 +1,7 @@
 let script = {
 	"url": "*://*.letterboxd.com/(?:\\w+/)?(film|list)/*",
 
-	"ready": () => (script.getType('list')? true: !$('.js-watch-panel').empty),
+	"ready": () => (script.getType('list')? true: !$('.js-watch-panel, .watch-panel').empty),
 
 	"init": (ready) => {
 		let _title, _year, _image, R = RegExp;
@@ -10,8 +10,8 @@ let script = {
 
 		switch(type) {
 			case 'movie':
-				title  = $('#featured-film-header .headline-1, .headline-1[itemprop="name"]').first.textContent.trim();
-				year   = +$('#featured-film-header [href*="/year/"], small[itemprop="datePublished"]').first.textContent.trim();
+				title  = $('#featured-film-header .headline-1, .headline-1[itemprop="name"], h1.headline-1').first.textContent.trim();
+				year   = +$('#featured-film-header [href*="/year/"], small[itemprop="datePublished"], a[href*="/films/year/"]').first.textContent.trim();
 				image  = ($('.film-poster img, .image').first || {}).src;
 				IMDbID = script.getIMDbID(type);
 
