@@ -401,3 +401,7 @@ Findings:
   ignore navigations that keep the path. Small runner fix.
 - **L2**: in Firefox, a page CSP `connect-src` (Trakt) blocks `Identify`'s content-script fetch, so no IDs. Needs the
   background fetch relay (`docs/PHASE3.md` permissions). Size L.
+- ~~**IMDb**~~ rewritten (`w2p-site-imdb`): JSON-LD with hero fallback; lists from ItemList or rows. Offline only:
+  IMDb's CAPTCHA wall blocked every live load from the test machine. **Owner check pending:** load
+  `imdb.com/title/tt0111161/` and `/title/tt0903747/`, pick the Web to Plex console context, run `script.ready()` and
+  `await script.init()`; expect a movie (1994) and a show (2008).
