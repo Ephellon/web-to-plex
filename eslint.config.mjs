@@ -273,6 +273,11 @@ export default [
         languageOptions: { parserOptions: { ecmaFeatures: { globalReturn: true } } },
     },
     {
+        // src/background holds the MV3 service worker's ES modules, bundled by esbuild (docs/PHASE3.md)
+        files: [`${ ROOT }/background/**/*.js`],
+        languageOptions: { sourceType: 'module', globals: { ...globals.serviceworker, ...globals.webextensions } },
+    },
+    {
         // src/lib holds ES modules, bundled by esbuild into classic scripts (docs/PHASE3.md)
         files: [`${ ROOT }/lib/**/*.js`],
         languageOptions: { sourceType: 'module' },
