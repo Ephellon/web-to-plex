@@ -3503,17 +3503,8 @@ function wait(on, then) {
 }
 
 function addListener(element, eventName, callback = event => {}) {
-	eventName = eventName.replace(/^(on)?/, 'on');
-	callback = callback.toString().replace(/;+$/g, '');
-
-	let event = element.getAttribute(eventName);
-
-	if(event && event.length)
-		event = `${ event }; ${ callback }`;
-	else
-		event = callback;
-
-	element[eventName] = eval(event);
+	// addEventListener, not eval (MV3 CSP): handlers keep their closures, and several can share an event, called in order
+	element.addEventListener(eventName.replace(/^on/, ''), callback);
 }
 
 function traverse(element, until, siblings = false) {
@@ -3922,19 +3913,8 @@ Object.filter = Object.filter || function filter(object, prejudice) {
 		Object.entries(attributes).forEach(
 			([name, value]) => (/^(on|(?:(?:inner|outer)(?:HTML|Text)|textContent|class(?:List|Name)|value)$)/.test(name))?
 				(typeof value == 'string' && /^on/.test(name))?
-					(() => {
-						try {
-							/* Can't make a new function(eval) */
-							element[name] = new Function('', value);
-						} catch (__error) {
-							try {
-								/* Not a Chrome (extension) state */
-								chrome.tabs.getCurrent(tab => chrome.tabs.executeScript(tab.id, { code: `document.furnish.__cache__ = () => {${ value }}` }, __cache__ => element[name] = __cache__[0] || parent.furnish.__cache__ || value));
-							} catch (_error) {
-								throw __error, _error;
-							}
-						}
-					})():
+					/* A string handler would need eval (blocked by the MV3 CSP); pass a function instead */
+					console.warn(`furnish: ignored the string handler "${ name }" on <${ element.localName }>; pass a function`):
 				element[name] = value:
 			element.setAttribute(name, value)
 		);

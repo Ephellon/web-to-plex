@@ -425,17 +425,8 @@ function TLDHost(host) {
 }
 
 function addListener(element, eventName, callback = event => {}) {
-	eventName = eventName.replace(/^(on)?/, 'on');
-	callback = callback.toString().replace(/;+$/g, '');
-
-	let event = element.getAttribute(eventName);
-
-	if(event && event.length)
-		event = `${ event }; ${ callback }`;
-	else
-		event = callback;
-
-	element[eventName] = eval(event);
+	// addEventListener, not eval (MV3 CSP): handlers keep their closures, and several can share an event, called in order
+	element.addEventListener(eventName.replace(/^on/, ''), callback);
 }
 
 function traverse(element, until, siblings = false) {
