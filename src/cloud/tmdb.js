@@ -13,7 +13,7 @@ let script = {
 		switch(type) {
 			case 'movie':
 			case 'tv':
-				title = $('.title > span > *:not(.release_date)').first;
+				title = $('.title > span > *:not(.release_date), .title h2 > a').first;
 				year  = $('.title .release_date').first;
 				image = $('img.poster').first;
 
