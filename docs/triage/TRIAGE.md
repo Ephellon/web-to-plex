@@ -396,3 +396,8 @@ Findings:
 - **F3**: options page fetches `check.torproject.org` on every load (blocked by CORS).
 - **F4**: the Plex font's protocol-relative URL resolves inside the extension; fallback font used.
 - **F5**: context-menu titles keep the previous page's item when nothing is found.
+- ~~**app.trakt.tv**~~ rewritten (`w2p-site-trakt`): JSON-LD, path-checked for the SPA.
+- **L1**: a `replaceState` that only changes the query (Trakt's `?season=1`) re-runs the site; the runner should
+  ignore navigations that keep the path. Small runner fix.
+- **L2**: in Firefox, a page CSP `connect-src` (Trakt) blocks `Identify`'s content-script fetch, so no IDs. Needs the
+  background fetch relay (`docs/PHASE3.md` permissions). Size L.
