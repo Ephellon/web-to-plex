@@ -1,142 +1,52 @@
-/** TODO
-	- re-enable list functionality (fix it)
+/** Trakt (app.trakt.tv, a SvelteKit app; trakt.tv redirects there)
+ * The item comes from the page's JSON-LD (Movie or TVSeries). The app swaps it on every in-app navigation, so the
+ * data only counts once its `url` names the current path. The pages link no IMDb/TMDb/TVDb IDs; Identify looks
+ * the item up by title and year. The old "minions" (#info-wrapper .action-buttons) have no counterpart; dropped.
 **/
 
 let script = {
-	"url": "*://*.trakt.tv/(movie|show)s/*",
+    url: '*://*.trakt.tv/(movie|show)s/*',
 
-	"ready": () => !$('#info-wrapper ul.external, .format-date').empty,
+    ready: () => !!script.getData(),
 
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
+    init: () => {
+        const data = script.getData();
 
-		let type = script.getType(),
-			IMDbID, TMDbID, TVDbID,
-			title, year, image, options;
+        if(!data)
+            return 1000;
 
-		switch(type) {
-			case 'movie':
-			case 'show':
-				title = $('.mobile-title').first;
-				year  = $('.mobile-title .year').first;
-				image = $('.poster img.real[alt="poster"i]').first;
-				IMDbID = script.getIMDbID();
-				TMDbID = script.getTMDbID();
-				TVDbID = script.getTVDbID();
+        const type = script.getType(data)
+            , title = (data.name || '').trim()
+            , year = parseInt(data.datePublished)
+            , image = data.image;
 
-				if(!IMDbID && !TMDbID && !TVDbID)
-					return 5000;
+        // Season, episode and person pages carry other types: nothing to show there
+        if(!type || !title)
+            return -1;
 
-				title = title.textContent.replace(/(.+)(\d{4}).*?$/, '$1').replace(/\s*\:\s*Season.*$/i, '').trim();
-				year  = +(R.$2 || year.textContent).trim();
-				image = (image || {}).src;
+        return { type, title, year, image };
+    },
 
-				options = { type, title, year, image, IMDbID, TMDbID, TVDbID };
-				break;
+    // The JSON-LD item describing the current path, or null while the app still shows the previous page's data
+    getData: () => {
+        const path = top.location.pathname.replace(/\/+$/, '');
 
-			case 'list':
-				let items = $('*');
+        for(const element of document.querySelectorAll('script[type="application/ld+json"]')) {
+            let data;
 
-				options = [];
+            try {
+                data = JSON.parse(element.textContent);
+            } catch {
+                continue;
+            }
 
-				items.forEach((element, index, array) => {
-					let option = script.process(element, items);
+            for(const item of [].concat(data['@graph'] || data))
+                if(item?.url && new URL(item.url, location.href).pathname.replace(/\/+$/, '') == path)
+                    return item;
+        }
 
-					if(option)
-						options.push(option);
-				});
-				break;
+        return null;
+    },
 
-			default:
-				return null;
-		}
-
-		return options;
-	},
-
-	"getType": () => {
-		let { pathname } = top.location;
-
-		return (
-			// /^\/(dashboard|calendars|people|search|(?:movie|show)s?\/(?:trending|popular|watched|collected|anticipated|boxoffice)|$)/i.test(pathname)?
-				// 'list':
-			/^\/(movie|show)s\//i.test(pathname)?
-				RegExp.$1:
-			'error'
-		)
-	},
-
-	"getIMDbID": () => {
-		let link = $(
-			// HTTPS and HTTP
-			'[href*="imdb.com/title/tt"]'
-		).first;
-
-		if(link)
-			return link.href.replace(/^.*?imdb\.com\/.+\b(tt\d+)\b/, '$1');
-	},
-
-	"getTMDbID": () => {
-		let link = $(
-			// HTTPS and HTTP
-			'[href*="themoviedb.org/"]'
-		).first;
-
-		if(link)
-			return link.href.replace(/^.*?themoviedb.org\/(?:movie|tv|shows?|series)\/(\d+).*?$/, '$1');
-	},
-
-	"getTVDbID": () => {
-		let link = $(
-			// HTTPS and HTTP
-			'[href*="thetvdb.com/"]'
-		).first;
-
-		if(link)
-			return link.href.replace(/^.*?thetvdb.com\/.+\/(\d+)\b.*?$/, '$1');
-	},
-
-	"process": (element, elements) => {
-		let type, title, year;
-
-		return { type, title, year };
-	},
-
-	"minions": () => {
-		let actions = $('#info-wrapper .action-buttons');
-
-		if(actions.empty)
-			return;
-
-		actions.forEach(element => {
-			let subtitle;
-
-			let minion = furnish('a.web-to-plex-minion.btn.btn-block.btn-summary.selected', {},
-				furnish('i.fa.fa-fw.fa-download'),
-				furnish('div.text', {},
-					furnish('div.main-info', {}, 'Web to Plex'),
-					subtitle = furnish('div.wtp-min.under-info', {
-						title: 'Loading...',
-						onmouseenter: event => {
-							let self = event.target,
-								title = self.getAttribute('title');
-
-							self.setAttribute('title', '');
-							self.innerHTML = title;
-						},
-						onmouseleave: event => {
-							let self = event.target,
-								title = self.innerHTML;
-
-							self.setAttribute('title', title);
-							self.innerHTML = '';
-						},
-					})
-				)
-			);
-
-			addMinions(minion, subtitle);
-			element.insertBefore(minion, element.childNodes[3]);
-		});
-	},
+    getType: data => ({ Movie: 'movie', TVSeries: 'show' })[data['@type']],
 };
