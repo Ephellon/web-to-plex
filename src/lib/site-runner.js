@@ -23,6 +23,12 @@ const DEFAULT_TIMEOUT = 1000;
 // Navigation events that re-run a site (the MV2 wrapper listened to the first two; `$INIT$` covered the third)
 const NAVIGATION_EVENTS = ['popstate', 'pushstate-changed'];
 
+// Per environment: the latest run of each site, so a repeated RunSite (utils.js re-calls `init`) replaces the last
+// one instead of stacking navigation listeners and retry timers
+const ACTIVE = new WeakMap();
+
+let SHARED_ENVIRONMENT = null;
+
 /**
  * Converts a site script's `url` glob into the RegExp the MV2 wrapper built (plugn.js:331-342).
  * The rules, in order: `*:` at the start is any scheme; `*.` is an optional sub-domain; `.*` is an optional TLD;
@@ -196,6 +202,14 @@ export function DefaultEnvironment() {
 }
 
 /**
+ * The default environment, created once so that repeated RunSite calls share their per-site state.
+ * @returns {object} See `DefaultEnvironment`
+ */
+export function SharedEnvironment() {
+    return SHARED_ENVIRONMENT ??= DefaultEnvironment();
+}
+
+/**
  * Runs a site script in the page: consent, URL, readiness, `init()`, then the result handling `handle()` did, and
  * finally posts the request `utils.js` used to receive from the background page.
  *
@@ -213,7 +227,7 @@ export function DefaultEnvironment() {
  * @param {object} [env] - Environment overrides (tests); see `DefaultEnvironment`
  * @returns {Promise<object>} The last outcome: `{ action, … }` as from `ClassifyResult`, or a consent/URL stop
  */
-export async function RunSite(script, { alias, type = 'script' } = {}, env = DefaultEnvironment()) {
+export async function RunSite(script, { alias, type = 'script' } = {}, env = SharedEnvironment()) {
     const kind = type.toLowerCase()
         , TYPE = kind.toUpperCase()
         , instance = env.instance ?? RandomName()
@@ -308,8 +322,19 @@ export async function RunSite(script, { alias, type = 'script' } = {}, env = Def
         return outcome;
     };
 
-    // 6. Navigation re-runs the site
-    env.listen(() => schedule(0));
+    // 6. Navigation re-runs the site; one listener per site, pointing at its latest run
+    let sites = ACTIVE.get(env);
+
+    if(sites == null)
+        ACTIVE.set(env, sites = new Map());
+
+    const previous = sites.get(alias);
+
+    previous?.stop();
+    sites.set(alias, { rerun: () => schedule(0), stop: () => env.clearTimeout(timer) });
+
+    if(previous == null)
+        env.listen(() => sites.get(alias).rerun());
 
     return run();
 }

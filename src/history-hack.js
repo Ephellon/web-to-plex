@@ -1,26 +1,19 @@
-let __script__ = document.createElement('script');
+/* Runs in the page's own world (manifest "world": "MAIN"), so it can wrap the page's history methods directly.
+ * The isolated-world site scripts listen for the 'pushstate-changed' event this dispatches on window. */
 
-// Injected DOM script is not a content script anymore;
-// It can modify objects and functions of the page
-__script__.text = `(${
-function() {
-	let history = window.history,
-		__pushState__ = history.pushState,
+(history => {
+	let __pushState__ = history.pushState,
 		__replaceState__ = history.replaceState;
 
 	history.pushState = function(state, title, url) {
-	__pushState__.call(this, state, title, url);
+		__pushState__.call(this, state, title, url);
 
-	window.dispatchEvent(new CustomEvent('pushstate-changed', { detail: state }));
+		window.dispatchEvent(new CustomEvent('pushstate-changed', { detail: state }));
 	};
 
 	history.replaceState = function(state, title, url) {
-	__replaceState__.call(this, state, title, url);
+		__replaceState__.call(this, state, title, url);
 
-	window.dispatchEvent(new CustomEvent('pushstate-changed', { detail: state }));
+		window.dispatchEvent(new CustomEvent('pushstate-changed', { detail: state }));
 	};
-}
-})();`;
-
-document.head.appendChild(__script__);
-document.head.removeChild(__script__);
+})(window.history);

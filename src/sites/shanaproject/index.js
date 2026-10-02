@@ -1,2 +1,2 @@
-/* global Update */ // Update(type:string, details:object)
-(init = () => Update('SCRIPT', { script: 'shanaproject' }))();
+/* global RunSite, plugin */ // RunSite: lib/site-runner.js; plugin: the site script loaded before this stub
+(init = () => RunSite(plugin, { alias: 'shanaproject', type: 'script' }).catch(error => console.warn(`[shanaproject] ${ error }`)))();

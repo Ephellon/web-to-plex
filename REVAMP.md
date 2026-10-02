@@ -9,7 +9,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0, 1 done; 2 done (51 fixes, live recheck passed in Firefox; only B36 open). 3 next and urgent: Chrome 153 no longer loads this MV2 build |
+| Phase | 0-2 done. 3: MV3 build loads in Chromium (3a-3d landed); live checks on real sites next |
 | Budget | First 3 h block ended 05:10 UTC; resumed 21:07 UTC on the owner's word, 30 min check-ins |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
@@ -20,7 +20,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | 0 | Baseline and tooling: lint, `scripts/build.mjs` (`dist/chrome`, `dist/firefox`, zips), pre-commit hook, CI | `npm test`, `npm run lint` (0 errors), `npm run build` run | ✅ |
 | 1 | Inventory: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, per-file digests, bug candidates | Every setting maps to code; every file has a digest | ✅ (`ARCHITECTURE.md`, `FEATURES.md`, `SITES.md`) |
 | 2 | Triage and isolated fixes: `docs/triage/TRIAGE.md` | Every candidate verified against code | ✅ (B36 needs a CouchPotato server) |
-| 3 | Core extraction and plugin contract (`src/lib/`, plugin registry, unit tests) | Pilot plugins behave identically (headless parity) | |
+| 3 | Core extraction and plugin contract (`src/lib/`, plugin registry, unit tests) | Pilot plugins behave identically (headless parity) | 3a-3d ✅; live checks pending (`docs/PHASE3.md`) |
 | 4 | Plugin migration: one plugin per site, one per service | Parity per batch | |
 | 5 | Declarative settings | Settings page renders the same; first-run defaults stored exactly | |
 | 6 | Styles and tokens | Computed styles unchanged (snapshot diff) | |
@@ -88,3 +88,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-01 | `w2p-triage-sites` | subordinate (`webtoplex-subo`) | T1-T32 verdicts, drop list (13 integrations; owner's call on iTunes, Verizon, Kitsu) |
 | 2026-10-01 | `w2p-fix-utils-a`, `w2p-fix-utils-b`, `w2p-fix-misc` | subordinate (`webtoplex-subo`) | 22 fixes: B39 B43 B40 B1 B20 B21; B16 B17 B34 B22 B23 B45 B46 B33 B35; B31 S14 S15 S18 B32 B51 B52 |
 | 2026-10-01 | `w2p-live-recheck-1` | subordinate (`webtoplex-subo`) | Firefox BiDi live checks: B39 B21 S1 S2 S18 pass; found N1 (fixed), N2; confirmed B37, B13 |
+| 2026-10-02 | `w2p-p3-runner`, `w2p-p3-worker`, `w2p-p3-csp` | subordinate (`webtoplex-subo`) | Phase 3a-3c; manager wired 3d |

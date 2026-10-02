@@ -245,3 +245,35 @@ test('a throwing site script is caught and retried, not thrown into the page', a
     assert.deepEqual(env.timers, [2000]);
     assert.match(env.warnings[0], /title is undefined/);
 });
+
+test('a repeated RunSite for the same site keeps one navigation listener and stops the old retry', async() => {
+    const { RunSite } = await import('../src/lib/site-runner.js');
+    const listeners = []
+        , timers = new Map()
+        , populated = [];
+
+    let next = 0;
+
+    const env = {
+        instance: 'test',
+        href: () => 'https://www.example.com/title/1',
+        get: async() => void null,
+        getCache: async() => null,
+        populate: async request => populated.push(request.type),
+        require: () => void null,
+        minionsWanted: async() => false,
+        listen: handler => listeners.push(handler),
+        setTimeout: (callback, delay) => (timers.set(++next, callback), next),
+        clearTimeout: timer => timers.delete(timer),
+        warn: () => void null,
+    };
+
+    // Not ready yet: each run schedules a retry
+    const script = { url: '*://*.example.com/*', ready: () => false, init: () => ({ type: 'movie', title: "Heat", year: 1995 }) };
+
+    await RunSite(script, { alias: 'example' }, env);
+    await RunSite(script, { alias: 'example' }, env);
+
+    assert.equal(listeners.length, 1);
+    assert.equal(timers.size, 1);
+});

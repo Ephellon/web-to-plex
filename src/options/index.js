@@ -1635,6 +1635,39 @@ function HandleProxyHeaders(Headers = "", URL = "") {
 	return headers;
 }
 
+/**
+ * Asks for the host permissions the service worker needs: the origin of every service URL on the page, the Plex
+ * URL, and Plex's relay domain. Origins already granted are not asked again.
+ * @returns {Promise<boolean>} Whether the origins are granted (true when there is nothing to ask for)
+ */
+function RequestServiceOrigins() {
+	let origins = new Set();
+
+	[...$('[data-option$="URLRoot"i], [data-option="plexURL"i]', true)].forEach(input => {
+		let value = (input.value || '').trim();
+
+		if(!value.length)
+			return;
+
+		try {
+			let { protocol, hostname, port } = new URL(/^\w+:\/\//.test(value)? value: `http://${ value }`);
+
+			origins.add(`${ protocol }//${ hostname }${ port? ':' + port: '' }/*`);
+		} catch(error) {
+			/* Not a URL; the service test reports it */
+		}
+	});
+
+	if(__servers__.value)
+		origins.add('*://*.plex.direct/*');
+
+	if(!origins.size || !chrome.permissions)
+		return Promise.resolve(true);
+
+	return chrome.permissions.request({ origins: [...origins] })
+		.catch(error => (terminal.warn('Host permission request failed:', error), false));
+}
+
 function saveOptions() {
 	if(RESETTING_SETTINGS)
 		return saveOptionsWhileResetting();
@@ -2444,6 +2477,9 @@ addListener($('#all-plugin'), 'click', event => {
 let empty = () => {};
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
+// MV3: the service worker can only reach the user's servers after the user grants their origins, which must be asked
+// for during the click itself, before any await
+__save__.addEventListener('click', RequestServiceOrigins);
 __save__.addEventListener('click', saveOptions);
 
 addListener($('#plex_test'), 'mouseup', event => {

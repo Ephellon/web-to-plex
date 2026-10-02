@@ -1,6 +1,6 @@
 /*** /tests/background-services.test.mjs
  * Fetch parity for the MV3 service worker (Phase 3b): for every service message, the same request object goes to
- * the MV2 background page (src/background.js, in a `vm` context) and to the MV3 router (src/background/router.js).
+ * the MV2 background page (tests/fixtures/mv2/background.js, in a `vm` context) and to the MV3 router (src/background/router.js).
  * Each must make the same requests (URL, method, headers, body, mode) and send the same replies.
  */
 

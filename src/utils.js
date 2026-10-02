@@ -146,7 +146,7 @@ let INITIALIZE = (async date => {
 	};
 
 	// simple helpers
-	let extURL = url => chrome.extension.getURL(url),
+	let extURL = url => chrome.runtime.getURL(url),
 		$ = (selector, container) => queryBy(selector, container),
 		// DO NOT EXPOSE
 		__CONFIG__, ALLOWED, PERMISS;

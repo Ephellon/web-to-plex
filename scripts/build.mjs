@@ -24,11 +24,14 @@ const WATCH = process.argv.includes('--watch');
 // The release zips committed at the repo root (the pre-commit hook rebuilds them: .githooks/pre-commit)
 const RELEASE_ZIPS = { chrome: 'web-to-plex.zip', firefox: 'web-to-plex.moz.zip' };
 
-// ES-module entry points (in SOURCE) → the classic script each becomes (in the extension). Filled in Phase 3
-const BUNDLES = {};
+// ES-module entry points (in SOURCE) → the classic script each becomes (in the extension)
+const BUNDLES = {
+    'background/index.js': 'background.js',
+    'lib/site-runner-entry.js': 'site-runner.js',
+};
 
 // Folders holding ES-module sources; only their bundles ship
-const MODULE_FOLDERS = /^(lib|plugins|settings)\//;
+const MODULE_FOLDERS = /^(background|lib|plugins|settings)\//;
 
 // Firefox needs a stable add-on ID; this is the published one (moz/manifest.json). Changing it orphans existing installs
 const GECKO_ID = 'mink.cbos@gmail.com';

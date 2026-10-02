@@ -3,6 +3,10 @@
 // 'Friendly Name' requires permissions...
 
 let script = {
+	// The comment above, as data for lib/site-runner.js
+	requires: ['api'],
+	requiresName: "Web to Plex",
+
 	// required
 	"url": "*://(ephellon|webtoplex).github.io/web[\\w\\.]*/(?!test|login)",
 	// Example: *://*.amazon.com/*/video/(detail|buy)/*

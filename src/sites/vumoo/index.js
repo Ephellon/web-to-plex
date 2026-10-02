@@ -1,2 +1,2 @@
-/* global Update */ // Update(type:string, details:object)
-(init = () => Update('SCRIPT', { script: 'vumoo' }))();
+/* global RunSite, script */ // RunSite: lib/site-runner.js; script: the site script loaded before this stub
+(init = () => RunSite(script, { alias: 'vumoo', type: 'script' }).catch(error => console.warn(`[vumoo] ${ error }`)))();

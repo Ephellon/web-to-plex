@@ -1,5 +1,5 @@
 /*** /tests/background-harness.mjs
- * Runs the MV2 background page (src/background.js) and the MV3 service-worker router (src/background/) side by side
+ * Runs the MV2 background page (tests/fixtures/mv2/background.js, kept as the parity reference) and the MV3 service-worker router (src/background/) side by side
  * against the same stub `chrome` and the same intercepted `fetch`, so tests can compare every request and reply.
  * Not a test file itself (no `.test.`); imported by tests/background-*.test.mjs.
  */
@@ -78,7 +78,7 @@ export function StubFetch(respond, parse = text => JSON.parse(text)) {
 }
 
 /**
- * Loads src/background.js (MV2) in a fresh `vm` context.
+ * Loads the MV2 background page in a fresh `vm` context.
  * @param {object} options - Stored options
  * @param {function} respond - The fetch responder
  * @returns {Promise<object>} `{ send, click, calls, requests }`
@@ -97,7 +97,7 @@ export async function LoadMV2(options, respond) {
         window: { crypto: webcrypto, open: url => calls.push(['tabs.create', { url }]) },
     });
 
-    vm.runInContext(fs.readFileSync('src/background.js', 'utf8'), context, { filename: 'background.js' });
+    vm.runInContext(fs.readFileSync('tests/fixtures/mv2/background.js', 'utf8'), context, { filename: 'background.js' });
     await Settle();
 
     return {

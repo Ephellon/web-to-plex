@@ -29,7 +29,7 @@ src/
 | 3a | `w2p-p3-runner` | `lib/site-runner.js` + unit tests; `cloud/itunes.js` top-level `return` removed | For every `cloud/*.js` with a saved fixture page, the runner yields the same POPULATE payload as `prepare` + `handle` in the MV2 build |
 | 3b | `w2p-p3-worker` | `background/` service worker; `background.js` handlers moved unchanged into service modules; router with allowlist | Each `PUSH_*` / `SEARCH_PLEX` / `CHARGE_*` request produces the same fetch (URL, method, headers, body) and the same reply, with fetch intercepted |
 | 3c | `w2p-p3-csp` | `addListener` without `eval`; `furnish` without `new Function`; no `'unsafe-eval'` | Options page and button behave the same; zero CSP errors in console |
-| 3d | manager | MV3 manifest, build bundles, content-script entries per site, `world: 'MAIN'` history hook, `optional_host_permissions` request when a service is tested | Build loads in Chrome; `w2p-live-*` jobs on a few real sites |
+| 3d | manager | MV3 manifest, build bundles, content-script entries per site, `world: 'MAIN'` history hook, `optional_host_permissions` request on Save | Build loads in Chrome; `w2p-live-*` jobs on a few real sites |
 
 3a, 3b and 3c are independent and run in parallel. 3d lands after them.
 
@@ -75,3 +75,21 @@ src/
 The subordinate's Firefox WebDriver BiDi harness (`w2p-live-recheck-1/harness.tgz`) runs the MV2 build. Phase 3 adds a
 Playwright Chromium runner for the MV3 build against the same saved fixture pages (`tests/fixtures/<site>.html`), and a
 diff of the POPULATE payloads and requests the two record.
+
+## Status
+
+| Step | State |
+|---|---|
+| 3a runner | ✅ `c38676d` |
+| 3b worker | ✅ `ef5cad9` |
+| 3c CSP | ✅ `c2cbdc3` |
+| 3d wiring | ✅ Loads in headless Chromium 1194: the service worker starts; on synthetic TMDb and Letterboxd pages the runner posts POPULATE, `utils.js` renders the button, and `SEARCH_PLEX` is answered through the router; no CSP or eval errors. Live jobs on real sites pending. |
+
+Notes from 3d:
+
+- The catch-all `*://*/*` entry (`sites/common.js`, third-party plugins) is gone; plugins come back through
+  `chrome.scripting.registerContentScripts` in Phase 4. Until then `cloud/plugin/*` sites do not run.
+- Shana Project's built-in stub had no `cloud/shanaproject.js` (T4); it now loads `cloud/plugin/shanaproject.js`.
+- `utils.js` still needs saved options (`__caught`, `__theme`) before it renders, as in MV2; a fresh install shows
+  nothing until the options page is saved once.
+- The MV2 `background.js` moved to `tests/fixtures/mv2/` as the parity reference; `plugn.js` is deleted.

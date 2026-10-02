@@ -1,2 +1,2 @@
-/* global Update */ // Update(type:string, details:object)
-(init = () => Update('SCRIPT', { script: 'google' }))();
+/* global RunSite, script */ // RunSite: lib/site-runner.js; script: the site script loaded before this stub
+(init = () => RunSite(script, { alias: 'google', type: 'script' }).catch(error => console.warn(`[google] ${ error }`)))();

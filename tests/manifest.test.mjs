@@ -10,11 +10,16 @@ import assert from 'node:assert/strict';
 const SOURCE = 'src';
 const manifest = JSON.parse(fs.readFileSync(path.join(SOURCE, 'manifest.json'), 'utf8'));
 
+// Files the build bundles from ES-module sources (scripts/build.mjs BUNDLES): built file → its entry
+const BUNDLED = { 'background.js': 'background/index.js', 'site-runner.js': 'lib/site-runner-entry.js' };
+
 /**
  * Asserts that a file exists under SOURCE.
  * @param {string} file - The file, relative to SOURCE
  */
 function exists(file) {
+    file = BUNDLED[file] ?? file;
+
     assert.ok(fs.existsSync(path.join(SOURCE, file)), `Missing ${ file }`);
 }
 
@@ -43,4 +48,11 @@ test('page scripts exist', () => {
         for(const [, src] of fs.readFileSync(path.join(SOURCE, page), 'utf8').matchAll(/<script[^>]*\bsrc=['"]([^'"]+)['"]/gi))
             exists(path.posix.join(folder, src));
     }
+});
+
+test('MV3: service worker, no remote code or eval allowances', () => {
+    assert.equal(manifest.manifest_version, 3);
+    assert.ok(manifest.background.service_worker);
+    assert.equal(manifest.content_security_policy, void null);
+    assert.ok(!manifest.permissions.includes('<all_urls>'));
 });
