@@ -1031,11 +1031,11 @@ let INITIALIZE = (async date => {
 				type,
 				options
 			}, response => {
-				if(response === undefined) {
-					console.warn(`Update response (${ type } [post-to-top=${ !!postToo }]): Invalid response...`, { response, options });
-				} else {
+				// Most Update types get no answer (SEARCH_FOR, FOUND...); reading lastError keeps Chrome from logging the closed port
+				void chrome.runtime.lastError;
+
+				if(response !== undefined)
 					console.log(`Update response (${ type } [post-to-top=${ !!postToo }]):`, { response, options });
-				}
 			});
 
 			// the message has only 30s to "live"

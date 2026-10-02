@@ -1850,11 +1850,11 @@ function saveOptions() {
 			type: 'UPDATE_CONFIGURATION',
 			options,
 		}, response => {
-			if(response === undefined) {
-				console.warn(`Update response (UPDATE_CONFIGURATION): Invalid response...`, { response, options });
-			} else {
+			// The worker does not answer this message; reading lastError keeps Chrome from logging the closed port
+			void chrome.runtime.lastError;
+
+			if(response !== undefined)
 				console.log(`Update response (UPDATE_CONFIGURATION):`, { response, options });
-			}
 		});
 	});
 }
@@ -1999,11 +1999,11 @@ function saveOptionsWithoutPlex() {
 			type: 'UPDATE_CONFIGURATION',
 			options,
 		}, response => {
-			if(response === undefined) {
-				console.warn(`Update response (UPDATE_CONFIGURATION): Invalid response...`, { response, options });
-			} else {
+			// The worker does not answer this message; reading lastError keeps Chrome from logging the closed port
+			void chrome.runtime.lastError;
+
+			if(response !== undefined)
 				console.log(`Update response (UPDATE_CONFIGURATION):`, { response, options });
-			}
 		});
 	});
 }
@@ -2035,11 +2035,11 @@ function saveOptionsWhileResetting() {
 			type: 'UPDATE_CONFIGURATION',
 			options,
 		}, response => {
-			if(response === undefined) {
-				console.warn(`Update response (UPDATE_CONFIGURATION): Invalid response...`, { response, options });
-			} else {
+			// The worker does not answer this message; reading lastError keeps Chrome from logging the closed port
+			void chrome.runtime.lastError;
+
+			if(response !== undefined)
 				console.log(`Update response (UPDATE_CONFIGURATION):`, { response, options });
-			}
 		});
 	});
 }
