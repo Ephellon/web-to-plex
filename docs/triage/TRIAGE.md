@@ -390,7 +390,7 @@ Chrome 153 and Firefox 156, throwaway profiles, signed out, no service calls.
 Findings:
 
 - ~~**N2**~~ app.trakt.tv refused by the domain check: fixed (options lists both hosts).
-- **F1**: `UPDATE_CONFIGURATION`, `SEARCH_FOR` and the old plugn types get no reply, but their senders pass a
+- ~~**F1**~~ (fixed: callbacks read `lastError`): `UPDATE_CONFIGURATION`, `SEARCH_FOR` and the old plugn types get no reply, but their senders pass a
   callback, so every save and item logs "message port closed" warnings. Cosmetic.
 - **F2**: the default OMDb key `PlzBanMe` is rejected; show pages never get an IMDb/TVDb ID. Needs a key (owner).
 - **F3**: options page fetches `check.torproject.org` on every load (blocked by CORS).
