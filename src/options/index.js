@@ -2232,7 +2232,7 @@ document.furnish = function furnish(name, attributes = {}, ...children) {
 let builtins = {
 	"Netflix": "https://netflix.com/",
 	"Verizon": "https://tv.verizon.com/",
-	"Trakt": "https://trakt.tv/",
+	"Trakt": ["https://trakt.tv/", "https://app.trakt.tv/"],
 	"YouTube": "https://youtube.com/",
 	"Rotten Tomatoes": "https://rottentomatoes.com/",
 	"Fandango": "https://www.fandango.com/",
