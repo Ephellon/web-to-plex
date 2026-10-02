@@ -12,7 +12,7 @@ let script = {
 			type   = 'show';
 
 		title = title.textContent.trim();
-		year  = +year.textContent.replace(/\((\d+).+\)/, '$1');
+		year  = +year.textContent.replace(/\((\d+)[^]*\)/, '$1');
 		image = (image || {}).src;
 
 		// The path holds a TVmaze ID, not a TVDb ID; Identify looks the TVDb ID up
