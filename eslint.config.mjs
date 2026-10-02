@@ -272,6 +272,11 @@ export default [
         files: [`${ ROOT }/cloud/**/*.js`],
         languageOptions: { parserOptions: { ecmaFeatures: { globalReturn: true } } },
     },
+    {
+        // src/lib holds ES modules, bundled by esbuild into classic scripts (docs/PHASE3.md)
+        files: [`${ ROOT }/lib/**/*.js`],
+        languageOptions: { sourceType: 'module' },
+    },
     ...Object.entries(sharedGlobals).map(([file, names]) => ({
         files: [`${ ROOT }/${ file }`],
         languageOptions: { globals: names },

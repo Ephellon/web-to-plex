@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* global configuration, init, Update, Helpers */
 
-let configuration, init, Update, IMAGES, Glyphs = {},
+// HandleInstanceMessage: the POPULATE/NO_RENDER/INITIALIZE handler, also called in-page by lib/site-runner.js (Phase 3)
+let configuration, init, Update, IMAGES, HandleInstanceMessage, Glyphs = {},
 	HELPERS_STORAGE = {
 		get(keys, callback = () => {}) {
 			let results;
@@ -3207,7 +3208,7 @@ let INITIALIZE = (async date => {
 	}
 
 	/* Listen for events */
-	chrome.runtime.onMessage.addListener(async(request, sender) => {
+	chrome.runtime.onMessage.addListener(HandleInstanceMessage = async(request, sender) => {
 		UTILS_TERMINAL.LOG(`Listener event [${ request.instance_type }#${ request[request.instance_type.toLowerCase()] }]:`, request);
 
 		let data = request.data,

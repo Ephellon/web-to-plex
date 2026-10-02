@@ -1,0 +1,217 @@
+[
+	{
+		"file": "cloud/__layout__.js",
+		"url": "< URL RegExp >",
+		"source": "< URL RegExp >"
+	},
+	{
+		"file": "cloud/__test__.js",
+		"url": "*://webtoplex.github.io/web/test/*",
+		"source": "\\w{3,}:\\/\\/webtoplex.github.io\\/web\\/test\\/[^$]*"
+	},
+	{
+		"file": "cloud/allocine.js",
+		"url": "*://*.allocine.fr/(film|series)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?allocine.fr\\/(film|series)\\/[^$]*"
+	},
+	{
+		"file": "cloud/amazon.js",
+		"url": "*://*.amazon.com/*/video/detail/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?amazon.com\\/[^$]*\\/video\\/detail\\/[^$]*"
+	},
+	{
+		"file": "cloud/couchpotato.js",
+		"url": "*://*.couchpotato.life/(movies|shows)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?couchpotato.life\\/(movies|shows)\\/[^$]*"
+	},
+	{
+		"file": "cloud/fandango.js",
+		"url": "*://*.fandango.com/[\\w\\-]+/movie-overview",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?fandango.com\\/[\\w\\-]+\\/movie-overview"
+	},
+	{
+		"file": "cloud/flickmetrix.js",
+		"url": "*://*.flickmetrix.com/(watchlist|seen|favourites|trash|share|\\?)?",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?flickmetrix.com\\/(watchlist|seen|favourites|trash|share|\\?)?"
+	},
+	{
+		"file": "cloud/google.js",
+		"url": "*://www.google.com/search",
+		"source": "\\w{3,}:\\/\\/www.google.com\\/search"
+	},
+	{
+		"file": "cloud/google.play.js",
+		"url": "*://play.google.com/store/(movies|tv)/details/*",
+		"source": "\\w{3,}:\\/\\/play.google.com\\/store\\/(movies|tv)\\/details\\/[^$]*"
+	},
+	{
+		"file": "cloud/gostream.js",
+		"url": "*://*.gostream.site/(?!genre|most-viewed|top-imdb|contact)",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?gostream.site\\/(?!genre|most-viewed|top-imdb|contact)"
+	},
+	{
+		"file": "cloud/hulu.js",
+		"url": "*://*.hulu.com/(watch|series|movie)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?hulu.com\\/(watch|series|movie)\\/[^$]*"
+	},
+	{
+		"file": "cloud/imdb.js",
+		"url": "*://*.imdb.com/(title|list)/(tt|ls)\\d+/(#*|?*)?$",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?imdb.com\\/(title|list)\\/(tt|ls)\\d+\\/(\\#[^$]*|\\?[^$]*)?$"
+	},
+	{
+		"file": "cloud/itunes.js",
+		"url": "*://itunes.apple.com/\\w{2,4}/(movie|tv(-season)?)/*",
+		"source": "\\w{3,}:\\/\\/itunes.apple.com\\/\\w{2,4}\\/(movie|tv(-season)?)\\/[^$]*"
+	},
+	{
+		"file": "cloud/justwatch.js",
+		"url": "*://*.justwatch.com/(\\w{2})/(tv(?:-show)|movie)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?justwatch.com\\/(\\w{2})\\/(tv(?:-show)|movie)\\/[^$]*"
+	},
+	{
+		"file": "cloud/letterboxd.js",
+		"url": "*://*.letterboxd.com/(?:\\w+/)?(film|list)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?letterboxd.com\\/(?:\\w+\\/)?(film|list)\\/[^$]*"
+	},
+	{
+		"file": "cloud/metacritic.js",
+		"url": "*://*.metacritic.com/(movie|tv|list)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?metacritic.com\\/(movie|tv|list)\\/[^$]*"
+	},
+	{
+		"file": "cloud/moviemeter.js",
+		"url": "*://*.moviemeter.nl/film/\\d+",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?moviemeter.nl\\/film\\/\\d+"
+	},
+	{
+		"file": "cloud/movieo.js",
+		"url": "*://*.movieo.me/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?movieo.me\\/[^$]*"
+	},
+	{
+		"file": "cloud/netflix.js",
+		"url": "*://*.netflix.com/watch/\\d+",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?netflix.com\\/watch\\/\\d+"
+	},
+	{
+		"file": "cloud/plex.js",
+		"url": "*://app.plex.tv/desktop/?#!/(server/(?:[a-f\\d]+)|provider/(?:tv.plex.provider.vod))/(details|list)\\?*",
+		"source": "\\w{3,}:\\/\\/app.plex.tv\\/desktop\\/?#!\\/(server\\/(?:[a-f\\d]+)|provider\\/(?:tv.plex.provider.vod))\\/(details|list)\\\\?[^$]*"
+	},
+	{
+		"file": "cloud/rottentomatoes.js",
+		"url": "*://*.rottentomatoes.com/([mt]|browse)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?rottentomatoes.com\\/([mt]|browse)\\/[^$]*"
+	},
+	{
+		"file": "cloud/tmdb.js",
+		"url": "*://*.themoviedb.org/(movie|tv)/\\d+([\\w\\-]+)?$",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?themoviedb.org\\/(movie|tv)\\/\\d+([\\w\\-]+)?$"
+	},
+	{
+		"file": "cloud/trakt.js",
+		"url": "*://*.trakt.tv/(movie|show)s/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?trakt.tv\\/(movie|show)s\\/[^$]*"
+	},
+	{
+		"file": "cloud/tubi.js",
+		"url": "*://*.tubitv.com/(movies|series)/\\d+/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?tubitv.com\\/(movies|series)\\/\\d+\\/[^$]*"
+	},
+	{
+		"file": "cloud/tvdb.js",
+		"url": "*://*.thetvdb.com/series/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?thetvdb.com\\/series\\/[^$]*"
+	},
+	{
+		"file": "cloud/tvmaze.js",
+		"url": "*://*.tvmaze.com/shows/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?tvmaze.com\\/shows\\/[^$]*"
+	},
+	{
+		"file": "cloud/verizon.js",
+		"url": "*://*.verizon.com/*/(movie|show)s?/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?verizon.com\\/[^$]*\\/(movie|show)s?\\/[^$]*"
+	},
+	{
+		"file": "cloud/vrv.js",
+		"url": "*://*.vrv.co/(series|watch(list)?)\\b",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?vrv.co\\/(series|watch(list)?)\\b"
+	},
+	{
+		"file": "cloud/vudu.js",
+		"url": "*://*.vudu.com/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?vudu.com\\/[^$]*"
+	},
+	{
+		"file": "cloud/vumoo.js",
+		"url": "*://*.vumoo.to/(movies|tv-series)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?vumoo.to\\/(movies|tv-series)\\/[^$]*"
+	},
+	{
+		"file": "cloud/webtoplex.js",
+		"url": "*://(ephellon|webtoplex).github.io/web[\\w\\.]*/(?!test|login)",
+		"source": "\\w{3,}:\\/\\/(ephellon|webtoplex).github.io\\/web[\\w\\.]*\\/(?!test|login)"
+	},
+	{
+		"file": "cloud/youtube.js",
+		"url": "*://www.youtube.com/.+",
+		"source": "\\w{3,}:\\/\\/www.youtube.com\\/.+"
+	},
+	{
+		"file": "cloud/plugin/foxsearchlight.js",
+		"url": "*://*.foxsearchlight.com/(?!films|search|$)",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?foxsearchlight.com\\/(?!films|search|$)"
+	},
+	{
+		"file": "cloud/plugin/freemoviescinema.js",
+		"url": "*://*.freemoviescinema.com/watch/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?freemoviescinema.com\\/watch\\/[^$]*"
+	},
+	{
+		"file": "cloud/plugin/go.js",
+		"url": "*://freeform.go.com/(movies|shows)/*",
+		"source": "\\w{3,}:\\/\\/freeform.go.com\\/(movies|shows)\\/[^$]*"
+	},
+	{
+		"file": "cloud/plugin/indomovietv.js",
+		"url": "*://*.indomovietv.*/(?!tag|$)",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?indomovietv(?:\\.[^\\/\\.]+)?\\/(?!tag|$)"
+	},
+	{
+		"file": "cloud/plugin/kitsu.js",
+		"url": "*://*.kitsu.io/anime/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?kitsu.io\\/anime\\/[^$]*"
+	},
+	{
+		"file": "cloud/plugin/myanimelist.js",
+		"url": "*://*.myanimelist.net/anime/\\d+/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?myanimelist.net\\/anime\\/\\d+\\/[^$]*"
+	},
+	{
+		"file": "cloud/plugin/myshows.js",
+		"url": "*://*.myshows.me/view/\\d+/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?myshows.me\\/view\\/\\d+\\/[^$]*"
+	},
+	{
+		"file": "cloud/plugin/redbox.js",
+		"url": "*://*.redbox.com/(ondemand-)?(movies|tvshows)/(?!featured|$)",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?redbox.com\\/(ondemand-)?(movies|tvshows)\\/(?!featured|$)"
+	},
+	{
+		"file": "cloud/plugin/shanaproject.js",
+		"url": "*://*.shanaproject.com/series/\\d+",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?shanaproject.com\\/series\\/\\d+"
+	},
+	{
+		"file": "cloud/plugin/snagfilms.js",
+		"url": "*://*.snagfilms.com/(films?|shows?)/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?snagfilms.com\\/(films?|shows?)\\/[^$]*"
+	},
+	{
+		"file": "cloud/plugin/toloka.js",
+		"url": "*://*.toloka.to/*",
+		"source": "\\w{3,}:\\/\\/(?:[^\\.]+\\.)?toloka.to\\/[^$]*"
+	}
+]

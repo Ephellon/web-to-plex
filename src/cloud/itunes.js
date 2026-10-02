@@ -69,25 +69,25 @@ if(!top.__NewCSP__) {
 	/* Add 'data:' to the CSP */
 	let ContentSecurityPolicies = $('meta[http-equiv="Content-Security-Policy"]');
 
-	if(ContentSecurityPolicies.empty)
-		return;
+	// No top-level return (site scripts are plain content scripts from Phase 3): rewrite only when a CSP meta exists
+	if(!ContentSecurityPolicies.empty) {
+		ContentSecurityPolicies.forEach(ContentSecurityPolicy =>
+			ContentSecurityPolicy.content = ContentSecurityPolicy.content
+				.split(';')
+				.map(src => {
+					let type;
 
-	ContentSecurityPolicies.forEach(ContentSecurityPolicy =>
-		ContentSecurityPolicy.content = ContentSecurityPolicy.content
-			.split(';')
-			.map(src => {
-				let type;
+					src = src.trim().split(' ');
+					type = src[0];
 
-				src = src.trim().split(' ');
-				type = src[0];
+					if(type == 'font-src')
+						src.push('http://webtoplex.github.io', 'https://webtoplex.github.io');
 
-				if(type == 'font-src')
-					src.push('http://webtoplex.github.io', 'https://webtoplex.github.io');
+					return src.join(' ');
+				})
+				.join(';')
+		);
 
-				return src.join(' ');
-			})
-			.join(';')
-	);
-
-	top.__NewCSP__ = true;
+		top.__NewCSP__ = true;
+	}
 }
