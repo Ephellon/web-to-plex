@@ -9,8 +9,8 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 |---|---|
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
-| Phase | 0-2 done. 3: MV3 build loads in Chromium (3a-3d landed); live checks on real sites next |
-| Budget | First 3 h block ended 05:10 UTC; resumed 21:07 UTC on the owner's word, 30 min check-ins |
+| Phase | 0-2 done. 3: MV3 build live-checked in Chrome 153 and Firefox 156; site rewrites (IMDb, app.trakt.tv) and F1 in progress |
+| Budget | Round from 21:04 UTC 2026-10-02: 3 fixes or 3 hours (ends about 00:04 UTC) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -89,3 +89,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-01 | `w2p-fix-utils-a`, `w2p-fix-utils-b`, `w2p-fix-misc` | subordinate (`webtoplex-subo`) | 22 fixes: B39 B43 B40 B1 B20 B21; B16 B17 B34 B22 B23 B45 B46 B33 B35; B31 S14 S15 S18 B32 B51 B52 |
 | 2026-10-01 | `w2p-live-recheck-1` | subordinate (`webtoplex-subo`) | Firefox BiDi live checks: B39 B21 S1 S2 S18 pass; found N1 (fixed), N2; confirmed B37, B13 |
 | 2026-10-02 | `w2p-p3-runner`, `w2p-p3-worker`, `w2p-p3-csp` | subordinate (`webtoplex-subo`) | Phase 3a-3c; manager wired 3d |
+| 2026-10-02 | `w2p-live-mv3-1` | subordinate (`webtoplex-subo`) | MV3 live check; 5 site/selector fixes; F1-F5 |

@@ -83,7 +83,7 @@ diff of the POPULATE payloads and requests the two record.
 | 3a runner | ✅ `c38676d` |
 | 3b worker | ✅ `ef5cad9` |
 | 3c CSP | ✅ `c2cbdc3` |
-| 3d wiring | ✅ Loads in headless Chromium 1194: the service worker starts; on synthetic TMDb and Letterboxd pages the runner posts POPULATE, `utils.js` renders the button, and `SEARCH_PLEX` is answered through the router; no CSP or eval errors. Live jobs on real sites pending. |
+| 3d wiring | ✅ Loads in headless Chromium 1194: the service worker starts; on synthetic TMDb and Letterboxd pages the runner posts POPULATE, `utils.js` renders the button, and `SEARCH_PLEX` is answered through the router; no CSP or eval errors. Live check `w2p-live-mv3-1` (Chrome 153, Firefox 156): load, first-run options, permission prompt, SPA, context menu pass; site selectors refreshed for TMDb, Letterboxd, JustWatch, TVmaze; IMDb and app.trakt.tv need rewrites. |
 
 Notes from 3d:
 

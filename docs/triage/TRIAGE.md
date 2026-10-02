@@ -372,3 +372,27 @@ New findings:
 - **N2** (medium): Trakt moved to `app.trakt.tv`, which the `utils.js` domain check refuses. Phase 4 (site rewrite).
 - **N3**: confirms B37 (`utils.js` injected twice) in Firefox. Phase 3+.
 - **N4**: confirms B13 (`plugn.js` targets the last tab seen, not the sender). Phase 3+.
+
+## Live check MV3 (`w2p-live-mv3-1`)
+
+Chrome 153 and Firefox 156, throwaway profiles, signed out, no service calls.
+
+| Check | Result |
+|---|---|
+| Load, service worker | Pass |
+| First-run options (N1) | Pass |
+| Permission prompt on Save | Pass |
+| Sites | TMDb, Letterboxd, JustWatch, TVmaze fixed (selectors, year); IMDb and app.trakt.tv need rewrites |
+| SPA navigation | Pass |
+| Context menu | Pass |
+| Firefox | Pass (TMDb, TVmaze) |
+
+Findings:
+
+- ~~**N2**~~ app.trakt.tv refused by the domain check: fixed (options lists both hosts).
+- **F1**: `UPDATE_CONFIGURATION`, `SEARCH_FOR` and the old plugn types get no reply, but their senders pass a
+  callback, so every save and item logs "message port closed" warnings. Cosmetic.
+- **F2**: the default OMDb key `PlzBanMe` is rejected; show pages never get an IMDb/TVDb ID. Needs a key (owner).
+- **F3**: options page fetches `check.torproject.org` on every load (blocked by CORS).
+- **F4**: the Plex font's protocol-relative URL resolves inside the extension; fallback font used.
+- **F5**: context-menu titles keep the previous page's item when nothing is found.
