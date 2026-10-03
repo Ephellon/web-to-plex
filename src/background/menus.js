@@ -9,6 +9,12 @@ import { SetBadge } from './badge.js';
 // chrome.storage.session key holding background.js's `external`
 const EXTERNAL = 'external';
 
+// Status changes read and then write `external`; run them one at a time, so a tab switch and the item its page names
+// again cannot interleave (F5)
+let STATUS_QUEUE = Promise.resolve();
+
+const Serial = task => (STATUS_QUEUE = STATUS_QUEUE.then(task, task));
+
 /**
  * Creates the context menu items (background.js:988-1022).
  */
@@ -95,10 +101,15 @@ export function ParseItem(request = {}) {
 
 /**
  * Records the page's item and retitles the badge and menus for it (background.js `ChangeStatus`).
- * @param {object} details - `{ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL, FILE_TYPE, FILE_PATH }`
+ * @param {object} details - `{ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL, FILE_TYPE, FILE_PATH, TAB_ID }`;
+ *     `TAB_ID` is the sending tab, so a tab switch or a left page can forget the item (F5)
  * @returns {Promise<object>} The stored `external`
  */
-export async function ChangeStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL = '', FILE_TYPE = '', FILE_PATH }) {
+export function ChangeStatus(details) {
+    return Serial(() => SetStatus(details));
+}
+
+async function SetStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL = '', FILE_TYPE = '', FILE_PATH, TAB_ID }) {
     const YEAR = new Date().getFullYear()
         , FILE_TITLE = ITEM_TITLE.replace(/-/g, ' ').replace(/[\s:]{2,}/g, ' - ').replace(/[^\w\s\-']+/g, '')
         , SEARCH_TITLE = ITEM_TITLE.replace(/[-\s]+/g, '-').replace(/\s*&\s*/g, ' and ').replace(/[^\w\-'*#]+/g, '')
@@ -107,7 +118,7 @@ export async function ChangeStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER
     ITEM_ID = (ITEM_ID && !/^tt$/i.test(ITEM_ID) ? ITEM_ID : '') + '';
     ITEM_ID = ITEM_ID.replace(/^.*\b(tt\d+)\b.*$/, '$1').replace(/^.*\bid=(\d+)\b.*$/, '$1').replace(/^.*(?:movie|tv|(?:tv-?)?(?:shows?|series|episodes?))\/(\d+).*$/, '$1');
 
-    const external = { ...await ReadExternal(), ID_PROVIDER, ITEM_ID, ITEM_TITLE, ITEM_YEAR, ITEM_URL, ITEM_TYPE, SEARCH_PROVIDER, SEARCH_TITLE, FILE_PATH, FILE_TITLE, FILE_TYPE };
+    const external = { ...await ReadExternal(), ID_PROVIDER, ITEM_ID, ITEM_TITLE, ITEM_YEAR, ITEM_URL, ITEM_TYPE, SEARCH_PROVIDER, SEARCH_TITLE, FILE_PATH, FILE_TITLE, FILE_TYPE, TAB_ID };
 
     await chrome.storage.session.set({ [EXTERNAL]: external });
 
@@ -131,6 +142,50 @@ export async function ChangeStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER
     });
 
     return external;
+}
+
+/**
+ * Forgets the item when it belongs to the given tab: the badge and menus go back to their start-up titles
+ * (CreateMenus), so they never name an item the page in view does not have (F5).
+ * @param {number} tabId - The tab that was left or switched away from
+ * @returns {Promise<void>}
+ */
+export function ForgetStatus(tabId) {
+    return Serial(() => Forget(tabId));
+}
+
+async function Forget(tabId) {
+    const { TAB_ID } = await ReadExternal();
+
+    if(TAB_ID == null || TAB_ID != tabId)
+        return;
+
+    await chrome.storage.session.remove(EXTERNAL);
+
+    SetBadge('', false);
+
+    chrome.contextMenus.update('W2P', { title: "Web to Plex" });
+    chrome.contextMenus.update('W2P-DL', { title: "Nothing to Save" });
+
+    for(const database of ['IM', 'TM', 'TV'])
+        chrome.contextMenus.update('W2P-' + database, { title: `Using ${ database }Db`, checked: true });
+
+    chrome.contextMenus.update('W2P-XX', { title: "Using best guess", checked: true });
+}
+
+/**
+ * A tab became active: an item that belongs to another tab no longer applies. If this tab's page has an item, its
+ * content script names it again as it comes into view (utils.js `visibilitychange`).
+ * @param {number} tabId - The newly active tab
+ * @returns {Promise<void>}
+ */
+export function SwitchStatus(tabId) {
+    return Serial(async() => {
+        const { TAB_ID } = await ReadExternal();
+
+        if(TAB_ID != null && TAB_ID != tabId)
+            await Forget(TAB_ID);
+    });
 }
 
 /**

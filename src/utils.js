@@ -2598,7 +2598,8 @@ let INITIALIZE = (async date => {
 
 	// make the button
 	// ( PERSISTENT, { HEADER_CLASSES } )
-	let MASTER_BUTTON;
+	let MASTER_BUTTON,
+		PAGE_ITEM = null; // the last item sent with SEARCH_FOR, sent again when this tab comes back into view (F5)
 	function RenderButton(persistent, headers = {}) {
 		let existingButtons = document.queryBy('.web-to-plex-button'),
 			firstButton = existingButtons.first;
@@ -2755,7 +2756,7 @@ let INITIALIZE = (async date => {
 			button = element.parentElement;
 		};
 
-		Update('SEARCH_FOR', { ...options, button });
+		Update('SEARCH_FOR', PAGE_ITEM = { ...options, button });
 
 		/* Handle a list of items */
 		if(multiple) {
@@ -3233,6 +3234,18 @@ let INITIALIZE = (async date => {
 
 	function Request_PlexURL(PlexUIID, key) {
 		return __CONFIG__.plexURL.replace(RegExp(`\/(${ __CONFIG__.server.id })?$`), `/web#!/server/` + PlexUIID) + `/details?key=${encodeURIComponent( key )}`;
+	}
+
+	/* The context menu shows the active tab's item (F5): name this page's item again when the tab comes back into view
+	 * (Update would drop a repeat within 30s), and tell the worker when the page is left */
+	if(!INITIALIZE.watching) {
+		INITIALIZE.watching = true;
+
+		document.addEventListener('visibilitychange', () => {
+			if(document.visibilityState == 'visible' && PAGE_ITEM)
+				chrome.runtime.sendMessage({ type: 'SEARCH_FOR', options: PAGE_ITEM }, () => void chrome.runtime.lastError);
+		});
+		top.addEventListener('pagehide', () => chrome.runtime.sendMessage({ type: 'PAGE_HIDDEN' }, () => void chrome.runtime.lastError));
 	}
 
 	/* Listen for events */

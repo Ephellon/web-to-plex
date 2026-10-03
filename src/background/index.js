@@ -6,11 +6,14 @@
 
 import { RefreshTerminal } from './common.js';
 import { Route } from './router.js';
-import { CreateMenus, OnMenuClicked } from './menus.js';
+import { CreateMenus, OnMenuClicked, SwitchStatus } from './menus.js';
 
 chrome.runtime.onMessage.addListener(Route);
 chrome.runtime.onInstalled.addListener(() => CreateMenus());
 chrome.contextMenus.onClicked.addListener(item => void OnMenuClicked(item));
+
+// F5: the menus name the active tab's item; switching to another tab forgets one that belongs elsewhere
+chrome.tabs.onActivated.addListener(({ tabId }) => void SwitchStatus(tabId));
 
 // Options were cached in localStorage by MV2; the worker reads them on demand and refreshes on change
 chrome.storage.onChanged.addListener(() => void RefreshTerminal());

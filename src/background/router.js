@@ -10,7 +10,7 @@
  */
 
 import { Terminal, RefreshTerminal } from './common.js';
-import { ParseItem, ChangeStatus, SaveAs, DownloadFile } from './menus.js';
+import { ParseItem, ChangeStatus, ForgetStatus, SaveAs, DownloadFile } from './menus.js';
 import { Search_Plex } from './services/plex.js';
 import { Query_CouchPotato, Push_CouchPotato, Charge_CouchPotato } from './services/couchpotato.js';
 import { Push_Watcher } from './services/watcher.js';
@@ -42,16 +42,18 @@ export const ROUTES = {
     OPEN_OPTIONS: { replies: false, handle: () => chrome.runtime.openOptionsPage() },
     SEARCH_FOR: {
         replies: false,
-        handle(request, reply, parsed) {
+        handle(request, reply, parsed, sender) {
             const { ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL, FILE_TYPE, FILE_PATH } = parsed;
 
             if(ITEM_TITLE && ITEM_TYPE)
-                return ChangeStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL, FILE_TYPE, FILE_PATH });
+                return ChangeStatus({ ITEM_ID, ITEM_TITLE, ITEM_TYPE, ID_PROVIDER, ITEM_YEAR, ITEM_URL, FILE_TYPE, FILE_PATH, TAB_ID: sender?.tab?.id });
         },
     },
     SAVE_AS: { replies: false, handle: (request, reply, parsed) => SaveAs(parsed) },
     DOWNLOAD_FILE: { replies: false, handle: (request, reply, parsed) => DownloadFile(parsed) },
     UPDATE_CONFIGURATION: { replies: false, handle: () => RefreshTerminal() },
+    // utils.js: the page was left; its item no longer applies (F5)
+    PAGE_HIDDEN: { replies: false, handle: (request, reply, parsed, sender) => ForgetStatus(sender?.tab?.id) },
 };
 
 /**
@@ -84,7 +86,7 @@ export function Route(request, sender, sendResponse) {
     };
 
     try {
-        const result = route.handle(request, reply, ParseItem(request));
+        const result = route.handle(request, reply, ParseItem(request), sender);
 
         // A rejected promise from a handler is reported like a thrown error, never as an unhandled rejection
         if(result instanceof Promise)
