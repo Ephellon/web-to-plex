@@ -305,11 +305,11 @@
   */
 
 @charset "utf-8";
+/* The packaged fonts, as in common.css */
 @font-face {
     font-family: Glyphicons Regular;
     src: local(Glyphicons),
-        url(/font/Glyphicons.woff) format("woff"),
-        url(//webtoplex.github.io/font/Glyphicons.woff) format("woff");
+        url("chrome-extension://__MSG_@@extension_id__/font/Glyphicons.woff") format("woff");
     font-weight: 400;
     font-style: normal
 }
@@ -317,8 +317,7 @@
 @font-face {
     font-family: Glyphicons Social Regular;
     src: local(Glyphicons Social),
-        url(/font/Glyphicons Social.woff) format("woff"),
-        url(//webtoplex.github.io/font/Glyphicons Social.woff) format("woff");
+        url("chrome-extension://__MSG_@@extension_id__/font/Glyphicons Social.woff") format("woff");
     font-weight: 400;
     font-style: normal
 }

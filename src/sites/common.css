@@ -3,11 +3,13 @@
 */
 
 @charset "utf-8";
+/* The packaged fonts: a content style sheet resolves relative URLs against the page, so name the extension (the
+ * Firefox build rewrites chrome-extension: to moz-extension:) */
 @font-face {
     font-family: "Plex";
     src: local(Plex),
-        url(//webtoplex.github.io/font/Plex.woff2) format('woff2'),
-        url(//webtoplex.github.io/font/Plex.woff) format('woff');
+        url("chrome-extension://__MSG_@@extension_id__/font/Plex.woff2") format('woff2'),
+        url("chrome-extension://__MSG_@@extension_id__/font/Plex.woff") format('woff');
     font-weight: 400;
     font-style: normal;
 }
@@ -15,8 +17,8 @@
 @font-face {
     font-family: "Plex-bold";
     src: local(Plex-bold),
-        url(//webtoplex.github.io/font/Plex.bold.woff2) format('woff2'),
-        url(//webtoplex.github.io/font/Plex.bold.woff) format('woff');
+        url("chrome-extension://__MSG_@@extension_id__/font/Plex.bold.woff2") format('woff2'),
+        url("chrome-extension://__MSG_@@extension_id__/font/Plex.bold.woff") format('woff');
     font-weight: 400;
     font-style: normal;
 }

@@ -45,6 +45,13 @@ const EXCLUDE = [
     /(^|\/)\.[^/]*$/,           // Dotfiles
 ];
 
+// Per-target rewrites of copied files: content style sheets name packaged files by chrome-extension: URL (F4)
+const FILE_TRANSFORMS = {
+    firefox: (file, data) => (/\.css$/.test(file)
+        ? Buffer.from(String(data).replaceAll('chrome-extension://__MSG_@@extension_id__/', 'moz-extension://__MSG_@@extension_id__/'))
+        : data),
+};
+
 const TARGETS = {
     chrome(manifest) {
         return manifest;
@@ -157,7 +164,7 @@ function write(target, transform, files, manifest, bundles) {
     for(const file of files) {
         const data = file == 'manifest.json'
             ? Buffer.from(JSON.stringify(transform(structuredClone(manifest)), null, 4) + '\n')
-            : fs.readFileSync(path.join(SOURCE, file));
+            : (FILE_TRANSFORMS[target] ?? ((file, data) => data))(file, fs.readFileSync(path.join(SOURCE, file)));
 
         fs.mkdirSync(path.dirname(path.join(directory, file)), { recursive: true });
         fs.writeFileSync(path.join(directory, file), data);
