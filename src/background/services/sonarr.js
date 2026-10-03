@@ -64,7 +64,18 @@ export function Push_Sonarr(request, sendResponse) {
 
             return debug.body = body;
         })
-        .then(body => {
+        .then(async body => {
+            // Sonarr v3 refuses a series without a language profile: take the server's first one. v4 dropped language
+            // profiles (the endpoint answers 404) and v2 never had them, so both skip this
+            if(!body.languageProfileId && /\/api\/v3\//.test(base)) {
+                const profiles = await fetch(`${ base.replace(/series\/?$/, 'languageprofile') }?apikey=${ request.token }`)
+                    .then(response => (response.ok ? response.json() : null))
+                    .catch(() => null);
+
+                if(profiles instanceof Array && profiles.length)
+                    body.languageProfileId = profiles[0].id;
+            }
+
             return fetch(`${ base }?apikey=${ request.token }`, debug.requestHeaders = {
                 method: 'POST',
             				// mode: cors(request.url),

@@ -120,14 +120,32 @@ test('PUSH_RADARR on a v3+ server: lookup and add both use /api/v3', async() => 
     assert.deepEqual(plain(replies), [{ success: 'Added to /movies/Heat (1995)' }]);
 });
 
-test('PUSH_SONARR on a v3+ server: lookup and add both use /api/v3', async() => {
-    const mv3 = await LoadMV3(OPTIONS, responder([[/\/api\/v3\/series\/lookup\?/, [{ title: "Lost", tvdbId: 73739 }]], [/\/api\/v3\/series\/\?apikey=/, '']]))
+// Sonarr on /api/v3: v3 has language profiles (and requires one on add), v4 answers 404 for them
+for(const [version, profiles, expected] of [['v3', [{ id: 2, name: "English" }, { id: 3, name: "Japanese" }], 2], ['v4', { status404: true }, void null]])
+    test(`PUSH_SONARR on a ${ version } server: lookup, language profiles, add, all on /api/v3`, async() => {
+        const mv3 = await LoadMV3(OPTIONS, responder([[/\/api\/v3\/series\/lookup\?/, [{ title: "Lost", tvdbId: 73739 }]], [/\/api\/v3\/languageprofile\?/, profiles], [/\/api\/v3\/series\/\?apikey=/, '']]))
+            , before = mv3.requests.length;
+
+        await mv3.send({ type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', QualityID: 1, title: "Lost", year: 2004, tvdbId: 73739 });
+
+        const requests = mv3.requests.slice(before);
+
+        assert.deepEqual(requests.map(({ url, method }) => [method, url]), [
+            ['GET', 'http://s.invalid/api/v3/series/lookup?apikey=k&term=tvdb%3A73739'],
+            ['GET', 'http://s.invalid/api/v3/languageprofile?apikey=k'],
+            ['POST', 'http://s.invalid/api/v3/series/?apikey=k'],
+        ]);
+        assert.equal(JSON.parse(requests.at(-1).body).languageProfileId, expected);
+    });
+
+test('PUSH_SONARR on /api/v3 keeps a language profile the lookup already carries', async() => {
+    const mv3 = await LoadMV3(OPTIONS, responder([[/\/api\/v3\/series\/lookup\?/, [{ title: "Lost", tvdbId: 73739, languageProfileId: 3 }]], [/\/api\/v3\/series\/\?apikey=/, '']]))
         , before = mv3.requests.length;
 
     await mv3.send({ type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', QualityID: 1, title: "Lost", year: 2004, tvdbId: 73739 });
 
-    assert.deepEqual(mv3.requests.slice(before).map(({ url, method }) => [method, url]), [
-        ['GET', 'http://s.invalid/api/v3/series/lookup?apikey=k&term=tvdb%3A73739'],
-        ['POST', 'http://s.invalid/api/v3/series/?apikey=k'],
-    ]);
+    const requests = mv3.requests.slice(before);
+
+    assert.ok(!requests.some(({ url }) => /languageprofile/.test(url)), 'no profile lookup');
+    assert.equal(JSON.parse(requests.at(-1).body).languageProfileId, 3);
 });
