@@ -1,5 +1,5 @@
 let SHOW = '[href*="thetvdb.com/"][href*="id="], [href*="thetvdb.com/series/"], [href*="themoviedb.org/tv/"], [href*="imdb.com/title/tt"][href$="externalsites"]',
-	FILM = '[href*="themoviedb.org/tv/"], [href*="imdb.com/title/tt"]';
+	FILM = '[href*="themoviedb.org/movie/"], [href*="imdb.com/title/tt"]'; // T19: was themoviedb.org/tv/ (a show link)
 	// FILM = '#media_result_group, ...'
 
 let script = {
