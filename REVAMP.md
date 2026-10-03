@@ -32,8 +32,8 @@ Nothing behavioural changes before Phase 7; Phases 3 to 6 are moves proven by pa
 ## Scope
 
 - `src/` is the Chrome source and the only code being rewritten.
-- `moz/`, `opa/`, `win/` (legacy Firefox, Opera, EdgeHTML copies) are frozen and ignored. Firefox is rebuilt
-  from `src/` by the build.
+- The legacy `moz/`, `opa/`, `win/` copies and their packages were removed on 2026-10-03; Firefox is built from `src/`,
+  and the Chromium zip serves Chrome, Edge and Opera.
 
 ## Known MV3 blockers (from the first read)
 
@@ -60,7 +60,7 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
   `web-to-plex.zip` and `web-to-plex.moz.zip` at the root. `.githooks/pre-commit` rebuilds them when `src/` is staged.
 - CI: `.github/workflows/ci.yml`. The `web-ext lint` step is non-blocking until Phase 4 (legacy `cloud/itunes.js`
   has a top-level `return`, legal only inside the `plugn.js` wrapper).
-- `Makefile` and the legacy `src.zip`/`src.crx`/`moz.*`/`opa.*`/`win.*` artifacts are left as they were.
+- `Makefile`, `env.example` and the legacy `src.*`/`moz.*`/`opa.*`/`win.*` packages were removed (2026-10-03).
 
 ## Decisions
 
@@ -73,6 +73,7 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-01 | New features come from the owner's breakdown; none are invented. |
 | 2026-10-01 | House style is `docs/STYLEGUIDE.md` (owner's upload; rule prefix `w2p/`): 4 spaces, leading `?`/`:`, comma-first. |
 | 2026-10-01 | Firefox build keeps the published add-on ID `mink.cbos@gmail.com`. |
+| 2026-10-03 | Remove the legacy `moz/`, `opa/`, `win/` copies, their packages, `Makefile` and `env.example` (owner). |
 | 2026-10-03 | The rewrite is version `5.0.0.0`, `version_name` "5.0 beta"; the fourth number counts beta builds. |
 
 ## Offser usage

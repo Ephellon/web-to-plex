@@ -1,9 +1,0 @@
-.web-to-plex-minion {
-	border-color: var(--orange) !important;
-	color: var(--orange) !important;
-}
-
-.web-to-plex-minion:hover {
-	border-color: var(--light-orange) !important;
-	color: var(--light-orange) !important;
-}

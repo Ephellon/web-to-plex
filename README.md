@@ -133,10 +133,10 @@ The sites used as search engines (IMDb, TMDb, and TVDb) will automatically creat
 
 ### Install the source code (ZIP)
 
-<a href="src.zip"><img alt="Get it for Chrome" src="badge.src.crx.png" /></a>
-<a href="moz.zip"><img alt="Get it for Firefox" src="badge.src.moz.png" /></a>
-<a href="win.zip"><img alt="Get it for Edge" src="badge.src.win.png" /></a>
-<a href="opa.zip"><img alt="Get it for Opera" src="badge.src.opa.png" /></a>
+<a href="web-to-plex.zip"><img alt="Get it for Chrome" src="badge.src.crx.png" /></a>
+<a href="web-to-plex.moz.zip"><img alt="Get it for Firefox" src="badge.src.moz.png" /></a>
+<a href="web-to-plex.zip"><img alt="Get it for Edge" src="badge.src.win.png" /></a>
+<a href="web-to-plex.zip"><img alt="Get it for Opera" src="badge.src.opa.png" /></a>
 
 ## Requirements
 

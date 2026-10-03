@@ -33,7 +33,7 @@ const BUNDLES = {
 // Folders holding ES-module sources; only their bundles ship
 const MODULE_FOLDERS = /^(background|lib|plugins|settings)\//;
 
-// Firefox needs a stable add-on ID; this is the published one (moz/manifest.json). Changing it orphans existing installs
+// Firefox needs a stable add-on ID; this is the published one (from the former moz/manifest.json). Changing it orphans existing installs
 const GECKO_ID = 'mink.cbos@gmail.com';
 const GECKO_MIN_VERSION = '142.0';
 

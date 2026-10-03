@@ -252,8 +252,8 @@ const style = {
 
 export default [
     {
-        // Vendored libraries, build output, and the frozen legacy copies (moz, opa, win)
-        ignores: ['dist/**', 'node_modules/**', 'moz/**', 'opa/**', 'win/**', `${ ROOT }/**/*.min.js`],
+        // Vendored libraries and build output
+        ignores: ['dist/**', 'node_modules/**', `${ ROOT }/**/*.min.js`],
     },
     js.configs.recommended,
     {
