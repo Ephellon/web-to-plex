@@ -1793,8 +1793,9 @@ let INITIALIZE = (async date => {
 		    (rqut == 'tvdb' || (rqut == '*' && !tid && title) || (apid == tid))?
 		        (tid)?
 		            `https://api.tvmaze.com/shows/?thetvdb=${ tid }`:
+		        /* TV1: a show with an IMDb ID asks TVmaze's lookup (`/shows/?imdb=` is not a route; 404) */
 		        (iid)?
-		            `https://api.tvmaze.com/shows/?imdb=${ iid }`:
+		            `https://api.tvmaze.com/lookup/shows?imdb=${ iid }`:
 		        `https://api.tvmaze.com/search/shows?q=${ encodeURI(title) }`:
 		    (title)?
 		        (apit && year)?
@@ -1834,8 +1835,9 @@ let INITIALIZE = (async date => {
 				.then(response => response.text())
 				.then(data => {
 					try {
+						// A lookup that finds nothing answers 404 with `null`
 						if(data)
-							json = JSON.parse(data);
+							json = JSON.parse(data) || {};
 					} catch(error) {
 						UTILS_TERMINAL.error(`Failed to parse JSON: "${ data }"`);
 					}
