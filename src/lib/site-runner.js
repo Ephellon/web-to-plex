@@ -235,7 +235,8 @@ export function SharedEnvironment() {
  *
  * @param {object} script - The site script object (`url`, `init`, optional `ready`, `timeout`, `minions`, `requires`)
  * @param {object} options
- * @param {string} options.alias - The site's name: `imdb`, `google.play`, `myanimelist`…
+ * @param {string} options.alias - The site's name, as in its options key (`builtin_<alias>`, `plugin_<alias>`): `imdb`,
+ *     `googleplay`, `myanimelist`…
  * @param {string} [options.type='script'] - `script` for a built-in site, `plugin` for an experimental one
  * @param {object} [env] - Environment overrides (tests); see `DefaultEnvironment`
  * @returns {Promise<object>} The last outcome: `{ action, … }` as from `ClassifyResult`, or a consent/URL stop

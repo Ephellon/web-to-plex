@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-const { BUILTINS, DOMAINS, DEFAULT_OPTIONS, MissingDefaults, SeedDefaults } = await import('../src/background/defaults.js');
+const { BUILTINS, DOMAINS, DEFAULT_OPTIONS, RENAMED_KEYS, MissingDefaults, RenamedOptions, SeedDefaults } = await import('../src/background/defaults.js');
 
 const PAGE = fs.readFileSync('src/options/index.js', 'utf8').replace(/\r\n/g, '\n')
     , HTML = fs.readFileSync('src/options/index.html', 'utf8');
@@ -114,4 +114,54 @@ test('SeedDefaults writes on install and update only, and never overwrites', asy
     // A later update finds nothing missing
     assert.deepEqual(await SeedDefaults({ reason: 'update' }), {});
     assert.equal(writes.length, 1);
+});
+
+// T2: the site runner checks `builtin_<alias>` / `plugin_<alias>` (lib/site-runner.js); each must be the page's own key
+test('every RunSite alias in src/sites has its options key (builtin_* in the defaults, plugin_* on the page)', () => {
+    const stubs = []
+        , walk = folder => fs.readdirSync(folder, { withFileTypes: true }).forEach(entry => (entry.isDirectory() ? walk(`${ folder }/${ entry.name }`) : /\.js$/.test(entry.name) && stubs.push(`${ folder }/${ entry.name }`)));
+
+    walk('src/sites');
+
+    const calls = stubs.flatMap(file => [...fs.readFileSync(file, 'utf8').matchAll(/RunSite\(\w+, \{ alias: '([^']+)', type: '(script|plugin)' \}\)/g)].map(([, alias, type]) => ({ file, alias, type })));
+
+    assert.ok(calls.length >= 40, `${ calls.length } RunSite calls`);
+
+    for(const { file, alias, type } of calls) {
+        const key = `${ type == 'plugin' ? 'plugin' : 'builtin' }_${ alias }`;
+
+        assert.ok(OPTION_KEYS.includes(key), `${ file }: ${ key } is not an options key`);
+        if(type == 'script')
+            assert.equal(DEFAULT_OPTIONS[key], true, `${ file }: ${ key } has no default`);
+    }
+});
+
+test('options saved under an old site name move to the current key; a value under the new key wins', () => {
+    assert.deepEqual(RenamedOptions({ 'builtin_google.play': false }), { set: { builtin_googleplay: false }, remove: ['builtin_google.play'] });
+    assert.deepEqual(RenamedOptions({ plugin_indomovietv: true, plugin_indomovie: false }), { set: {}, remove: ['plugin_indomovietv'] });
+    assert.deepEqual(RenamedOptions({ builtin_imdb: true }), { set: {}, remove: [] });
+
+    for(const key of Object.values(RENAMED_KEYS))
+        assert.ok(OPTION_KEYS.includes(key), key);
+});
+
+test('SeedDefaults on update carries a renamed switch over (an off switch stays off), then drops the old key', async() => {
+    const store = { 'builtin_google.play': false, builtin_imdb: true }
+        , removed = [];
+
+    globalThis.chrome = {
+        runtime: { lastError: null },
+        storage: {
+            sync: {
+                get: (keys, callback) => callback(structuredClone(store)),
+                set: async items => Object.assign(store, items),
+                remove: async keys => (removed.push(...keys), keys.forEach(key => delete store[key])),
+            },
+        },
+    };
+
+    await SeedDefaults({ reason: 'update' });
+    assert.equal(store.builtin_googleplay, false, 'the off switch is kept, not reset to the default');
+    assert.ok(!('builtin_google.play' in store));
+    assert.deepEqual(removed, ['builtin_google.play']);
 });

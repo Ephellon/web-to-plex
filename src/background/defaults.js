@@ -41,6 +41,29 @@ export const DEFAULT_OPTIONS = {
     DeveloperMode: true,
 };
 
+// Consent keys saved under an older site name (T2): the site runner reads `builtin_<alias>` / `plugin_<alias>`, and the
+// aliases now match the options page's keys
+export const RENAMED_KEYS = { 'builtin_google.play': 'builtin_googleplay', plugin_indomovietv: 'plugin_indomovie' };
+
+/**
+ * Moves saved values from old key names to the current ones; a value already saved under the new name wins.
+ * @param {object} stored - The saved options
+ * @returns {{ set: object, remove: string[] }} What to write and which old keys to drop
+ */
+export function RenamedOptions(stored = {}) {
+    const set = {}
+        , remove = [];
+
+    for(const [old, key] of Object.entries(RENAMED_KEYS))
+        if(old in stored) {
+            if(!(key in stored))
+                set[key] = stored[old];
+            remove.push(old);
+        }
+
+    return { set, remove };
+}
+
 /**
  * The defaults a store is missing.
  * @param {object} stored - The saved options
@@ -69,12 +92,19 @@ export async function SeedDefaults({ reason } = {}) {
     if(reason != 'install' && reason != 'update')
         return {};
 
-    const missing = MissingDefaults(await GetOptions());
+    const stored = await GetOptions()
+        , renamed = RenamedOptions(stored)
+        , missing = { ...MissingDefaults({ ...stored, ...renamed.set }), ...renamed.set };
 
     // The same area the options page saves to: sync, or local where sync is unavailable (as common.js GetOptions)
     if(Object.keys(missing).length)
         await (chrome.storage.sync ?? chrome.storage.local).set(missing)
             .catch(() => chrome.storage.local.set(missing));
+
+    // Old key names go only once their values are saved under the new ones
+    if(renamed.remove.length)
+        await (chrome.storage.sync ?? chrome.storage.local).remove(renamed.remove)
+            .catch(() => chrome.storage.local.remove(renamed.remove));
 
     return missing;
 }
