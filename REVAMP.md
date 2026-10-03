@@ -58,8 +58,8 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
   bulk `npm run format` pass is its own commit, not mixed with moves.
 - `npm run build`: `scripts/build.mjs` writes `dist/chrome` and `dist/firefox`; `--release` also writes
   `web-to-plex.zip` and `web-to-plex.moz.zip` at the root. `.githooks/pre-commit` rebuilds them when `src/` is staged.
-- CI: `.github/workflows/ci.yml`. The `web-ext lint` step is non-blocking until Phase 4 (legacy `cloud/itunes.js`
-  has a top-level `return`, legal only inside the `plugn.js` wrapper).
+- CI: `.github/workflows/ci.yml`. The `web-ext lint` step blocks on errors (0 since Phase 3a removed the top-level
+  `return` in `cloud/itunes.js`); its 66 warnings (`innerHTML` assignments, the vendored lodash `Function`) do not.
 - `Makefile`, `env.example` and the legacy `src.*`/`moz.*`/`opa.*`/`win.*` packages were removed (2026-10-03).
 
 ## Decisions

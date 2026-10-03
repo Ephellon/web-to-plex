@@ -27,8 +27,7 @@ jobs:
       - name: Build
         run: npm run build -- --zip
       - name: Lint Firefox build
-        # Non-blocking until Phase 4 retires the cloud scripts (cloud/itunes.js has a top-level return); see REVAMP.md
-        continue-on-error: true
+        # Blocking: errors fail the build, warnings (innerHTML, the vendored lodash) do not; see REVAMP.md
         run: npx web-ext lint --source-dir dist/firefox
       - uses: actions/upload-artifact@v4
         with:
