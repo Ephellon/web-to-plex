@@ -4,6 +4,7 @@
  * requires, so every wake-up has them.
  */
 
+import { SeedDefaults } from './defaults.js';
 import { RefreshTerminal } from './common.js';
 import { Route } from './router.js';
 import { CreateMenus, OnMenuClicked, SwitchStatus } from './menus.js';
@@ -25,3 +26,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) => void SwitchStatus(tabId));
 // Options were cached in localStorage by MV2; the worker reads them on demand and refreshes on change
 chrome.storage.onChanged.addListener(() => void RefreshTerminal());
 RefreshTerminal();
+
+// D1: a fresh install gets the options page's defaults, so sites work before the options are first saved; an update
+// fills in only the keys still missing
+chrome.runtime.onInstalled.addListener(details => void SeedDefaults(details));
