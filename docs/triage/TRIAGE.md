@@ -453,3 +453,11 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - ~~**TV1**~~ shows with only an IMDb ID got no TVDb ID: `/shows/?imdb=` is not a TVmaze route (404); now `/lookup/shows?imdb=`. Open: sibling `/shows/?thetvdb=` has the same bug (`/lookup/shows?thetvdb=`), next-round candidate.
 - ~~**X1**~~ Plex It! remote script removed; a test bans page script injection. Owner may want Plex It! back, bundled.
 - ~~**S23**~~ GitHub version check cached 24 h in `storage.local`; failures keep the last status.
+
+## Round 9 (`w2p-fix-round9`)
+
+- ~~**TV2**~~ `/shows/?thetvdb=` is not a TVmaze route: now `/lookup/shows?thetvdb=`.
+- ~~**T9**~~ (with T12) Rotten Tomatoes script was fully dead live (all selectors gone, shows under `/tv/`): rewritten on JSON-LD, glob `(m|tv|browse)`. Live: movie 1994, show 2008, browse 28 items.
+- ~~**T19**~~ Google `FILM` selector now TMDb `/movie/`. Fixture only (Google CAPTCHA headless).
+- ~~**S30**~~ popup manager cells built with DOM calls; only http(s) URLs become links. Live: injected markup now inert.
+- Sync-5 noted a leftover hidden `li#plexit` style/element after X1; cosmetic.
