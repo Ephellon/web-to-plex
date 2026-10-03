@@ -392,7 +392,7 @@ Findings:
 - ~~**N2**~~ app.trakt.tv refused by the domain check: fixed (options lists both hosts).
 - ~~**F1**~~ (fixed: callbacks read `lastError`): `UPDATE_CONFIGURATION`, `SEARCH_FOR` and the old plugn types get no reply, but their senders pass a
   callback, so every save and item logs "message port closed" warnings. Cosmetic.
-- **F2**: the default OMDb key `PlzBanMe` is rejected; show pages never get an IMDb/TVDb ID. Needs a key (owner).
+- ~~**F2**~~ (worked around: TVmaze fallback for show IDs; OMDb used only with the user's own key): the default OMDb key `PlzBanMe` is rejected; show pages never get an IMDb/TVDb ID. Needs a key (owner).
 - ~~**F3**~~ (fixed: IP check uses `checkip.amazonaws.com`): options page fetched `check.torproject.org` on every load (blocked by CORS).
 - ~~**F4**~~ (fixed: packaged fonts via `chrome-extension://__MSG_@@extension_id__/`): the Plex font's protocol-relative URL resolves inside the extension; fallback font used.
 - ~~**F5**~~ (fixed: item tied to its tab; reset on tab switch and pagehide): context-menu titles keep the previous page's item when nothing is found.
@@ -413,3 +413,10 @@ Findings:
   `/api/v3` first with legacy fallback. Not yet confirmed live; the owner switched to Ombi, which works.
 - ~~**B61**~~ legacy *arr API paths: Radarr and Sonarr now try `/api/v3` first. Open: Sonarr v3 (not v4) add needs a
   `languageProfileId`.
+
+## Round 5 (2026-10-03)
+
+- ~~**P1**~~ third-party plugin sites did not run after Phase 3d: registered per enabled plugin and granted host. Open:
+  the MyAnimeList plugin's selectors are stale (TypeError); the plugins need a selector pass.
+- ~~**S3**~~ Sonarr v3 add without `languageProfileId`: fixed.
+- ~~**D1**~~ fresh install showed no button until Settings was saved: defaults seeded on install/update.
