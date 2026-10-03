@@ -140,6 +140,19 @@ export function ClassifyResult(result, timeout = DEFAULT_TIMEOUT) {
 }
 
 /**
+ * The path of a URL, which is what tells one page of a site from another.
+ * @param {string} href - The URL
+ * @returns {string} Its `pathname`, or the whole string when it is not a URL
+ */
+export function PathOf(href) {
+    try {
+        return new URL(href).pathname;
+    } catch {
+        return href;
+    }
+}
+
+/**
  * Makes an instance name like `plugn.js` `RandomName()`: base-36 random values, starting with a letter.
  * `utils.js` checks a `PERMISSION` instance with `/[\da-z]{64,}/i`, so the default length matches MV2.
  * @param {number} [length=16] - How many random 32-bit values to join
@@ -233,7 +246,8 @@ export async function RunSite(script, { alias, type = 'script' } = {}, env = Sha
         , instance = env.instance ?? RandomName()
         , timeout = script.timeout || DEFAULT_TIMEOUT;
 
-    let timer = null;
+    let timer = null
+        , path = null;
 
     // The request shape the background page sent with `tabs.sendMessage` (plugn.js:410, 439, 458)
     const request = (requestType, data) => ({ data, instance, [kind]: alias, instance_type: TYPE, type: requestType });
@@ -245,6 +259,7 @@ export async function RunSite(script, { alias, type = 'script' } = {}, env = Sha
 
     const run = async() => {
         env.clearTimeout(timer);
+        path = PathOf(env.href());
 
         // 1. Consent: only an explicit `false` stops (T2 stays open until the Phase 4 registry)
         if(await env.get(`${ kind == 'plugin' ? 'plugin' : 'builtin' }_${ alias }`) === false)
@@ -331,10 +346,16 @@ export async function RunSite(script, { alias, type = 'script' } = {}, env = Sha
     const previous = sites.get(alias);
 
     previous?.stop();
-    sites.set(alias, { rerun: () => schedule(0), stop: () => env.clearTimeout(timer) });
+    sites.set(alias, { rerun: () => schedule(0), stop: () => env.clearTimeout(timer), path: () => path });
 
+    // Only a new path is a new page: a query or hash change (Trakt's `replaceState` to `?season=1`) keeps the item
     if(previous == null)
-        env.listen(() => sites.get(alias).rerun());
+        env.listen(() => {
+            const site = sites.get(alias);
+
+            if(PathOf(env.href()) != site.path())
+                site.rerun();
+        });
 
     return run();
 }

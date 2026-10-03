@@ -205,8 +205,10 @@ test('a positive number from init retries after that many ms; navigation re-runs
     mock.timers.enable({ apis: ['setTimeout'] });
 
     try {
-        let result = 3000;
-        const env = environment({ setTimeout: (callback, delay) => setTimeout(callback, delay), clearTimeout: timer => clearTimeout(timer) });
+        let result = 3000
+            , href = 'https://www.imdb.com/title/tt0111161/';
+
+        const env = { ...environment({ setTimeout: (callback, delay) => setTimeout(callback, delay), clearTimeout: timer => clearTimeout(timer) }), href: () => href };
         const script = { url: '*://*.imdb.com/*', init: () => result };
 
         assert.deepEqual(await RunSite(script, { alias: 'imdb' }, env), { action: 'retry', delay: 3000 });
@@ -218,12 +220,48 @@ test('a positive number from init retries after that many ms; navigation re-runs
 
         assert.equal(env.requests.length, 1);
 
-        // Navigation (popstate / pushstate-changed / locationchange) runs the pipeline again
+        // Navigation (popstate / pushstate-changed / locationchange) to a new path runs the pipeline again
+        href = 'https://www.imdb.com/title/tt0113277/';
         env.listeners[0]();
         mock.timers.tick(0);
         for(let i = 0; i < 5 && env.requests.length < 2; ++i)
             await new Promise(resolve => setImmediate(resolve));
 
+        assert.equal(env.requests.length, 2);
+    } finally {
+        mock.timers.reset();
+    }
+});
+
+test('navigation that keeps the path (query or hash change) does not re-run; a new path does', async() => {
+    mock.timers.enable({ apis: ['setTimeout'] });
+
+    try {
+        let href = 'https://app.trakt.tv/shows/breaking-bad';
+        const env = { ...environment({ setTimeout: (callback, delay) => setTimeout(callback, delay), clearTimeout: timer => clearTimeout(timer) }), href: () => href };
+        const script = { url: '*://*.trakt.tv/(movie|show)s/*', init: () => ({ type: 'show', title: "Breaking Bad", year: 2008 }) };
+        const settle = async count => {
+            mock.timers.tick(0);
+            for(let i = 0; i < 5 && env.requests.length < count; ++i)
+                await new Promise(resolve => setImmediate(resolve));
+        };
+
+        await RunSite(script, { alias: 'trakt-path' }, env);
+        assert.equal(env.requests.length, 1);
+
+        // Trakt's replaceState to ?season=1 fires pushstate-changed and the href poll: same page, no second run
+        href = 'https://app.trakt.tv/shows/breaking-bad?season=1';
+        env.listeners[0]();
+        env.listeners[0]();
+        href = 'https://app.trakt.tv/shows/breaking-bad?season=1#cast';
+        env.listeners[0]();
+        await settle(2);
+        assert.equal(env.requests.length, 1);
+
+        // A new title is a new page
+        href = 'https://app.trakt.tv/shows/better-call-saul';
+        env.listeners[0]();
+        await settle(2);
         assert.equal(env.requests.length, 2);
     } finally {
         mock.timers.reset();
