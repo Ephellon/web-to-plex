@@ -3441,8 +3441,9 @@ let INITIALIZE = (async date => {
 		}
 	});
 
-	// create the sleeping button
-	wait(() => document.readyState === 'complete', () => RenderButton(null, { sleeper: true }));
+	// create the sleeping button, unless the page's item already has its button: a non-persistent render would replace that
+	// finished button with a sleeper nothing wakes, when the item is found before the page completes (R1)
+	wait(() => document.readyState === 'complete', () => RenderButton(true, { sleeper: true }));
 
 });
 
