@@ -469,7 +469,7 @@ details:last-child > summary {
     color: inherit !important;
     font-size: 16px;
 
-    margin-left: 2px;
+    margin-left: -14px; /* in the summary's left padding, clear of its text */
     margin-top: -4px;
     position: absolute;
 }
