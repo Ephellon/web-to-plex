@@ -15,7 +15,7 @@ import { GetOptions } from './common.js';
 // shanaproject plugin became a built-in site.
 export const PLUGINS = [
     { name: 'foxsearchlight', file: 'cloud/plugin/foxsearchlight.js', url: '*://*.foxsearchlight.com/(?!films|search|$)' },
-    { name: 'freemoviescinema', file: 'cloud/plugin/freemoviescinema.js', url: '*://*.freemoviescinema.com/watch/*' },
+    { name: 'freemoviescinema', file: 'cloud/plugin/freemoviescinema.js', url: '*://*.freemoviescinema.com/(movies|tv-series)/*' },
     { name: 'go', file: 'cloud/plugin/go.js', url: '*://freeform.go.com/(movies|shows)/*' },
     {
         name: 'indomovie', file: 'cloud/plugin/indomovietv.js', url: '*://*.indomovietv.*/(?!tag|$)',
