@@ -14,17 +14,22 @@ let plugin = {
 	// REQUIRED [plugin.init]: this is what Web to Plex will call on when the url is detected
 	// it will always be fired after the page and Web to Plex have been loaded
 	"init": () => {
-		let title = document.queryBy('.maintitle')
-				.first.textContent.replace(/^.+\/(.+?)\(([\d]{4})\)\s*$/, '$1')
-				.trim(),
+		let heading = document.queryBy('.maintitle').first,
+			match = /^(?:.*\/)?\s*([^/]+?)\s*\((\d{4})\)/.exec(heading? heading.textContent.trim(): '');
+
+		// Only a release topic ("Назва / Original title (2024) …") names an item; other forum pages show nothing (PL3).
+		// Before, the heading was kept whole when it did not end at the year, and a stale RegExp.$2 became the year
+		if(!match)
+			return -1;
+
+		let title = match[1],
 			// REQUIRED [title:string]
 			// you have access to the exposed "helper.js" file within the extension
 
-			year = +RegExp.$2,
+			year = +match[2],
 			// PREFERRED [year:number, null, undefined]
 
-			image = document.queryBy('.postbody img')
-				.first.src,
+			image = (document.queryBy('.postbody img').first || {}).src,
 			// OPTIONAL [image:string]
 
 			IMDbID = plugin.getID();
