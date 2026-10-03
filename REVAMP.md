@@ -99,3 +99,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-vnext-cleanup` | subordinate (`webtoplex-subo`) | Owner's v-next folder synced to `7c98555`, stale `dist/` rebuilt |
 | 2026-10-03 | `w2p-fix-round5`, `w2p-fix-round5-d` | subordinate (`webtoplex-subo`) | P1, S3, F2, D1 |
 | 2026-10-03 | `w2p-fix-round6` | subordinate (`webtoplex-subo`) | R1, M1, I1, I2; O1 was a misdiagnosis (☐/☑ are status marks); Kitsu moved to kitsu.app (owner's drop-list call) |
+| 2026-10-03 | `w2p-vnext-sync-3` | subordinate (`webtoplex-subo`) | Owner folder at `400a642`; CI green again; R1 holds live |
