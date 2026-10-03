@@ -7,9 +7,16 @@
 import { RefreshTerminal } from './common.js';
 import { Route } from './router.js';
 import { CreateMenus, OnMenuClicked, SwitchStatus } from './menus.js';
+import { SyncPlugins, TouchesPlugins } from './plugins.js';
 
 chrome.runtime.onMessage.addListener(Route);
-chrome.runtime.onInstalled.addListener(() => CreateMenus());
+chrome.runtime.onInstalled.addListener(() => (CreateMenus(), void SyncPlugins()));
+
+// Plugin sites run where the user enabled them and granted their hosts; registrations follow both
+chrome.runtime.onStartup.addListener(() => void SyncPlugins());
+chrome.storage.onChanged.addListener(changes => TouchesPlugins(changes) && void SyncPlugins());
+chrome.permissions.onAdded.addListener(() => void SyncPlugins());
+chrome.permissions.onRemoved.addListener(() => void SyncPlugins());
 chrome.contextMenus.onClicked.addListener(item => void OnMenuClicked(item));
 
 // F5: the menus name the active tab's item; switching to another tab forgets one that belongs elsewhere

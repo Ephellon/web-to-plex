@@ -1662,7 +1662,7 @@ function HandleProxyHeaders(Headers = "", URL = "") {
 
 /**
  * Asks for the host permissions the service worker needs: the origin of every service URL on the page, the Plex
- * URL, and Plex's relay domain. Origins already granted are not asked again.
+ * URL, Plex's relay domain, and the sites of enabled plugins. Origins already granted are not asked again.
  * @returns {Promise<boolean>} Whether the origins are granted (true when there is nothing to ask for)
  */
 function RequestServiceOrigins() {
@@ -1685,6 +1685,9 @@ function RequestServiceOrigins() {
 
 	if(__servers__.value)
 		origins.add('*://*.plex.direct/*');
+
+	// Enabled plugins run on their own sites (background/plugins.js)
+	[...$('[id^="plugin_"]:checked', true)].forEach(box => (plugin_origins[box.id] ?? []).forEach(origin => origins.add(origin)));
 
 	if(!origins.size || !chrome.permissions)
 		return Promise.resolve(true);
@@ -2403,7 +2406,8 @@ let plugins = {
 	'Metacritic': 'https://www.metacritic.com/',
 
 	// Don't forget to add to the __options__ array!
-}, plugin_array = [], plugin_sites = {}, pluginElement = $('#plugins');
+}, plugin_array = [], plugin_sites = {}, pluginElement = $('#plugins'),
+	plugin_origins = {}; // plugin_<name> → the host patterns the service worker registers it on (background/plugins.js)
 
 for(let plugin in plugins)
 	plugin_array.push(plugin);
@@ -2422,6 +2426,7 @@ for(let index = 0, length = plugin_array.length; pluginElement && index < length
 				r     = TLDHost(url.host);
 
 			plugin_sites[r] = o;
+			(plugin_origins[name] ??= []).push(`*://*.${ r }/*`);
 
 			if(!i)
 				pluginElement.innerHTML +=
@@ -2447,6 +2452,7 @@ for(let index = 0, length = plugin_array.length; pluginElement && index < length
 			r     = TLDHost(url.host);
 
 		plugin_sites[r] = o;
+		(plugin_origins[name] ??= []).push(`*://*.${ r }/*`);
 
 		pluginElement.innerHTML +=
 `
@@ -2474,10 +2480,13 @@ $('[id^="plugin_"]', true)
 
 		if(self.checked) {
 			terminal.log(pid, plugin_sites[pid]);
-			requestURLPermissions(plugin_sites[pid].replace(/https?:\/\/(ww\w+\.)?/i, '*://*.').replace(/\/?$/, '/*'), granted => {
-				save(`permission:${ pid }`, granted);
-				save(`script:${ pid }`, granted? js: null);
-			});
+			// The worker runs a plugin only on hosts the user granted; ask during the click (MV3)
+			chrome.permissions.request({ origins: plugin_origins[self.id] ?? [] })
+				.catch(error => (terminal.warn('Host permission request failed:', error), false))
+				.then(granted => {
+					save(`permission:${ pid }`, granted);
+					save(`script:${ pid }`, granted? js: null);
+				});
 		} else {
 			save(`permission:${ pid }`, false);
 			save(`script:${ pid }`, null);

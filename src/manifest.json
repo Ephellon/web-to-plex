@@ -700,7 +700,8 @@
 	"permissions": [
 		"storage",
 		"downloads",
-		"contextMenus"
+		"contextMenus",
+		"scripting"
 	],
 	"host_permissions": [
 		"https://plex.tv/*"
