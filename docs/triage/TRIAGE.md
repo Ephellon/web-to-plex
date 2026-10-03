@@ -426,4 +426,5 @@ Findings:
 All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`checkip.amazonaws.com` 200, no
 `check.torproject.org`, no CORS), service relay (Ombi and Plex through the worker, no page-side calls), version "5.0 beta".
 
-- **O1** (new): the options page's icons render as tofu: `options/index.css` has no Glyphicons `@font-face`.
+- ~~**O1**~~ not a bug: the boxes after sidebar labels are intended status marks (`[using]::after` ☐ not set up, `[in-use]` ☑ in use); Glyphicons loads. UX tweak (hide or dot) is the owner's call (`w2p-fix-round6`).
+- **K1** (new): Kitsu moved to `kitsu.app` (Cloudflare challenge); the plugin glob, P1 match and options host still name `kitsu.io`, so it never runs. Fix or drop: owner's call (drop list).
