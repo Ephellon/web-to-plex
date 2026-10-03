@@ -48,7 +48,8 @@ test('the plugin table matches every plugin script (file, url glob) and has a bo
 
     for(const plugin of PLUGINS) {
         const source = fs.readFileSync(`src/${ plugin.file }`, 'utf8')
-            , url = /^\s*"url":\s*"((?:[^"\\]|\\.)*)"/m.exec(source)[1].replace(/\\\\/g, '\\');
+            // `"url": "…"` (legacy) or `url: '…'` (house style)
+            , url = /^\s*"?url"?:\s*(["'])((?:(?!\1)[^\\]|\\.)*)\1/m.exec(source)[2].replace(/\\\\/g, '\\');
 
         assert.equal(plugin.url, url, plugin.file);
 
