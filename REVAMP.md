@@ -103,3 +103,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-fix-round7` | subordinate (`webtoplex-subo`) | B36, T2 (Google Play alias), PL1 Free Movies Cinema, PL2 My Shows, PL3 Toloka; dead plugins listed in TRIAGE (round 7) |
 | 2026-10-03 | `w2p-vnext-sync-4`, `w2p-live-manual-1` | subordinate (`webtoplex-subo`) | Sync to `f2c3c3a`: pass (78/78, lint 0, googleplay migrated). Headed checks: IMDb movie/show pass, My Shows (PL2) pass, IMDb list and Toloka signed-in not checked, K1 Kitsu fixable (host move + first Aired year) |
 | 2026-10-03 | `w2p-fix-round8` | subordinate (`webtoplex-subo`) | IL1 IMDb list rows, TV1 TVmaze by IMDb id, X1 remove remote Plex It! script, S23 cache GitHub version check: all applied, 91/91 tests |
+| 2026-10-03 | `w2p-vnext-sync-5` | subordinate (`webtoplex-subo`) | Sync owner folder to `38e492e` (posted) |
