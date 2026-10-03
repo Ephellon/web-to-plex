@@ -874,6 +874,20 @@ function performOmbiTest({ refreshing = false, event }) {
 		);
 }
 
+// The latest host-permission request (made on a Test or Save click); service fetches wait for it, because an extension
+// page can only reach the user's servers once their origins are granted (MV3)
+let ORIGINS_REQUEST = Promise.resolve(true);
+
+/**
+ * fetch() for the user's service servers: waits for a pending host-permission request first.
+ * @param {string} url - The request URL
+ * @param {object} [init] - fetch options
+ * @returns {Promise<Response>} The response
+ */
+function ServiceFetch(url, init) {
+	return ORIGINS_REQUEST.then(() => fetch(url, init));
+}
+
 function getWatcher(options, api = "getconfig") {
 	if(!options.watcherToken)
 		return new Notification('error', 'Invalid Watcher token');
@@ -887,7 +901,7 @@ function getWatcher(options, api = "getconfig") {
 	if(options.watcherBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.watcherBasicAuthUsername }:${ options.watcherBasicAuthPassword }`) }`;
 
-	return fetch(`${ options.watcherURLRoot }/api?apikey=${ options.watcherToken }&mode=${ api }&quality=${ options.watcherQualityProfileId || 'Default' }`, { headers })
+	return ServiceFetch(`${ options.watcherURLRoot }/api?apikey=${ options.watcherToken }&mode=${ api }&quality=${ options.watcherQualityProfileId || 'Default' }`, { headers })
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'Watcher failed to connect with error:' + String(error)),
@@ -1003,7 +1017,11 @@ function getRadarr(options, api = "profile") {
 	if(options.radarrBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.radarrBasicAuthUsername }:${ options.radarrBasicAuthPassword }`) }`;
 
-	return fetch(`${ options.radarrURLRoot }/api/${ api }`, { headers })
+	// Radarr v3+ only serves /api/v3 (and renamed profile to qualityprofile); v2 and older only serve /api
+	let v3 = ({ profile: 'qualityprofile' })[api] ?? api;
+
+	return ServiceFetch(`${ options.radarrURLRoot }/api/v3/${ v3 }`, { headers })
+		.then(response => response.ok? response: ServiceFetch(`${ options.radarrURLRoot }/api/${ api }`, { headers }))
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'Radarr failed to connect with error:' + String(error)),
@@ -1133,7 +1151,7 @@ function getSonarr(options, api = "profile") {
 	if(options.sonarrBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.sonarrBasicAuthUsername }:${ options.sonarrBasicAuthPassword }`) }`;
 
-	return fetch(`${ options.sonarrURLRoot }/api/${ api }`, { headers })
+	return ServiceFetch(`${ options.sonarrURLRoot }/api/${ api }`, { headers })
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'Sonarr failed to connect with error:' + String(error)),
@@ -1262,7 +1280,7 @@ function getMedusa(options, api = "config") {
 	if(options.medusaBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.medusaBasicAuthUsername }:${ options.medusaBasicAuthPassword }`) }`;
 
-	return fetch(`${ options.medusaURLRoot }/api/v2/${ api }`, { headers })
+	return ServiceFetch(`${ options.medusaURLRoot }/api/v2/${ api }`, { headers })
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'Medusa failed to connect with error:' + String(error)),
@@ -1388,7 +1406,7 @@ function getSickBeard(options, api = "sb") {
 	if(options.sickBeardBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.sickBeardBasicAuthUsername }:${ options.sickBeardBasicAuthPassword }`) }`;
 
-	return fetch(`${ options.sickBeardURLRoot }/api/${ options.sickBeardToken }/?cmd=${ api }`, { headers })
+	return ServiceFetch(`${ options.sickBeardURLRoot }/api/${ options.sickBeardToken }/?cmd=${ api }`, { headers })
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'Sick Beard failed to connect with error:' + String(error)),
@@ -1523,7 +1541,7 @@ function getCouchPotato(options, api = "updater.info") {
 	if(options.couchpotatoBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.couchpotatoBasicAuthUsername }:${ options.couchpotatoBasicAuthPassword }`) }`;
 
-	return fetch(`${ options.couchpotatoURLRoot }/api/${ options.couchpotatoToken }/${ api }`)
+	return ServiceFetch(`${ options.couchpotatoURLRoot }/api/${ options.couchpotatoToken }/${ api }`)
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'CouchPotato failed to connect with error:' + String(error)),
@@ -2479,7 +2497,7 @@ let empty = () => {};
 document.addEventListener('DOMContentLoaded', restoreOptions);
 // MV3: the service worker can only reach the user's servers after the user grants their origins, which must be asked
 // for during the click itself, before any await
-__save__.addEventListener('click', RequestServiceOrigins);
+__save__.addEventListener('click', () => ORIGINS_REQUEST = RequestServiceOrigins());
 __save__.addEventListener('click', saveOptions);
 
 addListener($('#plex_test'), 'mouseup', event => {
@@ -2496,6 +2514,8 @@ addListener($('#plex_test'), 'mouseup', event => {
 	else if(ou && oa)
 		performOmbiLogin({ event });
 });
+// Registered before the test listeners, so the permission prompt opens inside the click and the tests wait for it
+$('[id$="_test"]', true).forEach(element => element.addEventListener('mouseup', () => ORIGINS_REQUEST = RequestServiceOrigins()));
 $('#watcher_test', true).forEach(element => addListener(element, 'mouseup', event => performWatcherTest({ event })));
 $('#radarr_test', true).forEach(element => addListener(element, 'mouseup', event => performRadarrTest({ event })));
 $('#sonarr_test', true).forEach(element => addListener(element, 'mouseup', event => performSonarrTest({ event })));
