@@ -51,6 +51,19 @@ test('no eval, new Function or string timers in src/', () => {
     assert.deepEqual(found, []);
 });
 
+// X1: the button's "Plex It!" item injected <script src="//webtoplex.github.io/plex.it.js"> into the page
+test('no script elements added to pages from src/', () => {
+    const found = [];
+
+    for(const file of scripts().filter(file => !ALLOWED.has(file)))
+        fs.readFileSync(path.join('src', file), 'utf8').split('\n').forEach((line, index) => {
+            if(/createElement\(\s*['"`]script\b|furnish\(\s*['"`]script\b|\.src\s*=\s*['"`](https?:)?\/\/[^'"`]+\.js\b/i.test(line))
+                found.push(`${ file }:${ index + 1 }`);
+        });
+
+    assert.deepEqual(found, []);
+});
+
 test('addListener (utils.js and options/index.js) adds real listeners, in order, keeping closures', () => {
     for(const file of ['utils.js', 'options/index.js']) {
         const addListener = extract(file, 'addListener')

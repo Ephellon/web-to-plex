@@ -2702,17 +2702,6 @@ let INITIALIZE = (async date => {
 					furnish('a.list-action', { tooltip: 'Web to Plex' }, furnish(`img[alt=Web to Plex]`, { style: 'display: inline !important;', src: IMG_URL.icon_48 }))
 				),
 
-				furnish('li#wtp-plexit.list-item', {
-					tooltip: 'Open Plex It!',
-					onmouseup: event => {
-						let self = event.target, parent = button;
-
-						(d=>{let s=d.createElement('script'),h=d.querySelector('head');s.type='text/javascript';s.src='//webtoplex.github.io/plex.it.js';h.appendChild(s)})(document);
-					}
-				},
-					furnish('i[red][gradient=lighten]', { glyph: 'fire 3x', onmouseup: event => event.target.parentElement.click() }) // <img/>
-				),
-
 				furnish('li#wtp-hide.list-item', {
 					tooltip: 'Hide Web to Plex',
 					onmouseup: event => {
