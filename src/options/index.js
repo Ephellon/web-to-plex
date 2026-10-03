@@ -2966,14 +2966,30 @@ Recall['@0sec'].SetVersionInfo = async() => {
 		verEl.setAttribute('status', status);
 	}
 
-	if(DM)
-		await fetch('https://api.github.com/repos/webtoplex/browser-extension/releases')
-			.then(response => response.json())
-			.then(versions => useVer(versions[0]));
-	else
-		await fetch('https://api.github.com/repos/webtoplex/browser-extension/releases/latest')
-			.then(response => response.json())
-			.then(version => useVer(version));
+	// S23: GitHub is asked at most once a day per channel (all releases in Developer Mode, the latest otherwise); the
+	// tag is kept in chrome.storage.local. A failed request keeps the last known tag (or the "..." placeholder)
+	const key = DM ? 'GitHubReleases' : 'GitHubRelease'
+		, cache = (await chrome.storage.local.get(key).catch(() => ({})))[key];
+
+	let release = cache?.release;
+
+	if(!(Date.now() - cache?.time < 86_400_000))
+		await fetch(`https://api.github.com/repos/webtoplex/browser-extension/releases${ DM ? '' : '/latest' }`)
+			.then(response => (response.ok ? response.json() : Promise.reject(new Error(`GitHub answered ${ response.status }`))))
+			.then(data => {
+				const version = DM ? data[0] : data;
+
+				if(typeof version?.tag_name != 'string')
+					throw new Error("GitHub sent no release");
+
+				release = { tag_name: version.tag_name };
+
+				return chrome.storage.local.set({ [key]: { time: Date.now(), release } });
+			})
+			.catch(error => console.warn(`Version check skipped: ${ error.message }`));
+
+	if(release)
+		useVer(release);
 };
 
 /* Get the user's IP address */
