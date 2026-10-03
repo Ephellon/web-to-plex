@@ -439,3 +439,10 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
   Chrome, checked on saved pages), Toloka (junk items from non-release topics).
 - **Plugin drop list (owner's call):** Fox Searchlight, IndoMovie, Redbox (no response), SnagFilms (domain taken over by
   a gambling site), Go/Freeform (moved to `freeform.com`), Kitsu (K1).
+
+## Live manual 1 (`w2p-live-manual-1`, headed, owner input)
+
+- **IMDb** movie (tt0111161, 1994, TMDb 278) and show (tt0903747, 2008, JSON-LD `TVSeries`): pass. List page not checked (harness took a video-player link); needs a `/list/ls…/` URL and a CAPTCHA session.
+- **PL2 My Shows**: pass (House, 2004, tt0412142).
+- **PL3 Toloka** signed in: not checked (no owner login); signed-out behaviour stands.
+- **K1 Kitsu**: kitsu.app keeps the old selectors and `og:type video.tv_show`. Fix if kept: move host to `kitsu.app` (glob, P1 table, options), take the first year of the "Aired" row (greedy regex gives the end year). Still on the drop list: owner's call.

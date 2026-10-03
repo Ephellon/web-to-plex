@@ -101,4 +101,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-fix-round6` | subordinate (`webtoplex-subo`) | R1, M1, I1, I2; O1 was a misdiagnosis (☐/☑ are status marks); Kitsu moved to kitsu.app (owner's drop-list call) |
 | 2026-10-03 | `w2p-vnext-sync-3` | subordinate (`webtoplex-subo`) | Owner folder at `400a642`; CI green again; R1 holds live |
 | 2026-10-03 | `w2p-fix-round7` | subordinate (`webtoplex-subo`) | B36, T2 (Google Play alias), PL1 Free Movies Cinema, PL2 My Shows, PL3 Toloka; dead plugins listed in TRIAGE (round 7) |
-| 2026-10-03 | `w2p-vnext-sync-4`, `w2p-live-manual-1` | subordinate (`webtoplex-subo`) | Sync to `32ea11f`; headed checks with owner input: IMDb, My Shows, Toloka, Kitsu (posted) |
+| 2026-10-03 | `w2p-vnext-sync-4`, `w2p-live-manual-1` | subordinate (`webtoplex-subo`) | Sync to `f2c3c3a`: pass (78/78, lint 0, googleplay migrated). Headed checks: IMDb movie/show pass, My Shows (PL2) pass, IMDb list and Toloka signed-in not checked, K1 Kitsu fixable (host move + first Aired year) |
