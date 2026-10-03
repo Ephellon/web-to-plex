@@ -1,115 +1,83 @@
+/** Rotten Tomatoes title pages (/m/…, /tv/…) and browse pages (/browse/…)
+ * Title pages: the item comes from the page's JSON-LD (Movie, TVSeries; a TVSeason gives its series), checked against
+ * the current path. Browse pages: the JSON-LD ItemList (its items are nested one list deep). The pre-2024 selectors
+ * (#reviews, .playButton + .title, time, .mb-movie, .movieTitle), the `/t/` glob (shows are under /tv/ now) and the
+ * "minions" are gone.
+**/
+
 let script = {
-	"url": "*://*.rottentomatoes.com/([mt]|browse)/*",
+    url: '*://*.rottentomatoes.com/(m|tv|browse)/*',
 
-	"ready": () => !$('#reviews').empty,
+    ready: () => (script.getType() == 'list' ? script.getList().length > 0 : script.getItem() != null),
 
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
+    init: () => {
+        const type = script.getType();
 
-		let title, type, year, image;
+        if(type == 'list') {
+            const items = script.getList();
 
-		type = script.getType();
+            return items.length ? items : 1000;
+        }
 
-		switch(type) {
-			case 'movie':
-			case 'show':
-				title = $('.playButton + .title, [itemprop="name"], [class*="wrap__title" i]').first;
-				year  = $('time').first;
-				image = $('[class*="posterimage" i]').first;
+        if(type == 'error')
+            return -1;
 
-				if(!title)
-					return 1000;
+        return script.getItem() ?? 1000;
+    },
 
-				title = title.textContent.trim().replace(/(.+)\:[^]*$/, type == 'movie'? '$&': '$1');
-				year  = +year.textContent.replace(/[^]*(\d{4})/, '').trim();
-				image = (image || {}).srcset;
+    getType: () => {
+        const { pathname } = top.location;
 
-				if(image)
-					image = image.replace(/([^\s]+)[^]*/, '$1');
+        return /^\/browse\//i.test(pathname) ? 'list' : /^\/m\//i.test(pathname) ? 'movie' : /^\/tv\//i.test(pathname) ? 'show' : 'error';
+    },
 
-				return { type, title, year, image };
-				break;
+    // Every JSON-LD object on the page
+    getData: () => {
+        const items = [];
 
-			case 'list':
-				let options = [],
-					elements = $('.mb-movie');
+        for(const element of document.querySelectorAll('script[type="application/ld+json"]')) {
+            try {
+                items.push(...[].concat(JSON.parse(element.textContent)));
+            } catch {
+                continue;
+            }
+        }
 
-				elements.forEach((element, index, array) => {
-					let option = script.process(element);
+        return items.filter(item => item && typeof item == 'object');
+    },
 
-					if(option)
-						options.push(option);
-				});
+    // "1994-09-01" or "2026" → 1994 or 2026 (T9: the old code deleted the year instead of keeping it)
+    year: value => +((value ?? '') + '').replace(/^\D*(\d{4})[^]*$/, '$1') || null,
 
-				return options;
-				break;
+    // A schema.org item → { type, title, year, image }; null for anything that is not a movie or show
+    toItem: item => {
+        const data = item?.['@type'] == 'TVSeason' ? item.partOfSeries : item
+            , type = data?.['@type'] == 'Movie' ? 'movie' : data?.['@type'] == 'TVSeries' ? 'show' : null;
 
-			default:
-				return 1000;
-				break;
-		}
-	},
+        if(!type || !data.name)
+            return null;
 
-	"getType": () => {
-		let { pathname } = top.location;
+        return { type, title: data.name.trim(), year: script.year(data.dateCreated ?? data.startDate ?? data.datePublished), image: data.image?.url ?? data.image };
+    },
 
-		return (/^\/browse\/i/.test(pathname))?
-			'list':
-		(/^\/m/.test(pathname))?
-			'movie':
-		(/^\/t/.test(pathname))?
-			'show':
-		'error';
-	},
+    // The title page's item, when the JSON-LD describes the current page; -1 for pages that are not a movie or show
+    getItem: () => {
+        const path = top.location.pathname.replace(/\/+$/, '')
+            , data = script.getData().find(item => item.url && new URL(item.url, top.location.href).pathname.replace(/\/+$/, '') == path);
 
-	"process": (element) => {
-		let title = $('.movieTitle').first,
-			image = $('.poster').first,
-			type  = $('[href^="/m/"], [href^="/t/"]').first;
+        if(!data)
+            return null;
 
-		title = title.textContent.trim();
-		image = image.src;
-		type  = /\/([mt])\//i.test(type.href)? RegExp.$1 == 'm'? 'movie': 'show': null;
+        return script.toItem(data) ?? -1;
+    },
 
-		if(!type)
-			return {};
+    // A browse page's items
+    getList: () => {
+        const list = script.getData().find(item => item['@type'] == 'ItemList');
 
-		if(type == 'show')
-			title = title.replace(/\s*\:\s*seasons?\s+\d+\s*/i, '');
-
-		return { type, title, image };
-	},
-
-	"minions": () => {
-			let actions = $('.franchiseLink, #topSection > *'),
-				type = script.getType();
-
-			if(actions.empty || type == 'error')
-				return;
-			let element = actions.first;
-
-			if(type == 'movie') {
-				let minion;
-
-				let parent = furnish('div', { style: 'box-shadow: none' },
-					furnish('div.wts-button__container', {},
-						minion = furnish('button.web-to-plex-minion.button--wts', { style: 'margin-bottom: 25px' },
-							' Web to Plex'
-						)
-					)
-				);
-
-				addMinions(minion);
-				element.appendChild(minion);
-			} else {
-				let minion;
-
-				let parent = furnish('div.poster_button.hidden-xs', {},
-					minion = furnish('a.web-to-plex-minion.fullWidth', {}, 'Web to Plex')
-				);
-
-				addMinions(minion);
-				element.appendChild(parent);
-			}
-		},
+        return [].concat(list?.itemListElement ?? [])
+            .flatMap(entry => (entry?.['@type'] == 'ItemList' ? [].concat(entry.itemListElement ?? []) : [entry]))
+            .map(entry => script.toItem(entry?.item ?? entry))
+            .filter(item => item);
+    },
 };

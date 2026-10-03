@@ -1,0 +1,67 @@
+{
+    "/m/shawshank_redemption": [
+        {
+            "@context": "http://schema.org",
+            "@type": "Movie",
+            "name": "The Shawshank Redemption",
+            "url": "https://www.rottentomatoes.com/m/shawshank_redemption",
+            "dateCreated": "1994-09-01",
+            "image": "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p15987_p_v12_at.jpg"
+        }
+    ],
+    "/tv/breaking_bad": [
+        {
+            "@context": "http://schema.org",
+            "@type": "TVSeries",
+            "name": "Breaking Bad",
+            "url": "https://www.rottentomatoes.com/tv/breaking_bad",
+            "dateCreated": "2008-01-20",
+            "image": "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p185846_b_v8_ad.jpg",
+            "partOfSeries": {
+                "@type": "TVSeries",
+                "name": "Breaking Bad",
+                "startDate": "2008-01-20",
+                "url": "https://www.rottentomatoes.com/tv/breaking_bad"
+            },
+            "numberOfSeasons": 5
+        }
+    ],
+    "/browse/movies_at_home": [
+        {
+            "@context": "http://schema.org",
+            "@type": "ItemList",
+            "url": "https://www.rottentomatoes.com/browse/movies_at_home",
+            "name": "Movies to Stream at Home (2026)",
+            "itemListElement": {
+                "@type": "ItemList",
+                "name": "Movies",
+                "itemListElement": [
+                    {
+                        "@type": "Movie",
+                        "position": 1,
+                        "name": "Let Go",
+                        "dateCreated": "2026",
+                        "image": "https://resizing.flixster.com/PX2w3otE0nX2AVAY76o2ISl4AOM=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzL2IzOTAxN2VhLTU2YzUtNDQwOC1iY2NjLTYwNTNkODNjNjQzOS5qcGc=",
+                        "url": "https://www.rottentomatoes.com/m/let_go_2026"
+                    },
+                    {
+                        "@type": "Movie",
+                        "position": 2,
+                        "name": "Speakeasy",
+                        "dateCreated": "2026",
+                        "image": "https://resizing.flixster.com/n9d73LiQYwB_Sh3ujlj6rMbE74Q=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzY3NzRmZjdlLWJhOGUtNGM1YS1hMWJhLWIyMzcxMjI3YTU4Ni5qcGc=",
+                        "url": "https://www.rottentomatoes.com/m/speakeasy_2026"
+                    },
+                    {
+                        "@type": "Movie",
+                        "position": 3,
+                        "name": "Coyote vs. Acme",
+                        "dateCreated": "2026",
+                        "image": "https://resizing.flixster.com/2tWOVnwNoN3mVPGeTtFxCACoAPM=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzL2UwMjUzNTNmLWNkZWQtNDVmNS1iZWI3LTY4MjQ4OTc5NGNlZi5qcGc=",
+                        "url": "https://www.rottentomatoes.com/m/coyote_vs_acme"
+                    }
+                ]
+            }
+        }
+    ]
+}
