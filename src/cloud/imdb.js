@@ -110,7 +110,9 @@ let script = {
                     if(!IMDbID || !item.name || !type)
                         return null;
 
-                    return { type, title: item.name.trim(), year: script.year(item.datePublished) ?? row?.year ?? null, image: script.getImage(item.image) ?? row?.image, IMDbID };
+                    // The list's JSON-LD has no dates and names titles in their original language; the rendered row has
+                    // the year and the title as the page shows it (the viewer's language, as Plex and TMDb mostly do)
+                    return { type, title: row?.title || item.name.trim(), year: script.year(item.datePublished) ?? row?.year ?? null, image: script.getImage(item.image) ?? row?.image, IMDbID };
                 })
                 .filter(item => item)
         }
@@ -127,17 +129,18 @@ let script = {
         return link ? script.process(link.closest('li.ipc-metadata-list-summary-item')) : null;
     },
 
-    // One list row: title link, "1. Title" heading, and metadata ("1994", "2008–2013", "TV Series", …)
+    // One list row: title link, "1. Title" heading (`.ipc-title--title`), and metadata (`.dli-title-metadata li`: year
+    // "1994" or "2008–2013", length, rating; or "TV Series")
     process: element => {
         const link = element?.querySelector('a[href*="/title/tt"]')
-            , heading = element?.querySelector('h3.ipc-title__text, .ipc-title__text');
+            , heading = element?.querySelector('.ipc-title--title, h3.ipc-title__text, .ipc-title__text');
 
         if(!link || !heading)
             return null;
 
         const IMDbID = (/\/title\/(tt\d+)/.exec(link.href) || [])[1]
             , title = heading.textContent.replace(/^\s*\d+\.\s*/, '').trim()
-            , metadata = [...element.querySelectorAll('.dli-title-metadata-item, [class*="title-metadata-item"]')].map(item => item.textContent.trim())
+            , metadata = [...element.querySelectorAll('.dli-title-metadata li, .dli-title-metadata-item, [class*="title-metadata-item"]')].map(item => item.textContent.trim())
             , released = metadata.find(text => /^\d{4}/.test(text)) ?? ''
             , type = /\d{4}\s*[-‐-―]/.test(released) || metadata.some(text => /^TV (Mini )?Series$/i.test(text)) ? 'show' : 'movie';
 
