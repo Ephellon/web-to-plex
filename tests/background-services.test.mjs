@@ -28,6 +28,9 @@ const responder = pairs => url => {
             if(body === null)
                 throw new TypeError("NetworkError when attempting to fetch resource.");
 
+            if(body?.status404)
+                return { status: 404, body: '' };
+
             return { body };
         }
 
@@ -64,11 +67,11 @@ const CASES = [
     ['PUSH_WATCHER by title, refused', { type: 'PUSH_WATCHER', url: 'http://w.invalid/api/', token: 'k', title: "Heat", year: 1995, imdbId: 'tt', tmdbId: '' },
         [[/mode=addmovie/, { response: false, error: 'already added' }]]],
     ['PUSH_RADARR', { type: 'PUSH_RADARR', url: 'http://r.invalid/api/movie/', token: 'k', StoragePath: 'D:\\Movies\\', QualityID: 4, basicAuth: AUTH, title: "Heat", year: 1995, imdbId: 'tt0113277', tmdbId: 949 },
-        [[/lookup\/imdb/, [{ title: "Heat", tmdbId: 949 }]], [/\?apikey=/, { path: 'D:\\Movies\\Heat (1995)' }]]],
+        [[/\/api\/v3\//, { status404: true }], [/lookup\/imdb/, [{ title: "Heat", tmdbId: 949 }]], [/\?apikey=/, { path: 'D:\\Movies\\Heat (1995)' }]]],
     ['PUSH_RADARR empty lookup', { type: 'PUSH_RADARR', url: 'http://r.invalid/api/movie/', token: 'k', StoragePath: '/m/', title: "Heat", year: 1995, imdbId: '', tmdbId: 949 },
-        [[/lookup\/tmdb/, []]]],
+        [[/\/api\/v3\//, { status404: true }], [/lookup\/tmdb/, []]]],
     ['PUSH_RADARR server error', { type: 'PUSH_RADARR', url: 'http://r.invalid/api/movie/', token: 'k', StoragePath: '/m/', title: "Heat", year: 1995, imdbId: 'tt0113277' },
-        [[/lookup/, { title: "Heat" }], [/\?apikey=/, [{ errorMessage: 'This movie has already been added' }]]]],
+        [[/\/api\/v3\//, { status404: true }], [/lookup/, { title: "Heat" }], [/\?apikey=/, [{ errorMessage: 'This movie has already been added' }]]]],
     ['PUSH_SONARR', { type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', QualityID: 1, basicAuth: AUTH, title: "Lost", year: 2004, tvdbId: 73739 },
         [[/lookup\?/, [{ title: "Lost", tvdbId: 73739 }]], [/\?apikey=/, '']]],
     ['PUSH_SONARR lookup fails', { type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', title: "Lost", year: 2004, tvdbId: 73739 },
@@ -96,8 +99,23 @@ for(const [name, request, pairs] of CASES)
         const a = await mv2.send(request)
             , b = await mv3.send(request);
 
-        assert.deepEqual(plain(mv3.requests.slice(before3)), plain(mv2.requests.slice(before2)), 'requests');
+        // Radarr tries /api/v3 first (v3+ servers); on these v2-style servers that answers 404 and MV3 falls back to MV2's path
+        const mv3Requests = mv3.requests.slice(before3).filter(({ url }) => !/\/api\/v3\//.test(url));
+
+        assert.deepEqual(plain(mv3Requests), plain(mv2.requests.slice(before2)), 'requests');
         assert.deepEqual(plain(b.replies), plain(a.replies), 'replies');
         assert.equal(b.replies.length, 1, 'exactly one reply');
         assert.equal(b.returned, true, 'async reply keeps the channel open');
     });
+
+test('PUSH_RADARR on a v3+ server: lookup and add both use /api/v3', async() => {
+    const mv3 = await LoadMV3(OPTIONS, responder([[/\/api\/v3\/movie\/lookup\/imdb/, [{ title: "Heat", tmdbId: 949 }]], [/\/api\/v3\/movie\/\?apikey=/, { path: '/movies/Heat (1995)' }]]))
+        , before = mv3.requests.length
+        , { replies } = await mv3.send({ type: 'PUSH_RADARR', url: 'http://r.invalid/api/movie/', token: 'k', StoragePath: '/movies/', QualityID: 4, title: "Heat", year: 1995, imdbId: 'tt0113277' });
+
+    assert.deepEqual(mv3.requests.slice(before).map(({ url, method }) => [method, url]), [
+        ['GET', 'http://r.invalid/api/v3/movie/lookup/imdb?imdbid=tt0113277&apikey=k'],
+        ['POST', 'http://r.invalid/api/v3/movie/?apikey=k'],
+    ]);
+    assert.deepEqual(plain(replies), [{ success: 'Added to /movies/Heat (1995)' }]);
+});

@@ -19,6 +19,7 @@ import { Push_Sonarr } from './services/sonarr.js';
 import { Push_Medusa } from './services/medusa.js';
 import { Push_SickBeard } from './services/sickbeard.js';
 import { Push_Ombi } from './services/ombi.js';
+import { Service_Fetch } from './services/relay.js';
 
 /**
  * Message types and their handlers. `replies` marks the handlers that answer through `sendResponse`.
@@ -35,6 +36,7 @@ export const ROUTES = {
     PUSH_WATCHER: { replies: true, handle: (request, reply) => Push_Watcher(request, reply) },
     PUSH_OMBI: { replies: true, handle: (request, reply) => Push_Ombi(request, reply) },
     PUSH_SICKBEARD: { replies: true, handle: (request, reply) => Push_SickBeard(request, reply) },
+    SERVICE_FETCH: { replies: true, handle: (request, reply) => Service_Fetch(request, reply) },
 
     // These never answered in MV2 either; the listener now says so (returns false) instead of holding the port (B50)
     OPEN_OPTIONS: { replies: false, handle: () => chrome.runtime.openOptionsPage() },

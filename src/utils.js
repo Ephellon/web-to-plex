@@ -101,6 +101,27 @@ class UUID {
 	}
 }
 
+/**
+ * Fetches through the service worker (background/services/relay.js). A content script's own fetch runs with the page's
+ * origin, so CORS, the page's CSP and the private-network rules (a page reaching http://localhost) block calls to the
+ * user's servers; the worker uses the host permissions granted in the options page.
+ * @param {string|string[]} urls - The URL, or URLs to try in order until one answers 2xx (fallbacks)
+ * @param {object} [init] - `{ method, headers, body }`
+ * @returns {Promise<{ ok: boolean, status: number, url: string, text: function, json: function }>} A Response-like object
+ */
+function ServiceRequest(urls, init = {}) {
+	let { method, headers, body } = init;
+
+	return new Promise((resolve, reject) =>
+		chrome.runtime.sendMessage({ type: 'SERVICE_FETCH', urls: [].concat(urls), method, headers, body }, reply => {
+			if(chrome.runtime.lastError || !reply || reply.error)
+				return reject(new Error((chrome.runtime.lastError || {}).message || (reply || {}).error || 'No reply from the service worker'));
+
+			resolve({ ok: reply.ok, status: reply.status, url: reply.url, text: async() => reply.text, json: async() => JSON.parse(reply.text) });
+		})
+	);
+}
+
 let INITIALIZE = (async date => {
 
 	// default date items
@@ -1257,7 +1278,7 @@ let INITIALIZE = (async date => {
 						        let url = options.ombiURL,
 									api = `apikey=${ options.ombiToken }`;
 
-						        fetch(`${ url }/api/v1/Request/movie?${ api }`)
+						        ServiceRequest(`${ url }/api/v1/Request/movie?${ api }`)
 						            .then(r => r.json())
 						            .then(json => {
 						                json.map(item => {
@@ -1268,7 +1289,7 @@ let INITIALIZE = (async date => {
 						                });
 						            });
 
-						        fetch(`${ url }/api/v1/Request/tv?${ api }`)
+						        ServiceRequest(`${ url }/api/v1/Request/tv?${ api }`)
 						            .then(r => r.json())
 						            .then(json => {
 						                json.map(item => {
@@ -1289,7 +1310,7 @@ let INITIALIZE = (async date => {
 						            username = options.watcherBasicAuthUsername,
 						            password = options.watcherBasicAuthPassword;
 
-						        fetch(`${ url }/api/?apikey=${ token }&mode=liststatus&quality=${ quality }`, {
+						        ServiceRequest(`${ url }/api/?apikey=${ token }&mode=liststatus&quality=${ quality }`, {
 						            headers: {
 						                'Accept': 'application/json',
 						                'Content-Type': 'application/json',
@@ -1315,7 +1336,7 @@ let INITIALIZE = (async date => {
 						            username = options.radarrBasicAuthUsername,
 						            password = options.radarrBasicAuthPassword;
 
-						        fetch(`${ url }/api/movie`, {
+						        ServiceRequest([`${ url }/api/v3/movie`, `${ url }/api/movie`], {
 						            headers: {
 						                'Accept': 'application/json',
 						                'Content-Type': 'application/json',
@@ -1368,7 +1389,7 @@ let INITIALIZE = (async date => {
 						            username = options.sonarrBasicAuthUsername,
 						            password = options.sonarrBasicAuthPassword;
 
-						        fetch(`${ url }/api/series`, {
+						        ServiceRequest([`${ url }/api/v3/series`, `${ url }/api/series`], {
 						            headers: {
 						                'Accept': 'application/json',
 						                'Content-Type': 'application/json',
@@ -1393,7 +1414,7 @@ let INITIALIZE = (async date => {
 						            username = options.medusaBasicAuthUsername,
 						            password = options.medusaBasicAuthPassword;
 
-						        fetch(`${ url }/api/v2/series`, {
+						        ServiceRequest(`${ url }/api/v2/series`, {
 						            headers: {
 						                'Accept': 'application/json',
 						                'Content-Type': 'application/json',
@@ -1419,7 +1440,7 @@ let INITIALIZE = (async date => {
 						            username = options.sickBeardBasicAuthUsername,
 						            password = options.sickBeardBasicAuthPassword;
 
-						        fetch(`${ url }/api/${ token }/?cmd=shows`, {
+						        ServiceRequest(`${ url }/api/${ token }/?cmd=shows`, {
 						            headers: {
 						                'Accept': 'application/json',
 						                'Content-Type': 'application/json',
@@ -1777,7 +1798,12 @@ let INITIALIZE = (async date => {
 
 		UTILS_TERMINAL.LOG(`Searching for "${ title } (${ year })" in ${ type || apit }/${ rqut }${ proxy.enabled? '[PROXY]': '' } => ${ url }`);
 
-		await(proxy.enabled? fetch(url, { mode: "cors", headers }): fetch(url))
+		// Radarr v3+ only serves /api/v3; v2 and older only /api
+		let urls = (__CONFIG__.radarrURLRoot && url.startsWith(`${ __CONFIG__.radarrURLRoot }api/movie/`))
+			? [url.replace(`${ __CONFIG__.radarrURLRoot }api/`, `${ __CONFIG__.radarrURLRoot }api/v3/`), url]
+			: [url];
+
+		await(proxy.enabled? fetch(url, { mode: "cors", headers }): ServiceRequest(urls))
 			.then(response => response.text())
 			.then(data => {
 				try {

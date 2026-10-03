@@ -21,7 +21,23 @@ export function Push_Radarr(request, sendResponse) {
         , debug = { headers, query, request };
    	// setup a stack trace for debugging
 
-    fetch(debug.url = `${ request.url }lookup/${ query }=${ id }&apikey=${ request.token }`)
+    // Radarr v3+ only serves /api/v3; v2 and older only /api. Try v3 first and keep whichever base answers for the add
+    let base = request.url;
+
+    const bases = [request.url.replace(/\/api\/movie\/?$/, '/api/v3/movie/'), request.url].filter((url, index, all) => all.indexOf(url) == index);
+
+    (async() => {
+        let response;
+
+        for(base of bases) {
+            response = await fetch(debug.url = `${ base }lookup/${ query }=${ id }&apikey=${ request.token }`);
+
+            if(response.ok)
+                break;
+        }
+
+        return response;
+    })()
         .then(response => response.json())
         .catch(error => {
             sendResponse({ error: 'Movie not found', location: '@0B: Push_Radarr => fetch.then.catch', silent: true });
@@ -63,7 +79,7 @@ export function Push_Radarr(request, sendResponse) {
             return debug.body = body;
         })
         .then(body => {
-            return fetch(`${ request.url }?apikey=${ request.token }`, debug.requestHeaders = {
+            return fetch(`${ base }?apikey=${ request.token }`, debug.requestHeaders = {
                 method: 'POST',
             				// mode: cors(request.url),
                 body: JSON.stringify(body),

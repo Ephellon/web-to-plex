@@ -54,7 +54,8 @@ export function StubChrome(options = {}) {
 }
 
 /**
- * Makes an intercepting `fetch`. `respond(url, init)` returns `{ body }` (a string or object), or throws to fail.
+ * Makes an intercepting `fetch`. `respond(url, init)` returns `{ body, status? }` (a string or object; status 200 by
+ * default), or throws to fail.
  * @param {function} respond - Decides each response
  * @param {function} [parse=JSON.parse] - Parses response JSON; the MV2 side passes the vm realm's, so `instanceof Array`
  *     works there as it does in a browser
@@ -71,7 +72,9 @@ export function StubFetch(respond, parse = text => JSON.parse(text)) {
         const answer = await respond(url, init);
         const text = typeof answer.body == 'string' ? answer.body : JSON.stringify(answer.body);
 
-        return { ok: true, status: 200, json: async() => parse(text), text: async() => text };
+        const status = answer.status ?? 200;
+
+        return { ok: status >= 200 && status < 300, status, json: async() => parse(text), text: async() => text };
     };
 
     return { fetch, requests };
