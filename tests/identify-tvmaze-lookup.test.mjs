@@ -3,7 +3,8 @@
  * `https://api.tvmaze.com/shows/?imdb=…`, which is not a TVmaze route (404), so the IDs stayed empty; it now asks
  * `/lookup/shows?imdb=…`. tests/fixtures/tvmaze-lookup-breaking-bad.json is a recorded reply of
  * `https://api.tvmaze.com/lookup/shows?imdb=tt0903747` (2026-10-03; the worker's fetch follows the 301 to /shows/169),
- * trimmed to the fields Identify reads. Requests go to a stub of `ServiceRequest`; nothing leaves the test.
+ * trimmed to the fields Identify reads; `/lookup/shows?thetvdb=81189` (TV2) gives the same show. Requests go to a stub of
+ * `ServiceRequest`; nothing leaves the test.
  */
 
 import fs from 'node:fs';
@@ -77,6 +78,27 @@ test('a show TVmaze does not know (404, `null`) keeps its IMDb ID and no others,
     assert.equal(requests[0], 'https://api.tvmaze.com/lookup/shows?imdb=tt0000001');
     assert.equal(data.imdb, 'tt0000001');
     assert.equal(data.tvdb, 0);
+    assert.equal(data.tmdb, 0);
+});
+
+// TV2: shows with a title and no IMDb ID go to OMDb and the F2 single search first; the TVDb lookup is for those with both IDs
+test('a show with a TVDb ID asks the TVmaze lookup by TVDb ID', async() => {
+    const { Identify, requests } = identify(url => (/^https:\/\/api\.tvmaze\.com\/lookup\/shows\?thetvdb=81189$/.test(url) ? { status: 200, text: SHOW } : { status: 404, text: 'null' }));
+    const data = await Identify({ type: 'show', title: 'Breaking Bad', year: 2008, IMDbID: 'tt0903747', TVDbID: 81189 });
+
+    assert.deepEqual(requests, ['https://api.tvmaze.com/lookup/shows?thetvdb=81189']);
+    assert.equal(data.imdb, 'tt0903747');
+    assert.equal(data.tvdb, 81189);
+    assert.equal(data.year, 2008);
+});
+
+test('a TVDb ID TVmaze does not know (404, `null`) keeps the given IDs, without throwing', async() => {
+    const { Identify, requests } = identify(() => ({ status: 404, text: 'null' }));
+    const data = await Identify({ type: 'show', title: 'Nothing Here', year: 2020, IMDbID: 'tt0000001', TVDbID: 1 });
+
+    assert.equal(requests[0], 'https://api.tvmaze.com/lookup/shows?thetvdb=1');
+    assert.equal(data.imdb, 'tt0000001');
+    assert.equal(data.tvdb, 1);
     assert.equal(data.tmdb, 0);
 });
 

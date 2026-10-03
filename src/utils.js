@@ -1791,9 +1791,9 @@ let INITIALIZE = (async date => {
 		            `https://api.themoviedb.org/3/find/${ iid || mid || tid }?api_key=${ api.tmdb }&external_source=${ iid? 'imdb': mid? 'tmdb': 'tvdb' }_id`:
 		        `https://api.themoviedb.org/3/search/${ MV? 'movie': 'tv' }?api_key=${ api.tmdb }&query=${ encodeURI(title) }${ year? '&year=' + year: '' }`:
 		    (rqut == 'tvdb' || (rqut == '*' && !tid && title) || (apid == tid))?
+		        /* TV1, TV2: a show with an ID asks TVmaze's lookup (`/shows/?imdb=` and `/shows/?thetvdb=` are not routes; 404) */
 		        (tid)?
-		            `https://api.tvmaze.com/shows/?thetvdb=${ tid }`:
-		        /* TV1: a show with an IMDb ID asks TVmaze's lookup (`/shows/?imdb=` is not a route; 404) */
+		            `https://api.tvmaze.com/lookup/shows?thetvdb=${ tid }`:
 		        (iid)?
 		            `https://api.tvmaze.com/lookup/shows?imdb=${ iid }`:
 		        `https://api.tvmaze.com/search/shows?q=${ encodeURI(title) }`:
