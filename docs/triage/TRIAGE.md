@@ -393,15 +393,23 @@ Findings:
 - ~~**F1**~~ (fixed: callbacks read `lastError`): `UPDATE_CONFIGURATION`, `SEARCH_FOR` and the old plugn types get no reply, but their senders pass a
   callback, so every save and item logs "message port closed" warnings. Cosmetic.
 - **F2**: the default OMDb key `PlzBanMe` is rejected; show pages never get an IMDb/TVDb ID. Needs a key (owner).
-- **F3**: options page fetches `check.torproject.org` on every load (blocked by CORS).
+- ~~**F3**~~ (fixed: IP check uses `checkip.amazonaws.com`): options page fetched `check.torproject.org` on every load (blocked by CORS).
 - **F4**: the Plex font's protocol-relative URL resolves inside the extension; fallback font used.
 - **F5**: context-menu titles keep the previous page's item when nothing is found.
 - ~~**app.trakt.tv**~~ rewritten (`w2p-site-trakt`): JSON-LD, path-checked for the SPA.
 - **L1**: a `replaceState` that only changes the query (Trakt's `?season=1`) re-runs the site; the runner should
   ignore navigations that keep the path. Small runner fix.
-- **L2**: in Firefox, a page CSP `connect-src` (Trakt) blocks `Identify`'s content-script fetch, so no IDs. Needs the
+- ~~**L2**~~ (fixed: service calls go through the worker relay, `SERVICE_FETCH`): in Firefox, a page CSP `connect-src` (Trakt) blocks `Identify`'s content-script fetch, so no IDs. Needs the
   background fetch relay (`docs/PHASE3.md` permissions). Size L.
 - ~~**IMDb**~~ rewritten (`w2p-site-imdb`): JSON-LD with hero fallback; lists from ItemList or rows. Offline only:
   IMDb's CAPTCHA wall blocked every live load from the test machine. **Owner check pending:** load
   `imdb.com/title/tt0111161/` and `/title/tt0903747/`, pick the Web to Plex console context, run `script.ready()` and
   `await script.init()`; expect a movie (1994) and a show (2008).
+
+## Owner reports (2026-10-03)
+
+- ~~**Radarr would not load**~~: content-side calls to `http://localhost:7878` were blocked (page origin, private
+  network) and Radarr v3+ dropped `/api/...`. Fixed: worker relay (`SERVICE_FETCH`), host permission asked on Test,
+  `/api/v3` first with legacy fallback. Not yet confirmed live; the owner switched to Ombi, which works.
+- ~~**B61**~~ legacy *arr API paths: Radarr and Sonarr now try `/api/v3` first. Open: Sonarr v3 (not v4) add needs a
+  `languageProfileId`.
