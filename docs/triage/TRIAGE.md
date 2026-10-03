@@ -420,3 +420,10 @@ Findings:
   the MyAnimeList plugin's selectors are stale (TypeError); the plugins need a selector pass.
 - ~~**S3**~~ Sonarr v3 add without `languageProfileId`: fixed.
 - ~~**D1**~~ fresh install showed no button until Settings was saved: defaults seeded on install/update.
+
+## v-next sync (`w2p-vnext-sync`, owner's folder at `709c373`)
+
+All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`checkip.amazonaws.com` 200, no
+`check.torproject.org`, no CORS), service relay (Ombi and Plex through the worker, no page-side calls), version "5.0 beta".
+
+- **O1** (new): the options page's icons render as tofu: `options/index.css` has no Glyphicons `@font-face`.
