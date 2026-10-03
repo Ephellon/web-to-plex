@@ -252,8 +252,8 @@ const style = {
 
 export default [
     {
-        // Vendored libraries and build output
-        ignores: ['dist/**', 'node_modules/**', `${ ROOT }/**/*.min.js`],
+        // Vendored libraries, build output, and test fixtures (recorded data and the MV2 parity copy, kept as they were)
+        ignores: ['dist/**', 'node_modules/**', `${ ROOT }/**/*.min.js`, 'tests/fixtures/**'],
     },
     js.configs.recommended,
     {

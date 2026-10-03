@@ -301,7 +301,7 @@ test('a repeated RunSite for the same site keeps one navigation listener and sto
         require: () => void null,
         minionsWanted: async() => false,
         listen: handler => listeners.push(handler),
-        setTimeout: (callback, delay) => (timers.set(++next, callback), next),
+        setTimeout: callback => (timers.set(++next, callback), next),
         clearTimeout: timer => timers.delete(timer),
         warn: () => void null,
     };
