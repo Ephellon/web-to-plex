@@ -370,8 +370,8 @@ New findings:
   `UseLoose`, `UseOmbi`, `DeveloperMode`), blocking every built-in site and switching to remote script loading.~~
   Fixed by the manager: keys never saved keep the page default.
 - **N2** (medium): Trakt moved to `app.trakt.tv`, which the `utils.js` domain check refuses. Phase 4 (site rewrite).
-- **N3**: confirms B37 (`utils.js` injected twice) in Firefox. Phase 3+.
-- **N4**: confirms B13 (`plugn.js` targets the last tab seen, not the sender). Phase 3+.
+- ~~**N3**~~ moot in MV3: no URL matches two `utils.js` entries (manifest check).
+- ~~**N4**~~ moot in MV3: `plugn.js` deleted; the runner works in its own tab.
 
 ## Live check MV3 (`w2p-live-mv3-1`)
 

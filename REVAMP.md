@@ -10,7 +10,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
 | Phase | 0-2 done. 3: MV3 build live-checked; round fixes F1, app.trakt.tv, IMDb landed (IMDb awaits an owner live check) |
-| Budget | Round from 15:55 UTC 2026-10-03: 5 fixes or 3 hours. Spent 4 (R1, M1, I1, I2; O1 needed none) at 16:30 UTC |
+| Budget | Round from 17:14 UTC 2026-10-03: 5 fixes or 3 hours (`w2p-fix-round7`: B36, T2, PL1-PL3) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -100,3 +100,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-fix-round5`, `w2p-fix-round5-d` | subordinate (`webtoplex-subo`) | P1, S3, F2, D1 |
 | 2026-10-03 | `w2p-fix-round6` | subordinate (`webtoplex-subo`) | R1, M1, I1, I2; O1 was a misdiagnosis (☐/☑ are status marks); Kitsu moved to kitsu.app (owner's drop-list call) |
 | 2026-10-03 | `w2p-vnext-sync-3` | subordinate (`webtoplex-subo`) | Owner folder at `400a642`; CI green again; R1 holds live |
+| 2026-10-03 | `w2p-fix-round7` | subordinate (`webtoplex-subo`) | B36, T2, PL1-PL3 (posted) |
