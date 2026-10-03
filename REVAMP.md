@@ -10,7 +10,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
 | Phase | 0-2 done. 3: MV3 build live-checked; round fixes F1, app.trakt.tv, IMDb landed (IMDb awaits an owner live check) |
-| Budget | Round from 17:14 UTC 2026-10-03: 5 fixes or 3 hours. Spent (B36, T2, PL1-PL3) at 17:50 UTC |
+| Budget | Round 8 from 22:22 UTC 2026-10-03: 4 fixes or 4 hours (IL1, TV1, X1, S23 posted) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -102,3 +102,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-vnext-sync-3` | subordinate (`webtoplex-subo`) | Owner folder at `400a642`; CI green again; R1 holds live |
 | 2026-10-03 | `w2p-fix-round7` | subordinate (`webtoplex-subo`) | B36, T2 (Google Play alias), PL1 Free Movies Cinema, PL2 My Shows, PL3 Toloka; dead plugins listed in TRIAGE (round 7) |
 | 2026-10-03 | `w2p-vnext-sync-4`, `w2p-live-manual-1` | subordinate (`webtoplex-subo`) | Sync to `f2c3c3a`: pass (78/78, lint 0, googleplay migrated). Headed checks: IMDb movie/show pass, My Shows (PL2) pass, IMDb list and Toloka signed-in not checked, K1 Kitsu fixable (host move + first Aired year) |
+| 2026-10-03 | `w2p-fix-round8` | subordinate (`webtoplex-subo`) | IL1 IMDb list rows, TV1 TVmaze by IMDb id, X1 remove remote Plex It! script, S23 cache GitHub version check (posted) |
