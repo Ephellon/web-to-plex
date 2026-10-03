@@ -20,6 +20,38 @@ function save(name, data, compress_data = false) {
 	return localStorage.setItem(name, data);
 }
 
+/**
+ * One manager cell of the popup (S30). It is built with DOM calls, so a saved URL can't add markup, and only an http: or
+ * https: URL becomes a link.
+ * @param {string} name - The manager ("radarr", …)
+ * @param {string} url - The saved URL
+ * @returns {HTMLTableCellElement} The cell
+ */
+function ManagerCell(name, url) {
+	const cell = document.createElement('td')
+		, link = document.createElement('a')
+		, image = document.createElement('img')
+		, label = document.createElement('label');
+
+	cell.setAttribute('id', `local-${ name }`);
+	cell.setAttribute('local', '{:name} ({:url})');
+	cell.setAttribute('name', name);
+	cell.setAttribute('url', url.replace(/^(.*?\/\/.*?\/).*$/, '$1'));
+
+	if(/^https?:\/\//i.test(url)) {
+		link.setAttribute('href', url);
+		link.setAttribute('target', '_blank');
+	}
+
+	image.setAttribute('alt', name);
+	image.setAttribute('src', `../img/local.${ name }.png`);
+	label.textContent = name;
+	link.append(image, label);
+	cell.append(link);
+
+	return cell;
+}
+
 let $ = top.$ = (selector, all) => (all? [...document.querySelectorAll(selector)]: document.querySelector(selector)),
 	table = $('table'),
 	managers = load('URLs'),
@@ -27,20 +59,14 @@ let $ = top.$ = (selector, all) => (all? [...document.querySelectorAll(selector)
 	plugins  = (load('plugin') || []);
 
 if(managers && managers.length) {
-	let strings = [],
-		compiled = [],
+	let compiled = [],
 		object = {},
 		width = 3;
 
 	for(let count = 0, length = Math.ceil(managers.length / width); count < length;)
 		for(let index = width * count++, name, url; index < count * width; index++)
 			object[name = managers[index]] = (!/^(null|undefined)?$/.test( url = load(`${ name }.url`) || '' ))?
-`            <td id="local-${ name }" local="{:name} ({:url})" name="${ name }" url="${ url.replace(/^(.*?\/\/.*?\/).*$/, '$1') }">
-				<a href="${ url }" target="_blank">
-					<img alt="${ name }" src="../img/local.${ name }.png" />
-					<label>${ name }</label>
-				</a>
-			</td>`: null;
+				ManagerCell(name, url): null;
 
 	for(let array = [...managers, ...builtins, ...plugins], index = 0, length = array.length, string; index < length; index++)
 		if(string = object[array[index]]) {
@@ -57,24 +83,16 @@ if(managers && managers.length) {
 				element.setAttribute('disabled', '');
 		}
 
-	for(let index = 0, length = compiled.length, string = ''; index <= length; index++) {
-		if((index > 0 && index % 3 == 0) || index >= length)
-			strings.push(string),
-			string = '';
-		if(index < length)
-			string += compiled[index];
+	const body = document.createElement('tbody');
+
+	for(let index = 0; index < compiled.length; index += width) {
+		const row = document.createElement('tr');
+
+		row.append(...compiled.slice(index, index + width));
+		body.append(row);
 	}
 
-	let html = '';
-
-	strings.map(string =>
-		html +=
-`       <tr>
-		${ string }
-		</tr>`
-	);
-
-	table.innerHTML = `<tbody>${html}</tbody>` + table.innerHTML;
+	table.insertBefore(body, table.firstChild);
 }
 
 document.body.onload = function() {
