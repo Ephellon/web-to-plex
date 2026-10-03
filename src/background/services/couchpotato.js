@@ -1,9 +1,11 @@
 /*** /src/background/services/couchpotato.js
  * CouchPotato (movies): query, add, and list ("charge") the library.
  * Moved verbatim from background.js (Phase 3b); only `Headers` → `RequestHeaders` and `BACKGROUND_TERMINAL` → `Terminal()`.
+ * No `mode: cors(url)` (B36): `no-cors` for an HTTP server gave an opaque reply (`.json()` rejects, no `Authorization`);
+ * the worker reaches the server with the host permission the options page asks for, as for the other services.
  */
 
-import { REPLIED, RequestHeaders, cors } from '../common.js';
+import { REPLIED, RequestHeaders } from '../common.js';
 
 /** CouchPotato - Movies **/
 // At this point you might want to think, WHY would you want to do
@@ -13,7 +15,6 @@ import { REPLIED, RequestHeaders, cors } from '../common.js';
 export function Query_CouchPotato(request, sendResponse) {
     fetch(`${ request.url }?id=${ request.imdbId }`, {
         headers: RequestHeaders(request.basicAuth),
-        mode: cors(request.url)
     })
         .then(response => response.json())
         .then(json => {
@@ -36,7 +37,6 @@ export function Push_CouchPotato(request, sendResponse) {
 
     fetch(debug.url = `${ request.url }?${ query }`, {
         method: 'POST',
-        mode: cors(request.url),
       		// body: JSON.stringify(body),
         headers,
     })
@@ -62,7 +62,6 @@ export function Push_CouchPotato(request, sendResponse) {
 export function Charge_CouchPotato(request, sendResponse) {
     fetch(request.url, {
         headers: RequestHeaders(request.basicAuth),
-        mode: cors(request.url)
     })
         .then(response => response.json())
         .then(json => sendResponse(json))

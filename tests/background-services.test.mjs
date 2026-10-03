@@ -100,12 +100,32 @@ for(const [name, request, pairs] of CASES)
             , b = await mv3.send(request);
 
         // Radarr and Sonarr try /api/v3 first (v3+ servers); on these v2-style servers that answers 404 and MV3 falls back
-        const mv3Requests = mv3.requests.slice(before3).filter(({ url }) => !/\/api\/v3\//.test(url));
+        const mv3Requests = mv3.requests.slice(before3).filter(({ url }) => !/\/api\/v3\//.test(url))
+            // CouchPotato no longer sends MV2's `mode: cors(url)` (B36; see the test below)
+            , modeless = list => (/COUCHPOTATO/.test(name) ? list.map(({ mode, ...rest }) => rest) : list);
 
-        assert.deepEqual(plain(mv3Requests), plain(mv2.requests.slice(before2)), 'requests');
+        assert.deepEqual(plain(modeless(mv3Requests)), plain(modeless(mv2.requests.slice(before2))), 'requests');
         assert.deepEqual(plain(b.replies), plain(a.replies), 'replies');
         assert.equal(b.replies.length, 1, 'exactly one reply');
         assert.equal(b.returned, true, 'async reply keeps the channel open');
+    });
+
+// B36: a browser answers a `no-cors` request with an opaque, empty reply; CouchPotato over HTTP must still read JSON
+for(const [name, request, reply, expected] of [
+    ['QUERY_COUCHPOTATO', { type: 'QUERY_COUCHPOTATO', url: 'http://cp.invalid/api/k/media.get', imdbId: 'tt0113277', basicAuth: AUTH }, { success: true, media: { status: 'active' } }, { success: true, status: 'active' }],
+    ['PUSH_COUCHPOTATO', { type: 'PUSH_COUCHPOTATO', url: 'http://cp.invalid/api/k/movie.add', imdbId: 'tt0113277', token: 'k', basicAuth: AUTH }, { success: true }, { success: true }],
+    ['CHARGE_COUCHPOTATO', { type: 'CHARGE_COUCHPOTATO', url: 'http://cp.invalid/api/k/media.list?type=movie', basicAuth: AUTH }, { movies: [] }, { movies: [] }],
+])
+    test(`${ name } over HTTP: no no-cors mode, the JSON reply and the Authorization header get through`, async() => {
+        const mv3 = await LoadMV3(OPTIONS, (url, init) => (init.mode == 'no-cors' ? { status: 0, body: '' } : { body: reply }))
+            , before = mv3.requests.length
+            , { replies } = await mv3.send(request)
+            , sent = mv3.requests.slice(before);
+
+        assert.equal(sent.length, 1);
+        assert.equal(sent[0].mode, null, 'no mode');
+        assert.match(sent[0].headers.Authorization, /^Basic /);
+        assert.deepEqual(plain(replies), [expected]);
     });
 
 test('PUSH_RADARR on a v3+ server: lookup and add both use /api/v3', async() => {
