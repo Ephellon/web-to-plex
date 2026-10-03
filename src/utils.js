@@ -1798,10 +1798,12 @@ let INITIALIZE = (async date => {
 
 		UTILS_TERMINAL.LOG(`Searching for "${ title } (${ year })" in ${ type || apit }/${ rqut }${ proxy.enabled? '[PROXY]': '' } => ${ url }`);
 
-		// Radarr v3+ only serves /api/v3; v2 and older only /api
+		// Radarr and Sonarr v3+ serve /api/v3 (Radarr v3+ and Sonarr v4 only that); v2 and older only /api
 		let urls = (__CONFIG__.radarrURLRoot && url.startsWith(`${ __CONFIG__.radarrURLRoot }api/movie/`))
 			? [url.replace(`${ __CONFIG__.radarrURLRoot }api/`, `${ __CONFIG__.radarrURLRoot }api/v3/`), url]
-			: [url];
+			: (__CONFIG__.sonarrURLRoot && url.startsWith(`${ __CONFIG__.sonarrURLRoot }api/series/`))
+				? [url.replace(`${ __CONFIG__.sonarrURLRoot }api/`, `${ __CONFIG__.sonarrURLRoot }api/v3/`), url]
+				: [url];
 
 		await(proxy.enabled? fetch(url, { mode: "cors", headers }): ServiceRequest(urls))
 			.then(response => response.text())

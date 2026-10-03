@@ -878,6 +878,9 @@ function performOmbiTest({ refreshing = false, event }) {
 // page can only reach the user's servers once their origins are granted (MV3)
 let ORIGINS_REQUEST = Promise.resolve(true);
 
+// Answers with the caller's public IP address as plain text (the proxy test shows it); it allows any origin (CORS *)
+const IP_CHECK_URL = 'https://checkip.amazonaws.com/';
+
 /**
  * fetch() for the user's service servers: waits for a pending host-permission request first.
  * @param {string} url - The request URL
@@ -1151,7 +1154,11 @@ function getSonarr(options, api = "profile") {
 	if(options.sonarrBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.sonarrBasicAuthUsername }:${ options.sonarrBasicAuthPassword }`) }`;
 
-	return ServiceFetch(`${ options.sonarrURLRoot }/api/${ api }`, { headers })
+	// Sonarr v3+ serves /api/v3 (v4 only that) and renamed profile to qualityprofile; v2 and older only serve /api
+	let v3 = ({ profile: 'qualityprofile' })[api] ?? api;
+
+	return ServiceFetch(`${ options.sonarrURLRoot }/api/v3/${ v3 }`, { headers })
+		.then(response => response.ok? response: ServiceFetch(`${ options.sonarrURLRoot }/api/${ api }`, { headers }))
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'Sonarr failed to connect with error:' + String(error)),
@@ -2974,7 +2981,7 @@ Recall['@auto'].GetIPAddress = async() => {
 
 	if(proxy.enabled) {
 		let { url, headers } = proxy,
-			tor = 'https://check.torproject.org';
+			tor = IP_CHECK_URL;
 
 		headers = HandleProxyHeaders(headers, tor);
 
@@ -3015,7 +3022,7 @@ Recall['@auto'].GetIPAddress = async() => {
 				new Notification('error', error);
 			});
 	} else {
-		await fetch('https://check.torproject.org', { mode: 'cors' })
+		await fetch(IP_CHECK_URL, { mode: 'cors' })
 			.then(results => results.text())
 			.then(text => {
 				let DOM = new DOMParser,

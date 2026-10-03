@@ -17,7 +17,23 @@ export function Push_Sonarr(request, sendResponse) {
         , debug = { headers, query, request };
    	// setup stack trace for debugging
 
-    fetch(debug.url = `${ request.url }lookup?apikey=${ request.token }&term=${ query }`)
+    // Sonarr v3+ serves /api/v3 (v4 only that); v2 and older only /api. Try v3 first and keep whichever base answers
+    let base = request.url;
+
+    const bases = [request.url.replace(/\/api\/series\/?$/, '/api/v3/series/'), request.url].filter((url, index, all) => all.indexOf(url) == index);
+
+    (async() => {
+        let response;
+
+        for(base of bases) {
+            response = await fetch(debug.url = `${ base }lookup?apikey=${ request.token }&term=${ query }`);
+
+            if(response.ok)
+                break;
+        }
+
+        return response;
+    })()
         .then(response => response.json())
         .catch(error => {
             sendResponse({ error: 'TV Show not found', location: '@0B: Push_Sonarr => fetch.then.catch', silent: true });
@@ -49,7 +65,7 @@ export function Push_Sonarr(request, sendResponse) {
             return debug.body = body;
         })
         .then(body => {
-            return fetch(`${ request.url }?apikey=${ request.token }`, debug.requestHeaders = {
+            return fetch(`${ base }?apikey=${ request.token }`, debug.requestHeaders = {
                 method: 'POST',
             				// mode: cors(request.url),
                 body: JSON.stringify(body),

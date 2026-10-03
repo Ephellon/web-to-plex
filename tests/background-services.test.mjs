@@ -73,9 +73,9 @@ const CASES = [
     ['PUSH_RADARR server error', { type: 'PUSH_RADARR', url: 'http://r.invalid/api/movie/', token: 'k', StoragePath: '/m/', title: "Heat", year: 1995, imdbId: 'tt0113277' },
         [[/\/api\/v3\//, { status404: true }], [/lookup/, { title: "Heat" }], [/\?apikey=/, [{ errorMessage: 'This movie has already been added' }]]]],
     ['PUSH_SONARR', { type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', QualityID: 1, basicAuth: AUTH, title: "Lost", year: 2004, tvdbId: 73739 },
-        [[/lookup\?/, [{ title: "Lost", tvdbId: 73739 }]], [/\?apikey=/, '']]],
+        [[/\/api\/v3\//, { status404: true }], [/lookup\?/, [{ title: "Lost", tvdbId: 73739 }]], [/\?apikey=/, '']]],
     ['PUSH_SONARR lookup fails', { type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', title: "Lost", year: 2004, tvdbId: 73739 },
-        [[/lookup\?/, null]]],
+        [[/\/api\/v3\//, { status404: true }], [/lookup\?/, null]]],
     ['PUSH_MEDUSA', { type: 'PUSH_MEDUSA', url: 'http://m.invalid/api/v2/series', root: 'http://m.invalid/api/v2/', token: 'k', StoragePath: 'D:\\TV', basicAuth: AUTH, title: "Lost Girl", year: 2010, tvdbId: 182181 },
         [[/searchIndexers/, { results: [['tvdb', 'Lost Girl', 182181]] }], [/api\/v2\/series$/, { id: { tvdb: 182181 } }]]],
     ['PUSH_SICKBEARD', { type: 'PUSH_SICKBEARD', url: 'http://sb.invalid/api/k/', token: 'k', StoragePath: 'D:\\TV', QualityID: 'hd', title: "Lost", year: 2004, tvdbId: 73739, exists: false },
@@ -99,7 +99,7 @@ for(const [name, request, pairs] of CASES)
         const a = await mv2.send(request)
             , b = await mv3.send(request);
 
-        // Radarr tries /api/v3 first (v3+ servers); on these v2-style servers that answers 404 and MV3 falls back to MV2's path
+        // Radarr and Sonarr try /api/v3 first (v3+ servers); on these v2-style servers that answers 404 and MV3 falls back
         const mv3Requests = mv3.requests.slice(before3).filter(({ url }) => !/\/api\/v3\//.test(url));
 
         assert.deepEqual(plain(mv3Requests), plain(mv2.requests.slice(before2)), 'requests');
@@ -118,4 +118,16 @@ test('PUSH_RADARR on a v3+ server: lookup and add both use /api/v3', async() => 
         ['POST', 'http://r.invalid/api/v3/movie/?apikey=k'],
     ]);
     assert.deepEqual(plain(replies), [{ success: 'Added to /movies/Heat (1995)' }]);
+});
+
+test('PUSH_SONARR on a v3+ server: lookup and add both use /api/v3', async() => {
+    const mv3 = await LoadMV3(OPTIONS, responder([[/\/api\/v3\/series\/lookup\?/, [{ title: "Lost", tvdbId: 73739 }]], [/\/api\/v3\/series\/\?apikey=/, '']]))
+        , before = mv3.requests.length;
+
+    await mv3.send({ type: 'PUSH_SONARR', url: 'http://s.invalid/api/series/', token: 'k', StoragePath: '/tv/', QualityID: 1, title: "Lost", year: 2004, tvdbId: 73739 });
+
+    assert.deepEqual(mv3.requests.slice(before).map(({ url, method }) => [method, url]), [
+        ['GET', 'http://s.invalid/api/v3/series/lookup?apikey=k&term=tvdb%3A73739'],
+        ['POST', 'http://s.invalid/api/v3/series/?apikey=k'],
+    ]);
 });
