@@ -446,3 +446,10 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - **PL2 My Shows**: pass (House, 2004, tt0412142).
 - **PL3 Toloka** signed in: not checked (no owner login); signed-out behaviour stands.
 - **K1 Kitsu**: kitsu.app keeps the old selectors and `og:type video.tv_show`. Fix if kept: move host to `kitsu.app` (glob, P1 table, options), take the first year of the "Aired" row (greedy regex gives the end year). Still on the drop list: owner's call.
+
+## Round 8 (`w2p-fix-round8`)
+
+- ~~**IL1**~~ IMDb list rows had no year and original-language titles: row reads `.ipc-title--title` and `.dli-title-metadata li`. Live: 10/10 years.
+- ~~**TV1**~~ shows with only an IMDb ID got no TVDb ID: `/shows/?imdb=` is not a TVmaze route (404); now `/lookup/shows?imdb=`. Open: sibling `/shows/?thetvdb=` has the same bug (`/lookup/shows?thetvdb=`), next-round candidate.
+- ~~**X1**~~ Plex It! remote script removed; a test bans page script injection. Owner may want Plex It! back, bundled.
+- ~~**S23**~~ GitHub version check cached 24 h in `storage.local`; failures keep the last status.
