@@ -3,7 +3,8 @@
 	"description": "Adds a button on various movie & TV show sites to open the item in Plex, or send to your designated NZB manager for download.",
 	"homepage_url": "https://webtoplex.github.io/",
 	"manifest_version": 3,
-	"version": "4.1.2.4",
+	"version": "5.0.0.0",
+	"version_name": "5.0 beta",
 	"icons": {
 		"16": "img/16.png",
 		"32": "img/32.png",
