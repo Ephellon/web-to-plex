@@ -428,3 +428,14 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 
 - ~~**O1**~~ not a bug: the boxes after sidebar labels are intended status marks (`[using]::after` ☐ not set up, `[in-use]` ☑ in use); Glyphicons loads. UX tweak (hide or dot) is the owner's call (`w2p-fix-round6`).
 - **K1** (new): Kitsu moved to `kitsu.app` (Cloudflare challenge); the plugin glob, P1 match and options host still name `kitsu.io`, so it never runs. Fix or drop: owner's call (drop list).
+
+## Round 7 (`w2p-fix-round7`)
+
+- ~~**B36**~~ CouchPotato over HTTP: `no-cors` dropped; tests cover the opaque-reply case.
+- ~~**T2**~~ key mismatch: `google.play` alias is now `googleplay` (switching Google Play off had no effect); old keys
+  migrate on update; a test ties every `RunSite` alias to its options key. Default-allow stays (owner's call); with D1
+  seeding every built-in key it changes nothing today. S21 superseded.
+- ~~**PL1-PL3**~~ Free Movies Cinema (new paths, JSON-LD), My Shows (JSON-LD; live blocked by a 502 to headless
+  Chrome, checked on saved pages), Toloka (junk items from non-release topics).
+- **Plugin drop list (owner's call):** Fox Searchlight, IndoMovie, Redbox (no response), SnagFilms (domain taken over by
+  a gambling site), Go/Freeform (moved to `freeform.com`), Kitsu (K1).
