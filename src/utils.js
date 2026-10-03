@@ -102,6 +102,27 @@ class UUID {
 }
 
 /**
+ * A show from a TVmaze single search (F2). Identify looks shows up by title through OMDb, which refuses the built-in
+ * key; TVmaze needs none. The reply counts only when it carries an IMDb or TVDb ID and, when the page gave a year, the
+ * show premiered within a year of it.
+ * @param {object} show - The `https://api.tvmaze.com/singlesearch/shows?q=…` reply
+ * @param {number|string} [year] - The page's year
+ * @returns {object|null} The show, or null when it does not match
+ */
+function TVmazeShow(show, year) {
+	let externals = (show && show.externals) || {},
+		premiered = parseInt((show && show.premiered) || '');
+
+	if(!externals.imdb && !externals.thetvdb)
+		return null;
+
+	if(+year && !(premiered && Math.abs(premiered - year) <= 1))
+		return null;
+
+	return show;
+}
+
+/**
  * Fetches through the service worker (background/services/relay.js). A content script's own fetch runs with the page's
  * origin, so CORS, the page's CSP and the private-network rules (a page reaching http://localhost) block calls to the
  * user's servers; the worker uses the host permissions granted in the options page.
@@ -1783,6 +1804,9 @@ let INITIALIZE = (async date => {
 
 		if(url === null) return null;
 
+		// A show looked up by title goes to OMDb; when that fails, or no OMDb key of the user's own is set, ask TVmaze (F2)
+		let omdbShow = rqut == 'tvdb' && !iid && /^https:\/\/www\.omdbapi\.com\/\?t=/.test(url);
+
 		let proxy = __CONFIG__.proxy || {},
 			cors = proxy.url, // if cors is requried and not uspported, proxy through this URL
 			headers = HandleProxyHeaders(proxy.headers, url);
@@ -1805,21 +1829,33 @@ let INITIALIZE = (async date => {
 				? [url.replace(`${ __CONFIG__.sonarrURLRoot }api/`, `${ __CONFIG__.sonarrURLRoot }api/v3/`), url]
 				: [url];
 
-		await(proxy.enabled? fetch(url, { mode: "cors", headers }): ServiceRequest(urls))
-			.then(response => response.text())
-			.then(data => {
-				try {
-					if(data)
-						json = JSON.parse(data);
-				} catch(error) {
-					UTILS_TERMINAL.error(`Failed to parse JSON: "${ data }"`);
-				}
-			})
-			.catch(error => {
-				throw error;
-			});
+		if(!(omdbShow && !__CONFIG__.OMDbAPI))
+			await(proxy.enabled? fetch(url, { mode: "cors", headers }): ServiceRequest(urls))
+				.then(response => response.text())
+				.then(data => {
+					try {
+						if(data)
+							json = JSON.parse(data);
+					} catch(error) {
+						UTILS_TERMINAL.error(`Failed to parse JSON: "${ data }"`);
+					}
+				})
+				.catch(error => {
+					throw error;
+				});
 
 		UTILS_TERMINAL.LOG('Search results', { title, year, url, json });
+
+		if(omdbShow && json.Response != 'True') {
+			let show = await ServiceRequest(`https://api.tvmaze.com/singlesearch/shows?q=${ encodeURIComponent(title) }`)
+				.then(response => response.ok? response.json(): null)
+				.catch(() => null);
+
+			UTILS_TERMINAL.LOG('TVmaze search results', { title, year, show });
+
+			if(show = TVmazeShow(show, year))
+				json = show;
+		}
 
 		/* DO NOT change to else-if, won't work with Sick Beard: { data: { results: ... } } */
 		if('data' in json)

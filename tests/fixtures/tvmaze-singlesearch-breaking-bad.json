@@ -1,0 +1,18 @@
+{
+    "id": 169,
+    "url": "https://www.tvmaze.com/shows/169/breaking-bad",
+    "name": "Breaking Bad",
+    "type": "Scripted",
+    "language": "English",
+    "premiered": "2008-01-20",
+    "ended": "2019-10-11",
+    "externals": {
+        "tvrage": 18164,
+        "thetvdb": 81189,
+        "imdb": "tt0903747"
+    },
+    "image": {
+        "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/501/1253519.jpg",
+        "original": "https://static.tvmaze.com/uploads/images/original_untouched/501/1253519.jpg"
+    }
+}
