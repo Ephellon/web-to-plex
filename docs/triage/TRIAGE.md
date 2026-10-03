@@ -394,10 +394,10 @@ Findings:
   callback, so every save and item logs "message port closed" warnings. Cosmetic.
 - **F2**: the default OMDb key `PlzBanMe` is rejected; show pages never get an IMDb/TVDb ID. Needs a key (owner).
 - ~~**F3**~~ (fixed: IP check uses `checkip.amazonaws.com`): options page fetched `check.torproject.org` on every load (blocked by CORS).
-- **F4**: the Plex font's protocol-relative URL resolves inside the extension; fallback font used.
-- **F5**: context-menu titles keep the previous page's item when nothing is found.
+- ~~**F4**~~ (fixed: packaged fonts via `chrome-extension://__MSG_@@extension_id__/`): the Plex font's protocol-relative URL resolves inside the extension; fallback font used.
+- ~~**F5**~~ (fixed: item tied to its tab; reset on tab switch and pagehide): context-menu titles keep the previous page's item when nothing is found.
 - ~~**app.trakt.tv**~~ rewritten (`w2p-site-trakt`): JSON-LD, path-checked for the SPA.
-- **L1**: a `replaceState` that only changes the query (Trakt's `?season=1`) re-runs the site; the runner should
+- ~~**L1**~~ (fixed: runner re-runs only on a new path): a `replaceState` that only changes the query (Trakt's `?season=1`) re-runs the site; the runner should
   ignore navigations that keep the path. Small runner fix.
 - ~~**L2**~~ (fixed: service calls go through the worker relay, `SERVICE_FETCH`): in Firefox, a page CSP `connect-src` (Trakt) blocks `Identify`'s content-script fetch, so no IDs. Needs the
   background fetch relay (`docs/PHASE3.md` permissions). Size L.

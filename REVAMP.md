@@ -10,7 +10,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
 | Phase | 0-2 done. 3: MV3 build live-checked; round fixes F1, app.trakt.tv, IMDb landed (IMDb awaits an owner live check) |
-| Budget | Round from 02:37 UTC 2026-10-03: 3 fixes or 3 hours (ends about 05:37 UTC); job `w2p-fix-round4` (L1, F5, F4) |
+| Budget | Round from 02:37 UTC 2026-10-03: 3 fixes or 3 hours. Spent (L1, F5, F4) at 03:10 UTC |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -94,3 +94,5 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-02 | `w2p-live-mv3-1` | subordinate (`webtoplex-subo`) | MV3 live check; 5 site/selector fixes; F1-F5 |
 | 2026-10-02 | `w2p-site-trakt` | subordinate (`webtoplex-subo`) | app.trakt.tv rewrite; L1, L2 |
 | 2026-10-02 | `w2p-site-imdb` | subordinate (`webtoplex-subo`) | IMDb rewrite, offline-checked; live blocked by CAPTCHA |
+| 2026-10-03 | `w2p-fix-round4` | subordinate (`webtoplex-subo`) | L1, F5, F4 |
+| 2026-10-03 | `w2p-vnext-cleanup` | subordinate (`webtoplex-subo`) | Owner's v-next folder synced to `7c98555`, stale `dist/` rebuilt |
