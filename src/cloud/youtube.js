@@ -84,14 +84,23 @@ let script = {
 		}
 
 		if(!listenersSet) {
+			// T14: one check a second, at most 10, cleared once it fires or the expander is gone; the old 10 ms interval
+			// was only cleared by a second full run, so a page where init returned early kept it for the life of the tab
+			let checks = 0;
+
 			listenerInt = setInterval(() => {
-				let closed = 'collapsed' in $('ytd-expander').first.attributes;
+				let expander = $('ytd-expander').first;
 
-				if(closed && !openedByUser)
+				if(++checks > 10 || !expander)
+					return clearInterval(listenerInt);
+
+				if('collapsed' in expander.attributes && !openedByUser) {
+					clearInterval(listenerInt);
 					script.init(true);
-			}, 10);
+				}
+			}, 1000);
 
-			$('ytd-expander').first.addEventListener('mouseup', event => {
+			$('ytd-expander').first?.addEventListener('mouseup', event => {
 				let closed = 'collapsed' in $('ytd-expander').first.attributes;
 
 				if(!closed)
