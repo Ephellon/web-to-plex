@@ -16,7 +16,8 @@ let script = {
 	// (detail|buy) - match one of the items
 
 	// optional
-	"ready": () => location.search && location.search.length > 1 && $('#tmdb').first.textContent,
+	// T16: every element read here may be missing (the page builds them after its own lookup); never throw
+	"ready": () => location.search && location.search.length > 1 && $('#tmdb').first?.textContent,
 
 	// optional
 	"timeout": 5000, // if the script fails to complete, retry after ... milliseconds
@@ -32,17 +33,20 @@ let script = {
 			IMDbID = script.getID('imdb')||"",
 			TMDbID = script.getID('tmdb')|0;
 
+		if(!title)
+			return script.timeout;
+
 		title = title.textContent;
-		year  = year.textContent|0;
-		image = image.src;
+		year  = year?.textContent|0;
+		image = image?.src;
 
 		return { type, title, year, image, IMDbID, TMDbID };
 	},
 
 	// optional | functionality only
-	"getType": () => ($('#info').first.getAttribute('type') == 'movie'? 'movie': 'show'),
+	"getType": () => ($('#info').first?.getAttribute('type') == 'movie'? 'movie': 'show'),
 
-	"getID": (provider) => $(`#${provider}`).first.textContent,
+	"getID": (provider) => $(`#${provider}`).first?.textContent,
 };
 
 setTimeout(() => {
