@@ -140,13 +140,17 @@ export function ClassifyResult(result, timeout = DEFAULT_TIMEOUT) {
 }
 
 /**
- * The path of a URL, which is what tells one page of a site from another.
+ * The path of a URL, which is what tells one page of a site from another. A hash route (`#!/…` or `#/…`, as the Plex web
+ * app uses: `/desktop/#!/server/…/details?key=…`) is part of the path, since the pathname never changes there; any
+ * other hash is not (an anchor or state on the same page).
  * @param {string} href - The URL
- * @returns {string} Its `pathname`, or the whole string when it is not a URL
+ * @returns {string} Its `pathname` (plus a hash route), or the whole string when it is not a URL
  */
 export function PathOf(href) {
     try {
-        return new URL(href).pathname;
+        const { pathname, hash } = new URL(href);
+
+        return /^#!?\//.test(hash) ? pathname + hash : pathname;
     } catch {
         return href;
     }
