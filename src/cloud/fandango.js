@@ -1,37 +1,40 @@
+/** Fandango movie pages (fandango.com/<slug>-<id>/movie-overview)
+ * FD1: the item comes from the page's JSON-LD Movie, checked against the current path. Its name carries the year
+ * ("Digger (2026)"), which wins over `datePublished` (the release date). The pre-2025 selectors (.subnav__title,
+ * .movie-details__release-date, .movie-details__movie-img) are gone, so init threw on `textContent`; the "minions"
+ * (.subnav ul) are gone too.
+**/
+
 let script = {
-	"url": "*://*.fandango.com/[\\w\\-]+/movie-overview",
+    url: '*://*.fandango.com/[\\w\\-]+/movie-overview',
 
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
+    ready: () => script.getItem() != null,
 
-		let title  = $('.subnav__title').first,
-			year   = $('.movie-details__release-date').first,
-			image  = $('.movie-details__movie-img').first,
-			type   = 'movie';
+    init: () => script.getItem() ?? 1000,
 
-		title = title.textContent.trim().split(/\n+/)[0].trim();
-		year  = +year.textContent.replace(/.*(\d{4}).*/, '$1').trim();
-		image = image.empty? '': image.src;
+    // The JSON-LD Movie whose `url` is this page; null while there is none
+    getItem: () => {
+        const path = top.location.pathname.replace(/\/+$/, '');
 
-		title = title.replace(RegExp(`\\s*\\((${ year })\\)`), '');
+        for(const element of $('script[type="application/ld+json"]')) {
+            let data;
 
-		return { type, title, year, image };
-	},
+            try {
+                data = JSON.parse(element.textContent);
+            } catch {
+                continue;
+            }
 
-	"minions": () => {
-		let actions = $('.subnav ul');
+            for(const item of [].concat(data?.['@graph'] ?? data)) {
+                if(item?.['@type'] != 'Movie' || !item.name || (item.url && new URL(item.url, top.location.href).pathname.replace(/\/+$/, '') != path))
+                    continue;
 
-		if(actions.empty)
-			return;
+                const [, title, year] = /^\s*(.+?)\s*(?:\((\d{4})\))?\s*$/.exec(item.name);
 
-		actions.forEach(element => {
-			let minion;
-			let parent = furnish('li.web-to-plex-wrapper.subnav__link-item', {},
-				minion = furnish('a.web-to-plex-minion.subnav__link', {}, 'Web to Plex')
-			);
+                return { type: 'movie', title, year: +(year ?? (/\d{4}/.exec(item.datePublished ?? '') ?? [])[0]) || null, image: item.image?.url ?? item.image };
+            }
+        }
 
-			addMinions(minion);
-			element.appendChild(parent);
-		});
-	},
+        return null;
+    },
 };
