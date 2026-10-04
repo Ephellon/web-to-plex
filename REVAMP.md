@@ -10,7 +10,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
 | Phase | 0-2 done. 3: MV3 build live-checked; round fixes F1, app.trakt.tv, IMDb landed (IMDb awaits an owner live check) |
-| Budget | Round 10 from 23:35 UTC 2026-10-03: 3 fixes (T13, T15, T20 posted) |
+| Budget | Round 10 from 23:35 UTC 2026-10-03: 3 fixes Spent (T13, T15, T20) at 00:07 UTC 2026-10-04 |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -105,4 +105,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-fix-round8` | subordinate (`webtoplex-subo`) | IL1 IMDb list rows, TV1 TVmaze by IMDb id, X1 remove remote Plex It! script, S23 cache GitHub version check: all applied, 91/91 tests |
 | 2026-10-03 | `w2p-vnext-sync-5` | subordinate (`webtoplex-subo`) | Sync owner folder to `14f5a17`: pass (91/91, no Plex It!, 1 GitHub request over 2 opens) |
 | 2026-10-03 | `w2p-fix-round9` | subordinate (`webtoplex-subo`) | TV2 TVmaze by TVDb ID, T9 Rotten Tomatoes year and browse, T19 Google film selector, S30 popup URL escaping: all applied, 106/106 tests |
-| 2026-10-03 | `w2p-fix-round10` | subordinate (`webtoplex-subo`) | T13 Letterboxd null panel, T15 TheTVDB slug pages, T20 Amazon image (posted) |
+| 2026-10-03 | `w2p-fix-round10` | subordinate (`webtoplex-subo`) | T13 Letterboxd null panel, T15 TheTVDB slug pages, T20 Amazon image: all applied, 116/116 tests |

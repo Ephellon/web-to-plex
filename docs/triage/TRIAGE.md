@@ -461,3 +461,9 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - ~~**T19**~~ Google `FILM` selector now TMDb `/movie/`. Fixture only (Google CAPTCHA headless).
 - ~~**S30**~~ popup manager cells built with DOM calls; only http(s) URLs become links. Live: injected markup now inert.
 - Sync-5 noted a leftover hidden `li#plexit` style/element after X1; cosmetic.
+
+## Round 10 (`w2p-fix-round10`)
+
+- ~~**T13**~~ Letterboxd panel id read after the null check. Open: Letterboxd list pages dead live (empty result list), poster is a placeholder.
+- ~~**T15**~~ TheTVDB script was dead live (`YEAR` ReferenceError; numeric `/series/<n>` now 404): ID and year from the info rows. Live: Breaking Bad 2008 81189, The Office 73244.
+- ~~**T20**~~ Amazon Prime Video script was dead live: rewritten on title art, year badge, hero image; episode list → show. Live: The Boys 2019, Bosch 2014, a 2026 film.
