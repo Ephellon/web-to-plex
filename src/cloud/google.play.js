@@ -4,14 +4,22 @@ let script = {
 	"init": (ready) => {
 		let _title, _year, _image, R = RegExp;
 
+		// GP1: the year is in the line after the heading ("2026 • 105 minutes"), the poster is `img[itemprop="image"]`;
+		// `h1 ~ div span` and `img[alt="cover art"]` are gone, and reading them threw
 		let type  = script.getType(),
-			title = $('h1').first,
-			year  = $(`h1 ~ div span:${ type == 'movie'? 'first': 'last' }-of-type`).first,
-			image = $('img[alt="cover art" i]').first;
+			title = $('h1 [itemprop="name"], h1').first,
+			line  = title?.closest('h1')?.parentElement?.nextElementSibling,
+			image = $('img[itemprop="image"], img[alt="cover art" i]').first,
+			year;
 
-		title = title.textContent.replace(/\s*\(\s*(\d{4})\s*\).*?$/, '').trim();
-		year = +(year.textContent || R.$1).replace(/^.*?(\d{4})/, '$1').trim();
-		image = (image || {}).src;
+		if(!title)
+			return 1000;
+
+		let [, name, named] = /^\s*(.+?)\s*(?:\(\s*(\d{4})\s*\).*)?$/.exec(title.textContent) ?? [];
+
+		title = name;
+		year = +(named ?? (/\b(1[89]\d{2}|2\d{3})\b/.exec(line?.textContent ?? '') ?? [])[1]) || null;
+		image = image?.src;
 
 		return { type, title, year, image };
 	},
