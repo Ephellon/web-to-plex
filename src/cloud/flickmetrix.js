@@ -53,8 +53,15 @@ let script = {
 			films.push({ type, title, year, image, IMDbID });
 		});
 
-		if(!films.length)
-			return new Notification('error', 'Failed to process list');
+		// FM1: `Notification` here is the browser's (the extension's notice class lives inside utils.js), and
+		// `new Notification('error', …)` threw; an empty list is usually one still loading, so warn once and retry
+		if(!films.length) {
+			if(!script.warned)
+				console.warn('[flickmetrix] No films found in the list yet');
+			script.warned = true;
+
+			return 1000;
+		}
 
 		return films;
 	},
