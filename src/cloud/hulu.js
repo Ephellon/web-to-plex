@@ -1,35 +1,49 @@
 let script = {
 	"url": "*://*.hulu.com/(watch|series|movie)/*",
 
-	"ready": () => !$('[class$="__meta"]').empty,
+	// SW1: title pages (/movie/…, /series/…) describe themselves in JSON-LD (Movie, TVSeries); /watch/ (the player, signed
+	// in) keeps reading the player's lines
+	"ready": () => (/^\/(series|movie)\//.test(top.location.pathname) ? script.getItem() != null : !$('[class$="__meta"]').empty),
 
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
-		let { pathname } = top.location;
-		let type, title, year, image;
+	"init": () => {
+		if(/^\/(series|movie)\//.test(top.location.pathname))
+			return script.getItem() ?? 1000;
 
-		if(/^\/(series|movie)\//.test(pathname)) {
-			type = R.$1;
-			title = $('[class~="masthead__title"i]').first;
-			year  = $('[class~="masthead__meta"i]').child(type == 'series'? 4: 3);
-			image = $('[class~="masthead__artwork"i]').first;
-
-			title = title.textContent;
-			year  = +year.textContent;
-			type  = /\b(tv|show|season|series)\b/i.test(type)? 'show': 'movie';
-			image = image? image.src: null;
-		} else {
-			title = $('[class$="__second-line"]').first;
-			year  = (new Date).getFullYear();
-			type  = script.getType();
-
-			title = title.textContent;
-		}
+		const title = $('[class$="__second-line"]').first?.textContent.trim();
 
 		if(!title)
 			return 5000;
 
-		return { type, title, year, image };
+		return { type: script.getType(), title, year: (new Date).getFullYear(), image: null };
+	},
+
+	// The JSON-LD item whose `url` is this page: name, year (`releasedEvent.startDate`, the premiere for series), artwork
+	"getItem": () => {
+		const path = top.location.pathname.replace(/\/+$/, '');
+
+		for(const element of $('script[type="application/ld+json"]')) {
+			let data;
+
+			try {
+				data = JSON.parse(element.textContent);
+			} catch {
+				continue;
+			}
+
+			for(const item of [].concat(data?.['@graph'] ?? data)) {
+				if(!item?.url || new URL(item.url, top.location.href).pathname.replace(/\/+$/, '') != path)
+					continue;
+
+				const type = item['@type'] == 'Movie' ? 'movie' : item['@type'] == 'TVSeries' ? 'show' : null;
+
+				if(!type || !item.name)
+					return -1;
+
+				return { type, title: item.name.trim(), year: +(/\d{4}/.exec(item.releasedEvent?.startDate ?? item.dateCreated ?? '') ?? [0])[0] || null, image: item.image?.url ?? item.image };
+			}
+		}
+
+		return null;
 	},
 
 	"getType": () => {
@@ -40,7 +54,7 @@ let script = {
 		} else {
 			let tl = $('[class$="__third-line"]').first;
 
-			return /^\s*$/.test(tl.textContent)?
+			return /^\s*$/.test((tl || {}).textContent || '')?
 				'movie':
 			'show';
 		}
