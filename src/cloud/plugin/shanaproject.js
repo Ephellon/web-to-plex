@@ -9,9 +9,11 @@ let plugin = {
 			year = +($('#header_big .header_info_block + *')
 				.first.textContent.trim()
 				.replace(/[^]*(\d{4})[^]*/m, '$1')),
-			image = $('#header_big .header_display_box')
-				.first.style['background-image'].trim()
-				.replace(/url\((.+)\)/i, '$1');
+			image = (/url\((["']?)(.+?)\1\)/i.exec($('#header_big .header_display_box').first?.style['background-image'] ?? '') ?? [])[2];
+
+		// SH1: the URL without its CSS quotes, and none for the site's "no art" placeholder (//static.shanaproject.com/no-art.jpg)
+		if(!image || /\/no-art\.\w+$/i.test(image))
+			image = null;
 
 		title = title.replace(RegExp(`\\s*\\(${ year }\\)`), '');
 
