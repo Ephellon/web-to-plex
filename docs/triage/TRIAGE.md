@@ -475,3 +475,12 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - ~~**SW2**~~ Tubi title pages on JSON-LD `@graph` (hashed classes gone).
 - Sweep: works: allocine films (type `film`, not `movie`; check), shanaproject (no-art image), tvmaze. Broken-but-alive, next: fandango, googleplay, allocine series, flickmetrix (`Notification` collision). Walled headless: justwatch 403, netflix sign-in (`/title/` glob idea), moviemeter Cloudflare, plex sign-in. Changed: movieo (redesign; drop or rewrite). showrss: options key, no script.
 - ~~**JW1**~~ JustWatch poster from JSON-LD; ~~**MM1**~~ MovieMeter rewrite (never ran: `.rating` wait); ~~**PX1**~~ Plex web hash routes: `PathOf` keeps `#!/` and `#/` hashes so the runner re-runs, details read `data-testid`. Owner-directed, live-checked headed. Plex server pages untested live (alt account has no server). Open: Plex Discover provider pages not in glob (owner call).
+
+## Round 12 (`w2p-fix-round12`)
+
+- ~~**FD1**~~ Fandango on JSON-LD. ~~**GP1**~~ Google Play movie pages. ~~**AC1**~~ AlloCiné series run; films type `movie`.
+- ~~**FM1**~~ Flick Metrix: empty list retries (browser `Notification` threw). ~~**T18**~~ closed with it.
+- ~~**T10**~~ TMDb lists: glob + manifest take `/movie`, `/tv`, `/list/`; items card-scoped, user lists from JSON-LD.
+- ~~**T14**~~ YouTube expander check 1 s, max 10. ~~**T17**~~ `google.js` (tmdb in T10; toloka clean). ~~**T16**~~ `webtoplex.js` (rest already rewritten).
+- ~~**SH1**~~ Shana no-art image → none. ~~**X1b**~~ Plex It! styles, icons, add-item code gone.
+- Found: YouTube still has a `YEAR` fallback (ReferenceError path); the webtoplex.github.io page is stale.
