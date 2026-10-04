@@ -1,69 +1,36 @@
-// Web to Plex - Toloka Plugin
-// Aurthor(s) - @ephellon (2019)
+/** Amazon Prime Video detail pages (amazon.com/gp/video/detail/…)
+ * The page (2026) has no JSON-LD or og: tags. The title is the title art's alt text (h1[data-testid="title-art"] img),
+ * with the tab title ("Watch The Boys - Season 1 | Prime Video") as a fallback; the year is the release-year badge; the
+ * image is the hero background (T20: the old fallback read `.src` of a list, always undefined); an episode list makes it
+ * a show. The pre-2024 selectors (#aiv-content-title, .dv-node-dp-title, .av-bgimg__div, .av-fallback-packshot), the
+ * `YEAR` fallback (a utils.js local: ReferenceError) and the "minions" (#dv-action-box) are gone.
+**/
 
-/* Minimal Required Layout *
-	script {
-		url:  string,
-		init: function => ({ type:string, title:string, year:number|null|undefined })
-	}
-*/
-
-// REQUIRED [script:object]: The script object
 let script = {
-	// REQUIRED [script.url]: this is what you ask Web to Plex access to; currently limited to a single domain
-	"url": "*://*.amazon.com/*/video/detail/*",
+    url: '*://*.amazon.com/*/video/detail/*',
 
-	// PREFERRED [script.ready]: a function to determine that the page is indeed ready
-	"ready": () => !$('[data-automation-id="imdb-rating-badge"], #most-recent-reviews-content > *:first-child').empty,
+    ready: () => script.getTitle() != null,
 
-	// REQUIRED [script.init]: it will always be fired after the page and Web to Plex have been loaded
-	// OPTIONAL [ready]: if using script.ready, Web to Plex will pass a boolean of the ready state
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
+    init: () => {
+        const title = script.getTitle();
 
-		let title = $('[data-automation-id="title"], #aiv-content-title, .dv-node-dp-title')
-					.first.textContent
-					.replace(/(?:\(.+?\)|(\d+)|\d+\s+seasons?\s+(\d+))\s*$/gi, '')
-					.trim(),
-				// REQUIRED [title:string]
-				// you have access to the exposed "helper.js" file within the extension
-			year = +(
-				!(_year = $('[data-automation-id="release-year-badge"], .release-year')).empty?
-					_year.first.textContent.trim():
-				(R.$1 || R.$2 || YEAR)
-			),
-				// PREFERRED [year:number, null, undefined]
-			image = (
-				(_image = $('.av-bgimg__div, div[style*="sgp-catalog-images"]')).empty?
-					$('.av-fallback-packshot img').src:
-				getComputedStyle(_image.first).backgroundImage.replace(/[^]*url\((["']?)(.+?)\1\)[^]*/i, '$2')
-			),
-				// the rest of the code is up to you, but should be limited to a layout similar to this
-			type = script.getType();
+        if(!title)
+            return 1000;
 
-		// REQUIRED [{ type:'movie', 'show'; title:string; year:number }]
-		// PREFERRED [{ image:string; IMDbID:string; TMDbID:string, number; TVDbID:string, number }]
-		return { type, title, year, image };
-	},
+        return {
+            type: script.getType(),
+            title,
+            year: +($('[data-automation-id="release-year-badge"]').first?.textContent.trim().match(/\d{4}/) ?? [0])[0] || null,
+            image: $('[data-automation-id="hero-background"] img, img[data-testid="base-image"]').first?.src,
+        };
+    },
 
-	// OPTIONAL: the rest of this code is purely for functionality
-	"getType": () => {
-		return !$('[data-automation-id*="season"], [class*="season"], [class*="episode"], [class*="series"]').empty?
-			'tv':
-		'movie'
-	},
+    getTitle: () => {
+        const art = $('h1[data-testid="title-art"] img').first?.alt?.trim()
+            , tab = (/^Watch (.+?)(?: - Season \d+)? \| Prime Video$/.exec(document.title) ?? [])[1];
 
-	"minions": () => {
-		let actions = $(script.getType() == 'tv'? '#dv-action-box .av-action-button-box': '#dv-action-box');
+        return art || tab || null;
+    },
 
-		if(actions.empty)
-			return;
-
-		actions.forEach(element => {
-			let minion = furnish('a.av-button.av-button--default', {}, 'Web to Plex');
-
-			addMinions(minion);
-			element.appendChild(minion);
-		});
-	},
+    getType: () => ($('[data-automation-id="btf-episodes-tab"], [data-automation-id^="ep-title-episode"]').empty ? 'movie' : 'show'),
 };
