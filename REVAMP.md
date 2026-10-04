@@ -107,4 +107,5 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-03 | `w2p-fix-round9` | subordinate (`webtoplex-subo`) | TV2 TVmaze by TVDb ID, T9 Rotten Tomatoes year and browse, T19 Google film selector, S30 popup URL escaping: all applied, 106/106 tests |
 | 2026-10-03 | `w2p-fix-round10` | subordinate (`webtoplex-subo`) | T13 Letterboxd null panel, T15 TheTVDB slug pages, T20 Amazon image: all applied, 116/116 tests |
 | 2026-10-04 | `w2p-fix-round11` | subordinate (`webtoplex-subo`) | LB1 Letterboxd lists and poster; SW1-SW2 built-in live sweep, Hulu and Tubi fixed: all applied, 128/128 tests |
-| 2026-10-04 | `w2p-owner-fixes-2` | subordinate (`webtoplex-subo`) | Upload owner-directed JW1 JustWatch, MM1 MovieMeter, PX1 Plex hash routes as patches; revert v-next tree (posted) |
+| 2026-10-04 | `w2p-owner-fixes-2` | subordinate (`webtoplex-subo`) | Upload owner-directed JW1 JustWatch, MM1 MovieMeter, PX1 Plex hash routes as patches; revert v-next tree: all applied, 139/139 tests |
+| 2026-10-04 | `w2p-vnext-sync-6` | subordinate (`webtoplex-subo`) | Sync owner folder to round 11 + owner fixes (posted) |
