@@ -10,7 +10,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
 | Phase | 0-2 done. 3: MV3 build live-checked; round fixes F1, app.trakt.tv, IMDb landed (IMDb awaits an owner live check) |
-| Budget | Round 12 from 02:35 UTC 2026-10-04: 10 fixes or 4 hours (FD1 GP1 AC1 FM1 T10 T14 T17 T16 SH1 X1b posted) |
+| Budget | Round 12 from 04:12 UTC 2026-10-04: 10 fixes or 4 hours (FD1 GP1 AC1 FM1 T10 T14 T17 T16 SH1 X1b posted) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
