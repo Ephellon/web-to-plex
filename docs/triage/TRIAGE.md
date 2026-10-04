@@ -467,3 +467,11 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - ~~**T13**~~ Letterboxd panel id read after the null check. Open: Letterboxd list pages dead live (empty result list), poster is a placeholder.
 - ~~**T15**~~ TheTVDB script was dead live (`YEAR` ReferenceError; numeric `/series/<n>` now 404): ID and year from the info rows. Live: Breaking Bad 2008 81189, The Office 73244.
 - ~~**T20**~~ Amazon Prime Video script was dead live: rewritten on title art, year badge, hero image; episode list → show. Live: The Boys 2019, Bosch 2014, a 2026 film.
+
+## Round 11 (`w2p-fix-round11`)
+
+- ~~**LB1**~~ Letterboxd list rows (`li.posteritem`) and real posters (JSON-LD `Movie.image`). Live: 100-item list.
+- ~~**SW1**~~ Hulu title pages on JSON-LD (masthead selectors gone). Film year may be Hulu's release year.
+- ~~**SW2**~~ Tubi title pages on JSON-LD `@graph` (hashed classes gone).
+- Sweep: works: allocine films (type `film`, not `movie`; check), shanaproject (no-art image), tvmaze. Broken-but-alive, next: fandango, googleplay, allocine series, flickmetrix (`Notification` collision). Walled headless: justwatch 403, netflix sign-in (`/title/` glob idea), moviemeter Cloudflare, plex sign-in. Changed: movieo (redesign; drop or rewrite). showrss: options key, no script.
+- Owner-directed in v-next (not yet committed): JW1 JustWatch, MM1 MovieMeter, PX1 Plex hash routes; patches requested in `w2p-owner-fixes-2`. Open: Plex Discover provider pages not in glob (owner call).
