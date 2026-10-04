@@ -1,34 +1,48 @@
+/** MovieMeter title pages (moviemeter.nl/film/<id>)
+ * The page (2026) has JSON-LD `Movie` (name, image, `sameAs` = the IMDb page) and og: tags; its dates are database
+ * dates, so the year comes from the heading ("Fools Rush In (1997)") or og:title ("… (Film, 1997) - MovieMeter.nl").
+ * The old `ready` waited for `.rating + p font`, which is gone, so the script never ran; `.details` and `.poster` are
+ * gone too.
+**/
+
 let script = {
-	"url": "*://*.moviemeter.nl/film/\\d+",
+    url: '*://*.moviemeter.nl/film/\\d+',
 
-	"ready": () => !$('.rating + p font').empty,
+    ready: () => script.getData() != null,
 
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
+    init: () => {
+        const data = script.getData();
 
-		let title = $('.details span').first,
-			year  = $('.details *').first,
-			image = $('.poster').first,
-			type  = script.getType();
+        if(!data?.name)
+            return 1000;
 
-		if(!title || !year)
-			return 1000;
+        const heading = $('h1').first?.textContent ?? ''
+            , ogTitle = $('meta[property="og:title"]').first?.content ?? ''
+            , ogType = $('meta[property="og:type"]').first?.content ?? ''
+            , year = (/\((\d{4})\)\s*$/.exec(heading.trim()) ?? /\(\w+, (\d{4})\)/.exec(ogTitle) ?? [])[1];
 
-		year  = year.lastChild.textContent;
-		title = title.textContent.replace(year, '').trim();
-		year  = +year.replace(/\D+/g, '');
-		image = image.src;
+        return {
+            type: data['@type'] == 'TVSeries' || /tv_show|series/i.test(ogType) || /\((Serie|Series), /i.test(ogTitle) ? 'show' : 'movie',
+            title: data.name.trim(),
+            year: +year || null,
+            image: data.image?.url ?? data.image ?? $('meta[property="og:image"]').first?.content,
+            IMDbID: (/imdb\.com\/title\/(tt\d+)/.exec([].concat(data.sameAs ?? []).join(' ')) ?? [])[1],
+        };
+    },
 
-		return { type, title, year, image };
-	},
+    // The page's JSON-LD Movie or TVSeries
+    getData: () => {
+        for(const element of $('script[type="application/ld+json"]')) {
+            try {
+                const item = [].concat(JSON.parse(element.textContent)).find(item => /^(Movie|TVSeries)$/.test(item?.['@type']));
 
-	"getType": () => {
-		let time = $('.rating + p font').last;
+                if(item)
+                    return item;
+            } catch {
+                continue;
+            }
+        }
 
-		time = time.textContent;
-
-		if(/(series|show)/.test(time))
-			return 'show';
-		return 'film';
-	},
+        return null;
+    },
 };
