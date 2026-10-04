@@ -25,14 +25,6 @@ BUTTON  [style].web-to-plex-button.<floating>.<hide|show>.<open|closed>
             A  [tooltip][href][`id`].list-action
                IMG  [src=/img/48.png] // Web to Plex logo
 
-        // The Plex It! button
-        LI  [tooltip]#wtp-plexit.list-item
-            IMG [src=/img/plexit.48.png] // Alarm bell
-
-        // The Add to Plex It! button (normally hidden, until Plex It! is visible)
-        LI  [tooltip][data]#plexit.list-item
-            DIV [tooltip][style][draggable=true]
-
         // The hide button
         LI  [tooltip]#wtp-hide.list-item
             IMG [src=/img/hide.48.png] // Eye icon
@@ -73,7 +65,7 @@ BUTTON  [style].web-to-plex-button.<floating>.<hide|show>.<open|closed>
     border-radius: 75px !important;
 }
 
-.web-to-plex-button.button-shape-box, #plexit-bookmarklet-frame ~ .web-to-plex-button.button-shape-box {
+.web-to-plex-button.button-shape-box {
     border-radius: 0 !important;
     border-bottom-left-radius: 2px !important;
     border-bottom-right-radius: 2px !important;

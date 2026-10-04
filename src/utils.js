@@ -208,8 +208,6 @@ let INITIALIZE = (async date => {
 		'icon_white_16':	extURL('img/_16.png'),
 		'icon_white_32':	extURL('img/_32.png'),
 		'icon_white_48':	extURL('img/_48.png'),
-		'plexit_icon_16':   extURL('img/plexit.16.png'),
-		'plexit_icon_48':   extURL('img/plexit.48.png'),
 		'reload_icon_16':   extURL('img/reload.16.png'),
 		'reload_icon_48':   extURL('img/reload.48.png'),
 		'icon_outline_16':  extURL('img/o16.png'),
@@ -3115,16 +3113,6 @@ let INITIALIZE = (async date => {
 
 		results = results.filter(v => v.status == 'download');
 
-		let img = furnish('img#plexit-add', { title: 'Add to Plex It!', onmouseup: event => {let frame = document.querySelector('#plexit-bookmarklet-frame'); frame.src = frame.src.replace(/(#plexit:.*)?$/, '#plexit:' + event.target.parentElement.getAttribute('data'))} }),
-			po, pi = furnish('li#plexit.list-item', { data: encode(JSON.stringify(results)) }, img),
-			op  = document.querySelector('#wtp-plexit');
-
-		if(po = button.querySelector('#plexit'))
-			po.remove();
-		try {
-			button.querySelector('ul').insertBefore(pi, op);
-		} catch(e) { /* Don't do anything */ }
-
 		let multiple = results.length,
 			items = multiple == 1? 'item': 'items';
 
@@ -3148,42 +3136,18 @@ let INITIALIZE = (async date => {
 		TMDbID = +TMDbID;
 		TVDbID = +TVDbID;
 
-		let opt = { name: options.title, year: options.year, image: options.image || IMG_URL.nil, type: options.type, imdb: IMDbID, IMDbID, tmdb: TMDbID, TMDbID, tvdb: TVDbID, TVDbID },
-			op  = document.querySelector('#wtp-plexit'),
-			img = (options.image)?
-				furnish('div#plexit-add', { tooltip: 'Add to Plex It!', style: `background: url(${ IMG_URL.plexit_icon_16 }) top right/60% no-repeat, #0004 url(${ opt.image }) center/contain no-repeat; height: 48px; width: 34px;`, draggable: true, onmouseup: event => {let frame = document.querySelector('#plexit-bookmarklet-frame'); frame.src = frame.src.replace(/(#plexit:.*)?$/, '#plexit:' + event.target.parentElement.getAttribute('data'))} }):
-			furnish('img', { src: IMG_URL.plexit_icon_48, onmouseup: event => {let frame = document.querySelector('#plexit-bookmarklet-frame'); frame.src = frame.src.replace(/(#plexit:.*)?$/, '#plexit:' + event.target.parentElement.getAttribute('data'))} });
-
 		FindMediaItem.OPTIONS = options;
 
 		try {
 			return Request_Plex(options).then(({ found, key }) => {
 				if(found) {
 					UpdateButton(options.button, 'found', 'On Plex', { ...options, key });
-					opt = { ...opt, url: options.button.href, found: true, status: 'found' };
-
-					let po, pi = furnish('li#plexit.list-item', { data: encode(JSON.stringify(opt)) }, img);
-
-					if(po = options.button.querySelector('#plexit'))
-						po.remove();
-					try {
-						options.button.querySelector('ul').insertBefore(pi, op);
-					} catch(e) { /* Don't do anything */ }
 				} else {
 					options.field = 'original_title';
 
 					return Request_Plex(options).then(({ found, key }) => {
 						if(found) {
 							UpdateButton(options.button, 'found', 'On Plex', { ...options, key });
-							opt = { ...opt, url: options.button.href, found: true, status: 'found' };
-
-							let po, pi = furnish('li#plexit.list-item', { data: encode(JSON.stringify(opt)) }, img);
-
-							if(po = options.button.querySelector('#plexit'))
-								po.remove();
-							try {
-								options.button.querySelector('ul').insertBefore(pi, op);
-							} catch(e) { /* Don't do anything */ }
 						} else {
 							let available = (__CONFIG__.usingOmbi || __CONFIG__.usingWatcher || __CONFIG__.usingRadarr || __CONFIG__.usingSonarr || __CONFIG__.usingMedusa || __CONFIG__.usingSickBeard || __CONFIG__.usingCouchPotato),
 								action = (available ? 'download' : 'notfound'),
@@ -3192,16 +3156,6 @@ let INITIALIZE = (async date => {
 								'Not on Plex (download not available)';
 
 							UpdateButton(options.button, action, title, options);
-							opt = { ...opt, found: false, status: action };
-
-							let po, pi = furnish('li#plexit.list-item', { data: encode(JSON.stringify(opt)) }, img);
-
-							if(po = options.button.querySelector('#plexit'))
-								po.remove();
-							if(!!~[].slice.call(options.button.querySelector('ul').children).indexOf(op))
-								try {
-									options.button.querySelector('ul').insertBefore(pi, op);
-								} catch(e) { /* Don't do anything */ }
 						}
 
 						return found;

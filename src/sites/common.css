@@ -407,16 +407,8 @@
    opacity: 0.1;
 }
 
-[class*="web-to-plex"] *:not(#plexit-bookmarklet-frame) ~ .web-to-plex-button {
+[class*="web-to-plex"] * ~ .web-to-plex-button {
    margin-left: 0px;
-}
-
-#plexit-bookmarklet-frame ~ .web-to-plex-button {
-   margin-left: 280px !important;
-}
-
-*:not(#plexit-bookmarklet-frame) + .web-to-plex-button [id^="plexit"i], #plexit-bookmarklet-frame + .web-to-plex-button #wtp-plexit {
-   display: none !important;
 }
 
 .floating.web-to-plex-button {
@@ -525,7 +517,7 @@
    }
 }
 
-.web-to-plex-button.open, #plexit-bookmarklet-frame + .web-to-plex-button {
+.web-to-plex-button.open {
    opacity: 1;
 
    width: 350px !important;
@@ -559,7 +551,7 @@
    display: none !important;
 }
 
-*:not(#plexit-bookmarklet-frame) + .web-to-plex-button.closed .list-item {
+* + .web-to-plex-button.closed .list-item {
    float: left !important;
    opacity: 0;
    transition: opacity 0 !important;
