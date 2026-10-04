@@ -12,14 +12,15 @@ let script = {
 			case 'movie':
 				title  = $('#featured-film-header .headline-1, .headline-1[itemprop="name"], h1.headline-1').first.textContent.trim();
 				year   = +$('#featured-film-header [href*="/year/"], small[itemprop="datePublished"], a[href*="/films/year/"]').first.textContent.trim();
-				image  = ($('.film-poster img, .image').first || {}).src;
+				image  = script.getPoster();
 				IMDbID = script.getIMDbID(type);
 
 				return { type, title, year, image, IMDbID };
 				break;
 
 			case 'list':
-				let items = $('.poster-list .poster-container, .poster-list .film-detail'),
+				// LB1: list rows are `li.posteritem` now (2026)
+				let items = $('li.posteritem, .poster-list .poster-container, .poster-list .film-detail'),
 					options = [];
 
 				items.forEach((element, index, array) => {
@@ -61,17 +62,33 @@ let script = {
 		}
 	},
 
+	// LB1: the film's poster from the page's JSON-LD (`Movie.image`; og:image is a wide backdrop), else a loaded poster
+	// image (the first `.film-poster img` is Letterboxd's empty-poster placeholder until it loads)
+	"getPoster": () => {
+		for(const element of $('script[type="application/ld+json"]')) {
+			try {
+				const data = JSON.parse(element.textContent.replace(/\/\*[^]*?\*\//g, ''));
+
+				if(data?.['@type'] == 'Movie' && data.image)
+					return data.image;
+			} catch {
+				continue;
+			}
+		}
+
+		return [...$('.film-poster img, .image')].map(image => image.src).find(src => src && !/empty-poster/.test(src));
+	},
+
+	// One list row (LB1): the poster's `data-item-name` ("Harakiri (1962)"), or the frame title on older markup
 	"process": (element) => {
-		let title = $('.frame-title', element).first,
-			image = $('img', element).first,
-			type = 'movie',
-			year;
+		const name = element.querySelector('[data-item-name]')?.getAttribute('data-item-name') ?? element.querySelector('.frame-title')?.textContent ?? ''
+			, [, title, year] = /^\s*(.+?)\s*(?:\((\d{4})\))?\s*$/.exec(name) ?? []
+			, image = element.querySelector('img')?.src;
 
-		title = title.textContent.replace(/\((\d+)\)/, '').trim();
-		year  = +RegExp.$1;
-		image = image.src;
+		if(!title)
+			return null;
 
-		return { type, title, year, image };
+		return { type: 'movie', title, year: +year || null, image: /empty-poster/.test(image ?? '') ? void null : image };
 	},
 
 	"minions": () => {
