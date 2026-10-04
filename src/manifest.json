@@ -222,8 +222,9 @@
 		},
 		{
 			"matches": [
-				"*://*.themoviedb.org/movie/*",
-				"*://*.themoviedb.org/tv/*"
+				"*://*.themoviedb.org/movie*",
+				"*://*.themoviedb.org/tv*",
+				"*://*.themoviedb.org/list/*"
 			],
 			"js": [
 				"utils.js",
