@@ -76,11 +76,13 @@ let script = {
 
 	"minions": () => {
 		let actions = $('.actions-panel ul, .js-watch-panel .services, #watch').first,
-			type = script.getType(),
-			featured = (actions.id == 'watch');
+			type = script.getType();
 
+		// T13: no panel (yet) → nothing to add to; read its id only after this check
 		if(!actions)
 			return;
+
+		let featured = (actions.id == 'watch');
 
 		let minion, parent;
 
