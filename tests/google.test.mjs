@@ -63,6 +63,21 @@ test('a TMDb /tv/ or TVDb link is a show, as before', () => {
     assert.equal(load([{ href: 'https://thetvdb.com/series/breaking-bad', className: 'x' }]).getType(), 'show');
 });
 
+test('T17: a subtitle without a year gives 0, never a year left over from an earlier regex', () => {
+    // Reading the subtitle first runs another regex, as the page's own code would, leaving RegExp.$1 = "2026"
+    const subtitle = { get textContent() {
+        /(2026)/.exec('stale 2026');
+
+        return 'Drama ‧ 2h 22m';
+    } };
+    const script = load([{ href: 'https://www.themoviedb.org/movie/278-the-shawshank-redemption', className: 'x' }], {
+        ...PANEL,
+        '#wp-tabs-container [data-attrid="subtitle"i] span, [role="heading"i] > div:last-child': subtitle,
+    });
+
+    assert.equal(script.init().year, 0);
+});
+
 test('a result page with no title links is not handled', () => {
     const script = load([{ href: 'https://en.wikipedia.org/wiki/Film', className: '' }]);
 

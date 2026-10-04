@@ -30,9 +30,8 @@ let script = {
 			return -1;
 		}
 
-		(_year.textContent + '').replace(/(\d{4})/, '');
-
-		let year  = +R.$1,
+		// T17: read the match itself; `RegExp.$1` after a regex that did not match is whatever an earlier regex left
+		let year  = +(/\d{4}/.exec(_year?.textContent ?? '') ?? [])[0] || 0,
 			title = _title.textContent.replace((type == 'movie'? /^(.+)$/: /(.+)(?:(?:\:\s*series\s+info|\-\s*(?:all\s+episodes|season)).+)$/i), '$1').trim(),
 			image = (_image || {}).src;
 
