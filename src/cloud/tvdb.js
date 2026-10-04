@@ -3,42 +3,38 @@ let script = {
 
 	"ready": () => !$('#series_basic_info').empty,
 
-	"init": (ready) => {
-		let _title, _year, _image, R = RegExp;
+	"init": () => {
+		const info = script.getInfo()
+			, title = $('#series_title, .translated_title').first
+			, image = $('img[src*="/posters/"]').first;
 
-		let title  = $('#series_title, .translated_title').first,
-			image  = $('img[src*="/posters/"]').first,
-			type   = 'show',
-			TVDbID = script.getTVDbID(),
-			Db = {}, year;
+		if(!title)
+			return 1000;
 
-		title = title.textContent.trim();
-		image = (image || {}).src;
-
-		$('#series_basic_info').first.textContent
-			.replace(/^\s+|\s+$/g, '')
-			.replace(/^\s+$/gm, '<!---->')
-			.replace(/^\s+(\S)/gm, '$1')
-			.split(RegExp(`\\n*<!---->\\n*`))
-			.forEach(value => {
-				value = value.split(/\n+/, 2);
-
-				let n = value[0], v = value[1];
-
-				n = n.replace(/^([\w\s]+).*$/, '$1').replace(/\s+/g, '_').toLowerCase();
-
-				Db[n] = /,/.test(v)? v.split(/\s*,\s*/): v;
-			});
-
-		year = +(((Db.first_aired || YEAR) + '').slice(0, 4));
-
-		return { type, title, year, image, TVDbID };
+		// T15: the year comes from the "First Aired" row ("January 20, 2008"); the old text split never found it and
+		// fell back to `YEAR`, which only exists inside utils.js (ReferenceError)
+		return { type: 'show', title: title.textContent.trim(), year: +(/\d{4}/.exec(info.first_aired ?? '') ?? [0])[0], image: image?.src, TVDbID: script.getTVDbID(info) };
 	},
 
-	"getTVDbID": () => {
-		let { pathname } = top.location;
+	// The "Basic info" rows by name (`<li><strong>First Aired</strong><span>January 20, 2008</span></li>` → first_aired)
+	"getInfo": () => {
+		const info = {};
 
-		if(/\/series\/(\d+)/.test(pathname))
-			return RegExp.$1;
+		for(const item of $('#series_basic_info li')) {
+			const name = item.querySelector('strong')
+				, value = item.querySelector('span');
+
+			if(name && value)
+				info[name.textContent.trim().replace(/\W+/g, '_').toLowerCase()] = value.textContent.replace(/\s+/g, ' ').trim();
+		}
+
+		return info;
+	},
+
+	// T15: series pages use slugs now (/series/breaking-bad); the ID is the "TheTVDB.com Series ID" row
+	"getTVDbID": (info = script.getInfo()) => {
+		const id = (/\/series\/(\d+)/.exec(top.location.pathname) ?? [])[1] ?? (info.thetvdb_com_series_id ?? '').replace(/\D+/g, '');
+
+		return id || void null;
 	},
 };
