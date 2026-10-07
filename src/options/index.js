@@ -893,7 +893,8 @@ function ServiceFetch(url, init) {
 
 function getWatcher(options, api = "getconfig") {
 	if(!options.watcherToken)
-		return new Notification('error', 'Invalid Watcher token');
+		// S6: a Promise, as the callers chain `.then`; their `.catch` shows the message, stops the spinner and marks the test
+		return Promise.reject(new Error('Invalid Watcher token'));
 
 	let headers = {
 		'Accept': 'application/json',
@@ -1009,7 +1010,7 @@ function performWatcherTest({ QualityProfileID = 'Default', refreshing = false, 
 
 function getRadarr(options, api = "profile") {
 	if(!options.radarrToken)
-		return new Notification('error', 'Invalid Radarr token');
+		return Promise.reject(new Error('Invalid Radarr token'));
 
 	let headers = {
 		'Accept': 'application/json',
@@ -1143,7 +1144,7 @@ function performRadarrTest({ QualityProfileID, StoragePath, refreshing = false, 
 
 function getSonarr(options, api = "profile") {
 	if(!options.sonarrToken)
-		return new Notification('error', 'Invalid Sonarr token');
+		return Promise.reject(new Error('Invalid Sonarr token'));
 
 	let headers = {
 		'Accept': 'application/json',
@@ -1276,7 +1277,7 @@ function performSonarrTest({ QualityProfileID, StoragePath, refreshing = false, 
 
 function getMedusa(options, api = "config") {
 	if(!options.medusaToken)
-		return new Notification('error', 'Invalid Medusa token');
+		return Promise.reject(new Error('Invalid Medusa token'));
 
 	let headers = {
 		'Accept': 'application/json',
@@ -1402,7 +1403,7 @@ function performMedusaTest({ QualityProfileID, StoragePath, refreshing = false, 
 
 function getSickBeard(options, api = "sb") {
 	if(!options.sickBeardToken)
-		return new Notification('error', 'Invalid Sick Beard token');
+		return Promise.reject(new Error('Invalid Sick Beard token'));
 
 	let headers = {
 		'Accept': 'application/json',
@@ -1537,7 +1538,7 @@ function performSickBeardTest({ QualityProfileID, StoragePath, refreshing = fals
 
 function getCouchPotato(options, api = "updater.info") {
 	if(!options.couchpotatoToken)
-		return new Notification('error', 'Invalid CouchPotato token');
+		return Promise.reject(new Error('Invalid CouchPotato token'));
 
 	let headers = {
 		'Accept': 'application/json',
