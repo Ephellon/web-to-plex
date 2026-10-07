@@ -10,7 +10,7 @@ build, plus a scripting language for user rules (Phase 7). Playbook: `CONVERTING
 | Base | `beta-branch` @ `3a89875`, tagged `pre-revamp` (local; the tag push was refused with HTTP 403) |
 | Dev branch | `claude/extension-rewrite-features-b4afna` (Ephellon/web-to-plex) |
 | Phase | 0-2 done. 3: MV3 build live-checked; round fixes F1, app.trakt.tv, IMDb landed (IMDb awaits an owner live check) |
-| Budget | Round 13 from 23:02 UTC 2026-10-07: 10 fixes or 3 hours (YT1 S6 S7 S8 S9 S16 S17 S19 S29 S31 posted) |
+| Budget | Round 13 from 23:02 UTC 2026-10-07: 10 fixes or 3 hours (YT1 S6 S7 S8 S9 S16 S17 S19 S29 O2 posted) |
 | Offser rules share | `w2p-live-rules` (`common.md`) |
 
 ## Phases
@@ -110,4 +110,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-04 | `w2p-owner-fixes-2` | subordinate (`webtoplex-subo`) | Upload owner-directed JW1 JustWatch, MM1 MovieMeter, PX1 Plex hash routes as patches; revert v-next tree: all applied, 139/139 tests |
 | 2026-10-04 | `w2p-vnext-sync-6` | subordinate (`webtoplex-subo`) | Sync owner folder to `2db2896`: pass (139/139, 0 errors, TVmaze runs once) |
 | 2026-10-04 | `w2p-fix-round12` | subordinate (`webtoplex-subo`) | Fandango, Google Play, AlloCiné series, Flick Metrix, TMDb lists, YouTube interval, RegExp.$n, null checks, Shana image, Plex It! leftovers: all applied, 167/167 tests |
-| 2026-10-07 | `w2p-fix-round13` | subordinate (`webtoplex-subo`) | YouTube year; options page: token guards, Ombi disabled/servers, CouchPotato auth, Plex sign-in spinner, Reset, client ID; popup tiles (posted) |
+| 2026-10-07 | `w2p-fix-round13` | subordinate (`webtoplex-subo`) | YouTube year; options page: token guards, Ombi disabled/servers, CouchPotato auth, Plex sign-in spinner, Reset, client ID; O2 Ombi prefill of Radarr/Sonarr (owner report) (posted) |
