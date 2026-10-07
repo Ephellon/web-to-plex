@@ -720,94 +720,112 @@ function performOmbiLogin({ event }) {
 				ServerID = s.value = uuid;
 				s.innerHTML = `<option value="${ uuid }">${ name }</option>`;
 
-				/* Now we can fill in the other details */
-				if(u.checked) {
-					// Ombi
-					let L = $('[data-option="ombiURLRoot"]'),
-						A = $('[data-option="ombiToken"]');
-
-					L.value = L.textContent = l;
-					A.value = A.textContent = a;
-
-					new Notification('update', 'Filled in Ombi', 3000);
-
-					// CouchPotato
-					fetch(`${ APIURL }Settings/CouchPotato`, headers)
-						.then( data => data.json() )
-						.then( json => {
-							LoadingAnimation();
-							if(!json || (!json.enabled && !json.enable)) return;
-
-							let k = $('[data-option="couchpotatoToken"]'),
-								K = $('[data-option="couchpotatoURLRoot"]');
-
-							k.value = k.textContent = json.apiKey;
-							K.value = K.textContent = json.ip.replace(/(?:[^\/]+\/\/)?([^\/]+)\/?/, `http${ json.ssl? 's': '' }://$1:${ json.port }/`);
-
-							new Notification('update', 'Filled in CouchPotato', 3000);
-						} )
-						.catch( error => { new Notification('error', 'Error getting CouchPotato details from Ombi'); throw error } );
-
-					// Radarr
-					fetch(`${ APIURL }Settings/radarr`, headers)
-						.then( data => data.json() )
-						.then( json => {
-							LoadingAnimation();
-							if(!json || (!json.enabled && !json.enable)) return;
-
-							let k = $('[data-option="radarrToken"]'),
-								K = $('[data-option="radarrURLRoot"]'),
-								q = $('[data-option="radarrQualityProfileId"]'),
-								Q = $('[data-option="radarrStoragePath"]'),
-								_q, _Q;
-
-							k.value = k.textContent = json.apiKey;
-							K.value = K.textContent = json.ip.replace(/(?:[^\/]+\/\/)?([^\/]+)\/?/, `http${ json.ssl? 's': '' }://$1:${ json.port }/`);
-							q.value = _q = json.defaultQualityProfile;
-							Q.value = _Q = json.defaultRootPath;
-
-							q.innerHTML = `<option value="${ _q }">[Ombi]: ${ _q }</option>`;
-							Q.innerHTML = `<option value="${ _Q }">[Ombi]: ${ _Q }</option>`;
-
-							new Notification('update', 'Filled in Radarr', 3000);
-						} )
-						.catch( error => { new Notification('error', 'Error getting Radarr details from Ombi'); throw error } );
-
-					// Sonarr
-					fetch(`${ APIURL }Settings/sonarr`, headers)
-						.then( data => data.json() )
-						.then( json => {
-							LoadingAnimation();
-							if(!json || (!json.enabled && !json.enable)) return;
-
-							let k = $('[data-option="sonarrToken"]'),
-								K = $('[data-option="sonarrURLRoot"]'),
-								q = $('[data-option="sonarrQualityProfileId"]'),
-								Q = $('[data-option="sonarrStoragePath"]'),
-								_q, _Q;
-
-							k.value = k.textContent = json.apiKey;
-							K.value = K.textContent = json.ip.replace(/(?:[^\/]+\/\/)?([^\/]+)\/?/, `http${ json.ssl? 's': '' }://$1:${ json.port }/`);
-							q.value = _q = json.qualityProfile;
-							Q.value = _Q = json.rootPath;
-
-							q.innerHTML = `<option value="${ _q }">[Ombi]: ${ _q }</option>`;
-							Q.innerHTML = `<option value="${ _Q }">[Ombi]: ${ _Q }</option>`;
-
-							new Notification('update', 'Filled in Sonarr', 3000);
-						} )
-						.catch( error => { new Notification('error', 'Error getting Sonarr details from Ombi'); throw error } );
-				}
+				/* O2: the manager settings are filled in after the Plex lookup (FillFromOmbi), with or without Plex */
+				LoadingAnimation();
 
 				__save__.disabled = false;
 				__save__.innerHTML = 'Save ' + MARKERS.yes;
 			} else {
 				/* Plex either doesn't exist, or is disabled */
-				new Notification('error', 'Error getting Plex details from Ombi');
+				LoadingAnimation();
+				new Notification('warning', 'Ombi has no Plex server set up; enter your Plex details above');
 			 	__save__.innerHTML = 'Save ' + MARKERS.no;
 			}
 		} )
 		.catch(error => { LoadingAnimation(); new Notification('error', error); __save__.innerHTML = 'Save ' + MARKERS.no; });
+
+	// O2: "Would you like to use Ombi to fill in your Manager Settings?" no longer depends on Ombi having Plex
+	if($('[data-option="UseOmbi"]').checked)
+		FillFromOmbi({ APIURL, headers, url: l, key: a });
+}
+
+/**
+ * A manager's URL from Ombi's settings (`ip`, `port`, `ssl`, `subDir`), e.g. `https://host:7878/radarr/`. The subdirectory
+ * was dropped before (O2), which broke managers behind a reverse-proxy path.
+ * @param {object} settings - Ombi's settings for the manager
+ * @returns {string} The URL, with a trailing slash
+ */
+function OmbiURL({ ip = '', port, ssl, subDir } = {}) {
+	let host = String(ip).replace(/^[^\/]*\/\//, '').replace(/\/.*$/, ''),
+		path = String(subDir || '').replace(/^\/+|\/+$/g, '');
+
+	return `http${ ssl? 's': '' }://${ host }${ port? `:${ port }`: '' }/${ path? `${ path }/`: '' }`;
+}
+
+/**
+ * Fills Ombi, CouchPotato, Radarr and Sonarr from Ombi's settings (O2). Each request stands alone: a failing one says
+ * so instead of throwing into nothing. Ombi v4 answers `Settings/radarr` with `{ radarr, radarr4K }`
+ * (RadarrCombinedModel); older versions with the Radarr settings themselves.
+ * @param {object} ombi - `APIURL` (`…/api/v1/`), `headers` (the fetch init with the API key), `url` and `key`
+ * @returns {Promise<string[]>} The managers that were filled in
+ */
+function FillFromOmbi({ APIURL, headers, url, key }) {
+	let L = $('[data-option="ombiURLRoot"]'),
+		A = $('[data-option="ombiToken"]'),
+		filled = [];
+
+	L.value = L.textContent = url;
+	A.value = A.textContent = key;
+
+	new Notification('update', 'Filled in Ombi', 3000);
+
+	let get = (path, name) => fetch(`${ APIURL }Settings/${ path }`, headers)
+		.then(response => {
+			if(!response.ok)
+				throw new Error(`Ombi answered ${ response.status }${ response.status == 401 || response.status == 403? ' (the settings need an admin API key)': '' }`);
+
+			return response.json();
+		})
+		.catch(error => (new Notification('error', `Error getting ${ name } details from Ombi: ${ error?.message ?? error }`), null));
+
+	let fill = (name, json, values) => {
+		if(!json || (!json.enabled && !json.enable))
+			return;
+
+		for(let option in values) {
+			let element = $(`[data-option="${ option }"]`),
+				value = values[option];
+
+			if(/QualityProfileId$|StoragePath$/.test(option))
+				element.innerHTML = `<option value="${ value }">[Ombi]: ${ value }</option>`;
+			element.value = value;
+
+			if(!/QualityProfileId$|StoragePath$/.test(option))
+				element.textContent = value;
+		}
+
+		filled.push(name);
+	};
+
+	return Promise.all([
+		get('CouchPotato', 'CouchPotato').then(json => fill('CouchPotato', json, {
+			couchpotatoToken: json?.apiKey,
+			couchpotatoURLRoot: OmbiURL(json ?? {}),
+		})),
+		get('radarr', 'Radarr').then(json => (json = json?.radarr ?? json, fill('Radarr', json, {
+			radarrToken: json?.apiKey,
+			radarrURLRoot: OmbiURL(json ?? {}),
+			radarrQualityProfileId: json?.defaultQualityProfile,
+			radarrStoragePath: json?.defaultRootPath,
+		}))),
+		get('sonarr', 'Sonarr').then(json => (json = json?.sonarr ?? json, fill('Sonarr', json, {
+			sonarrToken: json?.apiKey,
+			sonarrURLRoot: OmbiURL(json ?? {}),
+			sonarrQualityProfileId: json?.qualityProfile,
+			sonarrStoragePath: json?.rootPath,
+		}))),
+	])
+	.then(() => {
+		LoadingAnimation();
+
+		for(let name of filled)
+			new Notification('update', `Filled in ${ name }`, 3000);
+
+		if(!filled.length)
+			new Notification('info', 'Ombi has no enabled Radarr, Sonarr or CouchPotato to fill in', 5000);
+
+		return filled;
+	});
 }
 
 function performOmbiTest({ refreshing = false, event }) {
