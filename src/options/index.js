@@ -703,7 +703,11 @@ function performOmbiLogin({ event }) {
 					u = $('[data-option="UseOmbi"]'),
 					s = __servers__;
 
-				json = (json && json.servers.length? json.servers[0]: {});
+				// S29: Ombi can have Plex enabled with no server listed
+				json = (json?.servers?.length? json.servers[0]: {});
+
+				if(!json.ip)
+					return LoadingAnimation(), new Notification('error', 'Ombi has Plex enabled, but no Plex server'), __save__.innerHTML = 'Save ' + MARKERS.no;
 
 				let name  = json.name,              // people friendly server name
 					token = json.plexAuthToken,     // the auth token
