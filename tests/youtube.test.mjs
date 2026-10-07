@@ -11,10 +11,11 @@ import assert from 'node:assert/strict';
 
 /**
  * Loads cloud/youtube.js with recorded timers.
- * @param {object} [page] - `collapsed` (the expander's state) and `expander` (whether it exists)
+ * @param {object} [page] - `collapsed` (the expander's state), `expander` (whether it exists) and `details` (the description
+ *     text, or null for none)
  * @returns {object} `{ script, intervals, cleared, tick }`
  */
-function load({ collapsed = true, expander = true } = {}) {
+function load({ collapsed = true, expander = true, details = 'Release date 1994' } = {}) {
     const intervals = []
         , cleared = new Set()
         , element = text => ({ textContent: text, attributes: collapsed ? { collapsed: '' } : {}, click() {}, addEventListener() {} })
@@ -24,7 +25,7 @@ function load({ collapsed = true, expander = true } = {}) {
             '.super-title, #title, #header #main-title': [element('The Shawshank Redemption')],
             '#owner-container, #upload-info [href^="/channel/"]': [element('YouTube Movies')],
             '.title': [element('The Shawshank Redemption')],
-            '#content ytd-expander': [element('Release date 1994')],
+            '#content ytd-expander': details == null ? [] : [element(details)],
             'ytd-expander': expander ? [element('')] : [],
         }
         , $ = selector => Object.assign([...elements[selector] ?? []], { first: (elements[selector] ?? [])[0], empty: !(elements[selector] ?? []).length })
@@ -65,4 +66,12 @@ test('no expander: the check stops at once, and init does not throw', () => {
     tick();
 
     assert.ok(intervals.every((interval, id) => cleared.has(id)));
+});
+
+test('YT1: the year comes from the release date, else none (no `YEAR` ReferenceError, no NaN)', () => {
+    assert.equal(load().script.init().year, 1994);
+    assert.equal(load({ details: 'Air date 3/14/09' }).script.init().year, 2009);
+    assert.equal(load({ details: 'A man is wrongly imprisoned.' }).script.init().year, null);
+    assert.equal(load({ details: null }).script.init().year, null);
+    assert.equal(load({ details: null }).script.init().title, 'The Shawshank Redemption');
 });

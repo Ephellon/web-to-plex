@@ -56,13 +56,16 @@ let script = {
 			if(!title)
 				return -1;
 
+			// YT1: the year from "Release date …" / "Air date …", or none; the old fallback `YEAR` is a utils.js local
+			// (ReferenceError), and a description without a date gave NaN
+			let date = /(?:release|air) date\s+(?:\d+\/\d+\/)?(\d{2,4})\b/i.exec(year?.textContent ?? '');
+
 			title = title.textContent.trim();
-			year  = (year)?
-				+year.textContent.replace(/[^]*(?:release|air) date\s+(?:(?:\d+\/\d+\/)?(\d{2,4}))[^]*/i, ($0, $1, $$, $_) => +$1 < 1000? 2000 + +$1: $1):
-			YEAR;
+			year  = date? (+date[1] < 1000? 2000 + +date[1]: +date[1]): null;
 			image = image.src;
 
-			title = title.replace(R(`\\s*(\\(\\s*)?${ year }\\s*(\\))?`), '');
+			if(year)
+				title = title.replace(R(`\\s*(\\(\\s*)?${ year }\\s*(\\))?`), '');
 
 			options = { type, title, year, image };
 		} else if(type == 'list') {
