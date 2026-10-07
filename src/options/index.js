@@ -825,7 +825,8 @@ function performOmbiTest({ refreshing = false, event }) {
 					} else {
 						teststatus.innerHTML = MARKERS.no;
 						enabled.checked = teststatus.classList = false;
-						enabled.parentElement.setAttribute('disabled');
+						// S7: setAttribute needs a value; without one it threw and hid the Ombi error below
+						enabled.parentElement.setAttribute('disabled', '');
 						inusestatus.map(e => e.setAttribute('in-use', false));
 
 						throw new Error(`Ombi error [${ status }]`);
