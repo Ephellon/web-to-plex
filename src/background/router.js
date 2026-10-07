@@ -10,6 +10,7 @@
  */
 
 import { Terminal, RefreshTerminal } from './common.js';
+import { SeedDefaults } from './defaults.js';
 import { ParseItem, ChangeStatus, ForgetStatus, SaveAs, DownloadFile } from './menus.js';
 import { Search_Plex } from './services/plex.js';
 import { Query_CouchPotato, Push_CouchPotato, Charge_CouchPotato } from './services/couchpotato.js';
@@ -52,6 +53,8 @@ export const ROUTES = {
     SAVE_AS: { replies: false, handle: (request, reply, parsed) => SaveAs(parsed) },
     DOWNLOAD_FILE: { replies: false, handle: (request, reply, parsed) => DownloadFile(parsed) },
     UPDATE_CONFIGURATION: { replies: false, handle: () => RefreshTerminal() },
+    // S17: the options page's Reset cleared both storage areas; write the defaults again, as on a fresh install
+    RESEED_DEFAULTS: { replies: true, handle: (request, reply) => SeedDefaults({ reason: 'install' }).then(written => reply({ ok: true, keys: Object.keys(written).length })) },
     // utils.js: the page was left; its item no longer applies (F5)
     PAGE_HIDDEN: { replies: false, handle: (request, reply, parsed, sender) => ForgetStatus(sender?.tab?.id) },
 };

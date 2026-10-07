@@ -2071,7 +2071,11 @@ function saveOptionsWhileResetting() {
 		new Notification('update', 'Saved', 1500);
 	}
 
-	storage.set(options, () => {
+	// S17: the Reset button promises to "remove all of your data"; `storage.set` merges, so clear everything first
+	ClearAllData().then(() => storage.set(options, () => {
+		// The defaults the page does not hold (site switches, IGNORE_PLEX), as on a fresh install
+		chrome.runtime.sendMessage({ type: 'RESEED_DEFAULTS' }, () => void chrome.runtime.lastError);
+
 		LoadingAnimation();
 
 		if(chrome.runtime.lastError) {
@@ -2092,7 +2096,23 @@ function saveOptionsWhileResetting() {
 			if(response !== undefined)
 				console.log(`Update response (UPDATE_CONFIGURATION):`, { response, options });
 		});
-	});
+	}));
+}
+
+/**
+ * Removes every saved setting (S17): both storage areas (servers, proxy, ClientID, `~/cache/*`, the version cache) and
+ * this extension's localStorage (the popup's manager links).
+ * @returns {Promise<void>} Settles once both areas are cleared; a failing area is logged, not fatal
+ */
+function ClearAllData() {
+	try {
+		localStorage.clear();
+	} catch(error) {
+		terminal.warn('Could not clear localStorage:', error);
+	}
+
+	return Promise.all([chrome.storage.sync, chrome.storage.local].filter(area => area).map(area => area.clear().catch(error => terminal.warn('Could not clear storage:', error))))
+		.then(() => {});
 }
 
 function requestURLPermissions(url, callback) {
