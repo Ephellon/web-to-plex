@@ -484,3 +484,10 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - ~~**T14**~~ YouTube expander check 1 s, max 10. ~~**T17**~~ `google.js` (tmdb in T10; toloka clean). ~~**T16**~~ `webtoplex.js` (rest already rewritten).
 - ~~**SH1**~~ Shana no-art image → none. ~~**X1b**~~ Plex It! styles, icons, add-item code gone.
 - Found: YouTube still has a `YEAR` fallback (ReferenceError path); the webtoplex.github.io page is stale.
+
+## Round 13 (`w2p-fix-round13`)
+
+- ~~**O2**~~ (owner report) Ombi stopped prefilling Radarr/Sonarr: (1) prefill ran only inside the Plex-from-Ombi branch; (2) Ombi v4 `Settings/radarr` returns `{ radarr, radarr4K }`, so `json.enabled` was undefined and it returned silently; (3) `subDir` dropped, errors unhandled. Now runs without Plex, reads `json.radarr ?? json`, honours `subDir`, toasts per request. Fake Ombi (shapes from Ombi source); not yet checked against a real Ombi.
+- ~~**YT1**~~ YouTube `YEAR` fallback gone. ~~**S6**~~ empty-token tests reject. ~~**S7**~~ `setAttribute('disabled', '')`. ~~**S8**~~ no servers = failure. ~~**S9**~~ CouchPotato Basic auth sent.
+- ~~**S16**~~ Plex sign-in errors stop the spinner, no partial save. ~~**S17**~~ Reset clears sync, local, localStorage, then reseeds defaults (`RESEED_DEFAULTS`). ~~**S19**~~ Plex client ID = stored UUID. ~~**S29**~~ Ombi reply without `servers`.
+- Next: S31 popup tiles (dropped this round), S26, S33.
