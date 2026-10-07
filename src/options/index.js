@@ -507,19 +507,29 @@ function getServers(plexToken) {
 	});
 }
 
+/**
+ * This install's Plex client identifier (S19): a random UUID made once and kept in storage.local, so plex.tv sees the
+ * same client on every sign-in. It was `null` before the first sign-in, then the account's auth token.
+ * @returns {Promise<string>} The identifier
+ */
+function PlexClientIdentifier() {
+	return chrome.storage.local.get('PlexClientIdentifier')
+		.then(({ PlexClientIdentifier: id }) => id || (id = `web-to-plex-${ crypto.randomUUID() }`, chrome.storage.local.set({ PlexClientIdentifier: id }).then(() => id)));
+}
+
 /* See #1 */
 function tryPlexLogin(username, password) {
 	let hash = btoa(`${username}:${password}`);
 
-	return fetch(`https://plex.tv/users/sign_in.json`, {
+	return PlexClientIdentifier().then(identifier => fetch(`https://plex.tv/users/sign_in.json`, {
 		method: 'POST',
 		headers: {
 			'X-Plex-Product': 'Web to Plex',
 			'X-Plex-Version': manifest.version,
-			'X-Plex-Client-Identifier': ClientID,
+			'X-Plex-Client-Identifier': identifier,
 			'Authorization': `Basic ${ hash }`
 		}
-	})
+	}))
 	.then(response => response.json());
 }
 
@@ -544,7 +554,7 @@ function performPlexLogin({ event }) {
 			if(response.user) {
 				let t = $('#plex_token');
 
-				ClientID = t.value = t.textContent = response.user.authToken;
+				t.value = t.textContent = response.user.authToken;
 
 				return performPlexTest({});
 			}
@@ -702,7 +712,7 @@ function performOmbiLogin({ event }) {
 
 				url = url.replace(/(?:[^\/]+\/\/)?([^\/]+)\/?/, `http${ json.ssl? 's': '' }://$1:${ json.port }/`);
 
-				ClientID = t.value = t.textContent = token;
+				t.value = t.textContent = token;
 				ServerID = s.value = uuid;
 				s.innerHTML = `<option value="${ uuid }">${ name }</option>`;
 
@@ -1783,13 +1793,9 @@ function saveOptions() {
 	} if(options.sickBeardURLRoot && !options.sickBeardQualityProfileId) {
 		return new Notification('error', 'Select a quality profile for Sick Beard'),
 			null;
-	} if(!ClientID) {
-		ClientID = window.crypto.getRandomValues(new Uint32Array(5))
-			.join('-');
 	}
 	new Notification('update', 'Saving...', 1500);
 	LoadingAnimation(true);
-	storage.set({ ClientID });
 
 	options.plexURL = options.plexURLRoot = (options.plexURL || "https://app.plex.tv/")
 		.replace(/^(\:\d+)/, 'localhost$1')
@@ -1949,9 +1955,6 @@ function saveOptionsWithoutPlex() {
 	} if(options.sickBeardURLRoot && !options.sickBeardQualityProfileId) {
 		return new Notification('error', 'Select a quality profile for Sick Beard'),
 			null;
-	} if(!ClientID) {
-		ClientID = 'web-to-plex:client';
-		storage.set({ ClientID });
 	}
 	new Notification('update', 'Saving...', 1500);
 
