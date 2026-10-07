@@ -1624,8 +1624,10 @@ function HandleProxySettings(data) {
 		R = RegExp;
 
 	/* "All" secure URI schemes */
+	// S16: show the error and return null; callers stop before any spinner or partial save. A thrown Notification left
+	// Save's spinner running after the client ID was already stored, and went unhandled in GetIPAddress on every page load
 	if(UseProxy && ProxyURL && !/^(aaas|https|msrps|sftp|smtp|shttp|sips|ssh|wss)\:\/\//i.test(ProxyURL))
-		throw new Notification('error', `Insecure URI scheme '${ ProxyURL.replace(/^(\w*?)(?:\:\/\/)/, '$1') }' detected. Please use a secure scheme.`);
+		return new Notification('error', `Insecure URI scheme '${ ProxyURL.replace(/^(\w*?)(?:\:\/\/)/, '$1') }' detected. Please use a secure scheme.`), null;
 
 	return {
 		enabled: UseProxy,
@@ -1743,6 +1745,12 @@ function saveOptions() {
 
 	options.IGNORE_PLEX = false;
 
+	// S16: an insecure proxy URL stops the save here, before anything is stored
+	let proxy = HandleProxySettings(options);
+
+	if(!proxy)
+		return null;
+
 	let r, R = 'Radarr',
 		s, S = 'Sonarr',
 		w, W = 'Watcher',
@@ -1841,8 +1849,8 @@ function saveOptions() {
 	requestURLPermissions(options.ombiURLRoot);
 	requestURLPermissions(options.sickBeardURLRoot);
 
-	// Handle the proxy settings
-	options.proxy = HandleProxySettings(options);
+	// Handle the proxy settings (checked above)
+	options.proxy = proxy;
 
 	function OptionsSavedMessage() {
 		// Update status to let the user know the options were saved
@@ -1902,6 +1910,12 @@ function saveOptionsWithoutPlex() {
 		endingSlash = ($0, $1, $$, $_) => ($1 + (/\\/.test($_)? '\\': '/'));
 
 	options.IGNORE_PLEX = true;
+
+	// S16: an insecure proxy URL stops the save here, before anything is stored
+	let proxy = HandleProxySettings(options);
+
+	if(!proxy)
+		return null;
 
 	let r, R = 'Radarr',
 		s, S = 'Sonarr',
@@ -1997,8 +2011,8 @@ function saveOptionsWithoutPlex() {
 	requestURLPermissions(options.ombiURLRoot);
 	requestURLPermissions(options.sickBeardURLRoot);
 
-	// Handle the proxy settings
-	options.proxy = HandleProxySettings(options);
+	// Handle the proxy settings (checked above)
+	options.proxy = proxy;
 
 	function OptionsSavedMessage() {
 		// Update status to let the user know the options were saved
@@ -2049,6 +2063,9 @@ function saveOptionsWhileResetting() {
 
 	// The runtime reads the derived proxy object (utils.js), not the raw proxy fields
 	options.proxy = HandleProxySettings(options);
+
+	if(!options.proxy)
+		return LoadingAnimation(), null;
 
 	function OptionsSavedMessage() {
 		new Notification('update', 'Saved', 1500);
@@ -3009,6 +3026,13 @@ Recall['@auto'].GetIPAddress = async() => {
 	teststatus.innerHTML = MARKERS.maybe;
 
 	let proxy = HandleProxySettings(options);
+
+	if(!proxy) {
+		self.innerHTML = '';
+		teststatus.innerHTML = MARKERS.no;
+
+		return;
+	}
 
 	if(proxy.enabled) {
 		let { url, headers } = proxy,
