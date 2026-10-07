@@ -1553,7 +1553,8 @@ function getCouchPotato(options, api = "updater.info") {
 	if(options.couchpotatoBasicAuthUsername)
 		headers.Authorization = `Basic ${ btoa(`${ options.couchpotatoBasicAuthUsername }:${ options.couchpotatoBasicAuthPassword }`) }`;
 
-	return ServiceFetch(`${ options.couchpotatoURLRoot }/api/${ options.couchpotatoToken }/${ api }`)
+	// S9: send the headers (Basic auth for a CouchPotato behind a password); they were built and dropped
+	return ServiceFetch(`${ options.couchpotatoURLRoot }/api/${ options.couchpotatoToken }/${ api }`, { headers })
 		.then(response => response.json())
 		.catch(error => {
 			return new Notification('error', 'CouchPotato failed to connect with error:' + String(error)),
