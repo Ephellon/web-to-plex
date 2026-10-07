@@ -566,14 +566,17 @@ function performPlexTest({ ServerID, event }) {
 	LoadingAnimation(true);
 
 	getServers(plexToken).then((servers = []) => {
+		// S8: `servers` defaults to an array, so `!servers` was never true and an account without servers passed
+		let none = !servers?.length;
+
 		LoadingAnimation();
 
-		PlexServers = servers;
-		teststatus.innerHTML = MARKERS[+!servers];
+		PlexServers = servers ?? [];
+		teststatus.innerHTML = MARKERS[+none];
 		inusestatus.map(e => e.setAttribute('in-use', false));
 
-		if(!servers)
-			return teststatus.title = 'Failed to communicate with Plex', teststatus.classList = false;
+		if(none)
+			return teststatus.title = 'No Plex servers found for this account', teststatus.classList = false, __save__.innerHTML = 'Save ' + MARKERS.no;
 		inusestatus.map(e => e.setAttribute('in-use', true));
 
 		__save__.disabled = false;
