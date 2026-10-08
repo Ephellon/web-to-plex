@@ -273,10 +273,6 @@ export async function RunSite(script, { alias, type = 'script' } = {}, env = Sha
         if(await env.getCache(`has/${ alias }`) === false)
             return post({ action: 'stop', message: "The instance requires the \"authorized\" permission" });
 
-        // The `// "Name" requires: …` comment of MV2, as data (only cloud/webtoplex.js uses it)
-        if(script.requires instanceof Array)
-            await env.require(['cache', ...script.requires].join(','), alias, script.requiresName ?? alias, instance);
-
         // 2. URL: no match is the wrapper's -1, which the background turned into NO_RENDER
         const pattern = GlobToRegExp(script.url);
 
@@ -285,6 +281,11 @@ export async function RunSite(script, { alias, type = 'script' } = {}, env = Sha
 
             return post({ action: 'no-render', data: -1 });
         }
+
+        // The `// "Name" requires: …` comment of MV2, as data (only cloud/webtoplex.js uses it). O3: asked only on a page
+        // the script runs on (webtoplex.github.io/web/login.html, which it excludes, showed the prompt too)
+        if(script.requires instanceof Array)
+            await env.require(['cache', ...script.requires].join(','), alias, script.requiresName ?? alias, instance);
 
         if(!(script.init instanceof Function)) {
             env.warn(`The ${ kind } (${ alias }) is incorrectly structured. Could not find required function ${ kind }.init`);

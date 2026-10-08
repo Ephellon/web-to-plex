@@ -281,7 +281,15 @@ let INITIALIZE = (async date => {
 			}
 		});
 
-		await UTILS_STORAGE.set({[name]: data}, () => data);
+		// O3: the callback form returned nothing, so this awaited nothing and a failed write (storage.sync is 100 KB)
+		// vanished; wait for it, and give null when it fails
+		try {
+			await UTILS_STORAGE.set({[name]: data});
+		} catch(error) {
+			UTILS_TERMINAL.ERROR(`Could not save "${ name }": ${ error }`);
+
+			return null;
+		}
 
 		return name;
 	}
@@ -903,17 +911,25 @@ let INITIALIZE = (async date => {
 							element.remove();
 					};
 
-					callback = (allowed, permissions) => {
-						save(`has/${ name }`, allowed);
-						save(`get/${ name }`, permissions);
+					// O3: save the choice before anything re-runs (the site re-ran at once and, finding nothing saved yet,
+					// asked again), then apply it in place: no page reload
+					callback = async(allowed, permissions) => {
+						let saved = (await save(`has/${ name }`, allowed)) && (await save(`get/${ name }`, permissions));
+
+						if(!saved)
+							new Notification('error', `Could not save your choice for "${ alias || name }"; it applies to this page only`);
 
 						ALLOWED = allowed;
 						PERMISS = permissions;
 
-						ParsedOptions();
+						// ParsedOptions reads the grant of the running site
+						Update.running = name;
+						await ParsedOptions();
 
-						return Update(`GRANT_PERMISSION`, { allowed, permissions }, true),
-							(init && !RUNNING? (init(), RUNNING = true): RUNNING = false);
+						if(allowed && init)
+							init();
+
+						return saved;
 					};
 
 					prompt = furnish('div.web-to-plex-prompt', { type: prompt_type },
@@ -968,7 +984,7 @@ let INITIALIZE = (async date => {
 							// The engagers
 							furnish('div.web-to-plex-prompt-footer', {},
 								furnish('button.web-to-plex-prompt-decline', { onmouseup: event => { if(!event.isTrusted) throw alert('The script for this site is trying to decline its own permissions!'), 'Malicious script. Decline permissions'; remove(true); callback(false, {}) }, title: 'Deny all permissions' }, Glyphs.ban),
-								furnish('button.web-to-plex-prompt-accept', { onmouseup: async event => { if(!event.isTrusted) throw alert('The script for this site is trying to grant its own permissions!'), 'Malicious script. Grant permissions'; remove(true); await callback(true, permissions); top.open(top.location.href, '_top'); }, title: 'Allow all permissions' }, Glyphs.ok)
+								furnish('button.web-to-plex-prompt-accept', { onmouseup: async event => { if(!event.isTrusted) throw alert('The script for this site is trying to grant its own permissions!'), 'Malicious script. Grant permissions'; remove(true); await callback(true, permissions); }, title: 'Allow all permissions' }, Glyphs.ok)
 							)
 						)
 					);
@@ -3364,12 +3380,17 @@ let INITIALIZE = (async date => {
 						throw `Incorrect instance [${ instance.slice(0, 7) }]`;
 
 					if(typeof data.allowed == 'boolean') {
+						// O3: every run of the site sends this; re-running it on each one kept it looping. Re-run only when an
+						// answer this page already had changed (another frame or tab answered the prompt)
+						let changed = typeof ALLOWED == 'boolean' && ALLOWED !== data.allowed;
+
 						ALLOWED = data.allowed;
 						PERMISS = data.allotted;
 
 						await ParsedOptions();
 
-						(init && !RUNNING? (init(), RUNNING = true): RUNNING = false);
+						if(changed && data.allowed && init)
+							init();
 					} else {
 						UTILS_TERMINAL.WARN('Permission Request:', data);
 						new Prompt('permission', data);
