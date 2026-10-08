@@ -491,3 +491,7 @@ All four manager-made changes pass live: sidebar dot (5.7 px gap), IP check (`ch
 - ~~**YT1**~~ YouTube `YEAR` fallback gone. ~~**S6**~~ empty-token tests reject. ~~**S7**~~ `setAttribute('disabled', '')`. ~~**S8**~~ no servers = failure. ~~**S9**~~ CouchPotato Basic auth sent.
 - ~~**S16**~~ Plex sign-in errors stop the spinner, no partial save. ~~**S17**~~ Reset clears sync, local, localStorage, then reseeds defaults (`RESEED_DEFAULTS`). ~~**S19**~~ Plex client ID = stored UUID. ~~**S29**~~ Ombi reply without `servers`.
 - Next: S31 popup tiles (dropped this round), S26, S33.
+
+## O3 (`w2p-fix-o3`, owner report)
+
+- ~~**O3**~~ granting a site's API access reloaded the page and re-prompted. Root cause: the grant was read through the page's filtered configuration, which hides `~/cache/` keys until a grant exists, so a saved grant was never seen; plus a forced reload, unawaited callback-style saves, re-init on every message, and the prompt firing before the URL check. Now: grant read from `chrome.storage`, saves awaited, applied in place (no reload), re-run only on a changed answer. Only `cloud/webtoplex.js` asks. Live: accept → 0 reloads, no prompt over 3 loads; deny persists.
