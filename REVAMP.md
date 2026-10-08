@@ -112,3 +112,4 @@ unusable on Chromium. The MV3 conversion in Phase 3 is the top priority.
 | 2026-10-04 | `w2p-fix-round12` | subordinate (`webtoplex-subo`) | Fandango, Google Play, AlloCiné series, Flick Metrix, TMDb lists, YouTube interval, RegExp.$n, null checks, Shana image, Plex It! leftovers: all applied, 167/167 tests |
 | 2026-10-07 | `w2p-fix-round13` | subordinate (`webtoplex-subo`) | YouTube year; options page: token guards, Ombi disabled/servers, CouchPotato auth, Plex sign-in spinner, Reset, client ID; O2 Ombi prefill of Radarr/Sonarr (owner report): all applied, 191/191 tests |
 | 2026-10-08 | `w2p-fix-o3` | subordinate (`webtoplex-subo`) | O3 owner report: site API-access grant reloads page, re-prompts, not saved: applied, 197/197 tests |
+| 2026-10-08 | `w2p-fix-o3b` | subordinate (`webtoplex-subo`) | O3 not fixed live (webtoplex.github.io/web/?movie=567): headed debug with owner sign-in (posted) |
